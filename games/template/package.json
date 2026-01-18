@@ -2,8 +2,8 @@
   "name": "@falkura-pet/games-template",
   "version": "0.0.0",
   "scripts": {
-    "build": "concurrently 'rslib build' 'assetpack'",
-    "dev": "concurrently 'rslib build -w' 'assetpack -w'"
+    "build": "assetpack && rspack build",
+    "dev": "concurrently 'rspack build -w' 'assetpack -w'"
   },
   "dependencies": {
     "@falkura-pet/engine": "workspace:*"

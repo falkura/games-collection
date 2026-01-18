@@ -4,6 +4,9 @@
     "path": "games",
     "gamesList": {
       "template": {
+        "title": "Template",
+        "description": "template project",
+        "icon": "/template.png",
         "path": "template",
         "route": "game1",
         "enabled": true

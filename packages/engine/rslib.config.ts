@@ -3,7 +3,8 @@ import { defineConfig } from "@rslib/core";
 export default defineConfig({
   lib: [
     {
-      format: "esm",
+      format: "umd",
+      umdName: "__ENGINE__",
       syntax: "esnext",
       bundle: true,
       autoExternal: false,
@@ -13,6 +14,6 @@ export default defineConfig({
   output: {
     cleanDistPath: true,
     target: "web",
-    minify: true,
+    minify: false,
   },
 });

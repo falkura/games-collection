@@ -32,6 +32,18 @@
                 "type": "string",
                 "description": "Path that will be used to access the game"
               },
+              "title": {
+                "type": "string",
+                "description": "Displayed game title"
+              },
+              "description": {
+                "type": "string",
+                "description": "Displayed game description"
+              },
+              "icon": {
+                "type": "string",
+                "description": "Path to game icon"
+              },
               "enabled": {
                 "type": "boolean",
                 "description": "Add game to bundle",

@@ -4,13 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rsbuild build",
-    "dev": "rsbuild dev"
+    "build": "rspack build",
+    "dev": "rspack dev"
   },
   "dependencies": {
-    "@falkura-pet/engine": "workspace:*"
+    "@falkura-pet/engine": "workspace:*",
+    "normalize.css": "^8.0.1"
   },
   "devDependencies": {
-    "@falkura-pet/configs": "workspace:*"
+    "@falkura-pet/configs": "workspace:*",
+    "@falkura-pet/types": "workspace:*"
   }
 }

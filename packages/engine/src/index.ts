@@ -1,42 +1,34 @@
 import * as PIXI from "pixi.js";
+import { Assets } from "pixi.js";
 
 export class EngineClass {
-  async initEngine(config) {
-    console.log("Initializing Engine", config);
-
+  async initEngine() {
     const app = new PIXI.Application();
 
     await app.init({
       backgroundColor: 0x191bff,
+      backgroundAlpha: 0.5,
       preference: "webgl", // or 'webgpu'
       resizeTo: window,
     });
 
-    document.getElementById("root")!.appendChild(app.canvas);
+    root.appendChild(app.canvas);
 
     globalThis.app = app;
   }
 
-  // TODO check for duplication or loading process
-  async initGame(config, importUrl: string) {
-    console.log("Initializing Game", config, importUrl);
+  async initGame(config) {
+    console.log("Initializing Game", config);
 
-    const manifestName = config.gameCode + "-manifest";
+    await Assets.init({ basePath: "./assets/" });
 
-    const basePath = new URL("./assets/", importUrl).href;
+    Assets.add({ src: "manifest.json" });
 
-    await PIXI.Assets.init({ basePath });
+    const manifest = await Assets.load("manifest.json");
 
-    PIXI.Assets.add({
-      alias: manifestName,
-      src: "manifest.json",
-    });
+    Assets.addBundle("default", manifest.bundles[0].assets);
 
-    const manifest = await PIXI.Assets.load(manifestName);
-
-    PIXI.Assets.addBundle(config.gameCode, manifest.bundles[0].assets);
-
-    const assets = await PIXI.Assets.loadBundle(config.gameCode);
+    const assets = await Assets.loadBundle("default");
 
     console.log("Game assets loaded successfully", assets);
   }

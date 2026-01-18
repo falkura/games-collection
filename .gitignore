@@ -9,4 +9,5 @@ dist-assets
 .env
 .cache
 .assetpack
+.generated
 server/dist
