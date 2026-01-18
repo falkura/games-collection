@@ -1,21 +1,13 @@
 {
-  "outdir": "dist",
+  "$schema": "packages/schemas/project.schema.json",
   "games": {
-    "outdir": "dist",
-    "assets": "assets",
-    "list": [
-      {
-        "enabled": true,
-        "path": "games/game1"
-      },
-      {
-        "enabled": true,
-        "path": "games/template"
+    "path": "games",
+    "gamesList": {
+      "template": {
+        "path": "template",
+        "route": "game1",
+        "enabled": true
       }
-    ]
-  },
-  "wrapper": {
-    "outdir": "dist",
-    "path": "packages/wrapper"
+    }
   }
 }

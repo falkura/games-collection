@@ -1,4 +1,4 @@
-import { getArgs, pickGame } from "./utils";
+import { getArgs, pickGame } from "./utils/utils";
 import { execa } from "execa";
 
 const game = await pickGame();
