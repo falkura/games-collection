@@ -53,6 +53,9 @@ export function getArgs() {
       game: {
         type: "string",
       },
+      force: {
+        type: "boolean",
+      },
     },
     strict: true,
     allowPositionals: true,
