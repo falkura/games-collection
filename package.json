@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "build_all": "turbo run build",
-    "dev_all": "turbo run dev",
+    "dev": "bun run scripts/dev.ts",
     "build": "turbo run build --filter='./packages/*' --filter='./games/template'",
-    "dev": "turbo run dev --filter='./packages/*' --filter='./games/template'",
     "serve": "serve dist -p 3001"
   },
   "dependencies": {
@@ -17,7 +16,11 @@
     "@rsbuild/core": "^1.7.2",
     "@rslib/core": "^0.19.1",
     "@types/bun": "^1.3.5",
+    "chalk": "^5.6.2",
     "concurrently": "^9.2.1",
+    "enquirer": "^2.4.1",
+    "execa": "^9.6.1",
+    "find-up": "^8.0.0",
     "serve": "^14.2.5",
     "turbo": "^2.6.1",
     "typescript": "^5.9.3"
