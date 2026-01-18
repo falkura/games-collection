@@ -8,8 +8,9 @@ import { compress, mipmap } from "@assetpack/core/image";
 import { json } from "@assetpack/core/json";
 import { cacheBuster } from "@assetpack/core/cache-buster";
 import path from "path";
+import projectConfig from "../../../config.json";
 
-export const create = (dirname, config) => {
+export const create = (dirname) => {
   const resolutions = { default: 1 };
   const doCacheBust = false;
   const compression = {
@@ -25,9 +26,10 @@ export const create = (dirname, config) => {
 
   const output = path.resolve(
     dirname,
-    "../../dist/games",
-    config.gameCode,
-    "assets"
+    "../../dist",
+    projectConfig.games.path,
+    path.basename(dirname),
+    "assets",
   );
 
   return {

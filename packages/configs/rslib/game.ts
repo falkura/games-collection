@@ -1,8 +1,9 @@
 import { defineConfig } from "@rslib/core";
 import path from "path";
+import projectConfig from "../../../config.json";
 
-export const create = (dirname: string, config: { gameCode: string }) =>
-  defineConfig({
+export const create = (dirname: string) => {
+  return defineConfig({
     lib: [
       {
         format: "esm",
@@ -16,6 +17,12 @@ export const create = (dirname: string, config: { gameCode: string }) =>
       cleanDistPath: false,
       target: "web",
       minify: true,
-      distPath: path.resolve(dirname, "../../dist/games", config.gameCode),
+      distPath: path.resolve(
+        dirname,
+        "../../dist",
+        projectConfig.games.path,
+        path.basename(dirname),
+      ),
     },
   });
+};
