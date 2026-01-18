@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/project.schema.json",
+  "title": "Game config",
+  "description": "Game configuration",
+  "type": "object",
+  "required": ["title", "description", "version"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The schema to verify this config against."
+    },
+    "title": {
+      "type": "string",
+      "description": "Game title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Game description"
+    },
+    "version": {
+      "type": "string",
+      "description": "Game version"
+    }
+  },
+  "additionalProperties": true
+}
