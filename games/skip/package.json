@@ -1,0 +1,8 @@
+{
+  "name": "skip",
+  "scripts": {
+    "build": "error",
+    "dev": "error"
+  },
+  "private": true
+}

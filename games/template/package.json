@@ -1,0 +1,21 @@
+{
+  "name": "@falkura-pet/games-template",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "concurrently 'rslib build' 'assetpack'",
+    "dev": "concurrently 'rslib build -w' 'assetpack -w'"
+  },
+  "dependencies": {
+    "@falkura-pet/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@falkura-pet/configs": "workspace:*",
+    "@falkura-pet/types": "workspace:*"
+  },
+  "private": true,
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "dist",
+  "type": "module"
+}

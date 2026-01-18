@@ -1,0 +1,6 @@
+{
+  "name": "@falkura-pet/types",
+  "version": "0.0.0",
+  "private": true,
+  "types": "global.d.ts"
+}

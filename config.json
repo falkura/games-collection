@@ -1,0 +1,21 @@
+{
+  "outdir": "dist",
+  "games": {
+    "outdir": "dist",
+    "assets": "assets",
+    "list": [
+      {
+        "enabled": true,
+        "path": "games/game1"
+      },
+      {
+        "enabled": true,
+        "path": "games/template"
+      }
+    ]
+  },
+  "wrapper": {
+    "outdir": "dist",
+    "path": "packages/wrapper"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "types": ["@falkura-pet/types"],
+    "sourceMap": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2023", "DOM"],
+    "strict": false,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitOverride": true,
+    "declaration": true,
+
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "module": "esnext",
+
+    "esModuleInterop": true,
+
+    "useDefineForClassFields": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": "./"
+  },
+  "exclude": ["*.md", "node_modules"]
+}

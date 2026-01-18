@@ -1,0 +1,4 @@
+{
+  "extends": "@falkura-pet/configs/typescript/engine.json",
+  "include": ["src"]
+}

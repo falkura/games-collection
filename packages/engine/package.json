@@ -1,0 +1,24 @@
+{
+  "name": "@falkura-pet/engine",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build -w"
+  },
+  "dependencies": {
+    "gsap": "^3.13.0",
+    "normalize.css": "^8.0.1",
+    "pixi.js": "^8.13.2"
+  },
+  "devDependencies": {
+    "@types/greensock": "^1.15.32",
+    "@falkura-pet/configs": "*",
+    "@falkura-pet/types": "*"
+  },
+  "private": true,
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "dist",
+  "type": "module"
+}
