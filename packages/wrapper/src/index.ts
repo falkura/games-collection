@@ -22,4 +22,6 @@ Object.values(projectConfig.games.gamesList).forEach((game) => {
   root.appendChild(a);
 });
 
+Engine.initEngine();
+
 console.log("Wrapper Loaded Successfully");

@@ -9,6 +9,16 @@ export default defineConfig({
       bundle: true,
       autoExternal: false,
       dts: true,
+      output: {
+        distPath: "./dist/umd",
+      },
+    },
+    {
+      format: "esm",
+      syntax: "esnext",
+      bundle: true,
+      autoExternal: false,
+      dts: true,
     },
   ],
   output: {

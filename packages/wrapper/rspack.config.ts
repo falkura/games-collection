@@ -38,6 +38,9 @@ const htmlPlugins = games.map(
       filename: path.join(route, "index.html"),
       chunks: [route], // Include only game script
       inject: "body",
+      templateParameters: {
+        engine: `<script src="/engine/index.js"></script>`,
+      },
     }),
 );
 
@@ -78,7 +81,7 @@ export default defineConfig({
     // Engine that will be used in project and games
     new rspack.CopyRspackPlugin({
       patterns: [
-        { from: path.join(root, "packages/engine/dist"), to: "engine" },
+        { from: path.join(root, "packages/engine/dist/umd"), to: "engine" },
         ...copyPatterns,
       ],
     }),

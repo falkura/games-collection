@@ -24,6 +24,13 @@ const dev = defineConfig({
   },
   devServer: {
     port: 3001,
+    static: [
+      {
+        directory: path.resolve("dist"),
+        publicPath: "/",
+        watch: true,
+      },
+    ],
   },
   plugins: [
     new rspack.HtmlRspackPlugin({
