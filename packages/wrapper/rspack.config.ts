@@ -1,5 +1,4 @@
 import { defineConfig } from "@rspack/cli";
-
 import path from "path";
 import config from "../../config.json";
 import { rspack } from "@rslib/core";
@@ -50,11 +49,6 @@ const copyPatterns = games.map((data) => {
   };
 });
 
-// Local server routes from localhost:3000/game.html to localhost:3000/game
-const gameRewrites = games.map(({ route }) => {
-  return { from: new RegExp(`^/${route}$`), to: `/${route}.html` };
-});
-
 export default defineConfig({
   entry: {
     // Project entry script
@@ -67,7 +61,7 @@ export default defineConfig({
   },
   output: {
     path: distPath,
-    clean: false,
+    clean: true,
   },
   plugins: [
     // Project entry page
@@ -76,6 +70,9 @@ export default defineConfig({
       filename: "index.html",
       chunks: ["index"], // Include only wrapper script
       inject: "body",
+      templateParameters: {
+        engine: `<script src="/engine/index.js"></script>`,
+      },
     }),
 
     // Engine that will be used in project and games
@@ -96,13 +93,6 @@ export default defineConfig({
     "@falkura-pet/engine": "__ENGINE__",
   },
   externalsType: "window",
-
-  devServer: {
-    port: 3000,
-    historyApiFallback: {
-      rewrites: [...gameRewrites],
-    },
-  },
 
   module: {
     rules: [

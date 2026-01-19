@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build_all": "turbo run build",
-    "dev": "bun run scripts/dev.ts",
     "build": "bun run scripts/build.ts",
-    "serve": "serve dist -p 3001"
+    "dev": "bun run scripts/dev.ts",
+    "dev:wrapper": "bun run scripts/dev_wrapper.ts",
+    "serve": "serve dist -p 3002"
   },
   "dependencies": {
     "pixi.js": "^8.13.2"

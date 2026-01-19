@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "rspack build",
-    "dev": "rspack dev"
+    "dev": "rspack dev --config rspack.dev.config.ts"
   },
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",
