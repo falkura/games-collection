@@ -7,21 +7,24 @@
 // png.src = logoPNG;
 // root.appendChild(png);
 
-import "normalize.css";
-import projectConfig from "../../../config.json";
+import "@falkura-pet/shared/normalize/normalize.css";
+
+import gamesMeta from "@gamesMeta";
 
 import Engine from "@falkura-pet/engine";
 
-Object.values(projectConfig.games.gamesList).forEach((game) => {
-  if (game.enabled === false) return;
-
+Object.entries(gamesMeta).map(([gamePath, data]) => {
+  // @ts-ignore
+  const { route, title } = data;
   const a = document.createElement("a");
-  a.href = game.route || game.path;
-  a.text = game.title;
+  a.href = route || gamePath;
+  a.text = title;
 
   root.appendChild(a);
 });
 
 Engine.initEngine();
+Engine.initGame(gamesMeta);
 
 console.log("Wrapper Loaded Successfully");
+console.log(gamesMeta);

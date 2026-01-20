@@ -1,39 +1,41 @@
 import Enquirer from "enquirer";
-import config from "../../config.json";
+import Bun from "bun";
 import { parseArgs } from "util";
 import logger from "./logger";
+import { getGamesList } from "./games";
 
 export async function pickGame() {
   const gameName = getArgs().game;
+  const games = await getGamesList();
 
   if (gameName) {
-    if (!config.games.gamesList[gameName]) {
-      logger.warn(`Game with name [${gameName}] does not exist`);
+    if (!games[gameName]) {
+      logger.warn(
+        `Game with name [${gameName}] does not exist or it's disabled`,
+      );
     } else {
       return gameName;
     }
   }
 
-  const gamesList = Object.entries(config.games.gamesList)
-    .filter(([_, { enabled }]) => enabled !== false)
-    .map(([key, _]) => key);
+  const gameKeys = Object.keys(games);
 
-  if (gamesList.length === 0) {
+  if (gameKeys.length === 0) {
     logger.warn("Games not found.");
     process.exit(0);
   }
 
-  if (gamesList.length === 1) {
-    logger.info(gamesList[0]);
+  if (gameKeys.length === 1) {
+    logger.info(gameKeys);
 
-    return gamesList[0];
+    return gameKeys[0];
   }
 
   return await Enquirer.prompt<{ game: string }>({
     type: "select",
     name: "game",
     message: "Pick a game",
-    choices: gamesList,
+    choices: gameKeys,
   }).then(({ game }) => game);
 }
 
@@ -45,6 +47,9 @@ export function getArgs() {
         type: "string",
       },
       force: {
+        type: "boolean",
+      },
+      ["assemble-only"]: {
         type: "boolean",
       },
     },

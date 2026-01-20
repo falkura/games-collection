@@ -1,29 +1,34 @@
-import { defineConfig } from "@rslib/core";
+import { defineConfig, LibConfig, RslibConfig } from "@rslib/core";
 
-export default defineConfig({
-  lib: [
-    {
-      format: "umd",
-      umdName: "__ENGINE__",
-      syntax: "esnext",
-      bundle: true,
-      autoExternal: false,
-      dts: true,
-      output: {
-        distPath: "./dist/umd",
-      },
+export default defineConfig(({ envMode }) => {
+  const isDev = envMode === "dev";
+
+  const devLib: LibConfig = {
+    format: "esm",
+    syntax: "esnext",
+    bundle: true,
+    autoExternal: false,
+    dts: true,
+  };
+
+  const prodLib: LibConfig = {
+    format: "umd",
+    umdName: "__ENGINE__",
+    syntax: "esnext",
+    bundle: true,
+    autoExternal: false,
+    dts: true,
+    output: {
+      distPath: "./dist/umd",
     },
-    {
-      format: "esm",
-      syntax: "esnext",
-      bundle: true,
-      autoExternal: false,
-      dts: true,
+  };
+
+  return {
+    lib: [isDev ? devLib : prodLib],
+    output: {
+      cleanDistPath: true,
+      target: "web",
+      minify: false,
     },
-  ],
-  output: {
-    cleanDistPath: true,
-    target: "web",
-    minify: false,
-  },
+  } as RslibConfig;
 });

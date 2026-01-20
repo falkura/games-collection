@@ -1,14 +1,41 @@
 import { getArgs } from "./utils/utils";
 import { execa } from "execa";
+import Bun from "bun";
 import path from "path";
-import projectConfig from "../config.json";
-
-const games = Object.values(projectConfig.games.gamesList)
-  .filter(({ enabled }) => enabled !== false)
-  .map(({ path: _path }) => _path);
+import { getGamesList } from "./utils/games";
+import { rm } from "fs/promises";
 
 const args = getArgs();
+
+const assemble = async () => {
+  // Combine games and engine in wrapper
+  await execa({
+    stdio: "inherit",
+    cwd: path.resolve("packages/wrapper"),
+  })`bun ${["run", "build"]}`;
+};
+
+if (args["assemble-only"]) {
+  await assemble();
+
+  process.exit(0);
+}
+
 const flags = [];
+const games = await getGamesList();
+
+const cleanPromises = [];
+cleanPromises.push(rm("dist", { recursive: true, force: true }));
+
+for (let gamePath in games) {
+  cleanPromises.push(
+    rm(path.join("games", gamePath, "dist"), { recursive: true, force: true }),
+  );
+}
+
+await Promise.all(cleanPromises);
+
+await Bun.write("dist/meta.json", JSON.stringify(games));
 
 if (args.force) {
   flags.push("--force");
@@ -21,17 +48,13 @@ flags.push("--filter", "./packages/*");
 flags.push("--filter", "!./packages/wrapper");
 
 // And the games
-games.forEach((gamePath) => {
+for (let gamePath in games) {
   flags.push("--filter", "./games/" + gamePath);
-});
+}
 
 // Run build
 await execa({
   stdio: "inherit",
 })`turbo ${["run", "build", ...flags]}`;
 
-// Then combine in wrapper
-await execa({
-  stdio: "inherit",
-  cwd: path.resolve("packages/wrapper"),
-})`bun ${["run", "build"]}`;
+await assemble();

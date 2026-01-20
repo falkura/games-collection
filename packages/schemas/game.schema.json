@@ -4,7 +4,7 @@
   "title": "Game config",
   "description": "Game configuration",
   "type": "object",
-  "required": ["title", "description", "version"],
+  "required": ["title", "description", "version", "route"],
   "properties": {
     "$schema": {
       "type": "string",
@@ -21,6 +21,19 @@
     "version": {
       "type": "string",
       "description": "Game version"
+    },
+    "route": {
+      "type": "string",
+      "description": "Path that will be used to access the game"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Path to game icon"
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Add game to bundle",
+      "default": true
     }
   },
   "additionalProperties": true

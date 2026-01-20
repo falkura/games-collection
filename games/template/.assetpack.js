@@ -1,3 +1,3 @@
-import { create } from "../../packages/configs/assetpack/game";
+import { create } from "@falkura-pet/shared/assetpack/game";
 
 export default create(__dirname);

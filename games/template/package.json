@@ -9,13 +9,8 @@
     "@falkura-pet/engine": "workspace:*"
   },
   "devDependencies": {
-    "@falkura-pet/configs": "workspace:*",
-    "@falkura-pet/types": "workspace:*"
+    "@falkura-pet/shared": "workspace:*"
   },
   "private": true,
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "types": "dist",
   "type": "module"
 }

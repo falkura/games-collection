@@ -1,8 +1,0 @@
-{
-  "name": "@falkura-pet/configs",
-  "version": "0.0.0",
-  "devDependencies": {
-    "@falkura-pet/types": "workspace:*"
-  },
-  "private": true
-}

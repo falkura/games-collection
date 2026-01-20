@@ -1,6 +1,0 @@
-{
-  "$schema": "../../../packages/schemas/game.schema.json",
-  "title": "Title",
-  "description": "Description",
-  "version": "0.0"
-}

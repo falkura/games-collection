@@ -1,8 +1,8 @@
 {
-  "extends": "@falkura-pet/configs/typescript/engine.json",
+  "extends": "@falkura-pet/shared/tsconfig/wrapper.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "./dist"
+    "outDir": "./dist",
   },
   "include": ["src"]
 }

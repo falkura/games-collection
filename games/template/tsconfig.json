@@ -1,4 +1,4 @@
 {
-  "extends": "@falkura-pet/configs/typescript/game.json",
+  "extends": "@falkura-pet/shared/tsconfig/game.json",
   "include": ["src"]
 }

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.com/schemas/project.schema.json",
   "title": "Project config",
-  "description": "Configuration of project and games",
+  "description": "Not used right now",
   "type": "object",
   "required": ["games"],
   "properties": {
@@ -16,42 +16,6 @@
       "properties": {
         "path": {
           "type": "string"
-        },
-        "gamesList": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "required": ["path"],
-            "description": "Game key for internal usage",
-            "properties": {
-              "path": {
-                "type": "string",
-                "description": "Game folder path"
-              },
-              "route": {
-                "type": "string",
-                "description": "Path that will be used to access the game"
-              },
-              "title": {
-                "type": "string",
-                "description": "Displayed game title"
-              },
-              "description": {
-                "type": "string",
-                "description": "Displayed game description"
-              },
-              "icon": {
-                "type": "string",
-                "description": "Path to game icon"
-              },
-              "enabled": {
-                "type": "boolean",
-                "description": "Add game to bundle",
-                "default": true
-              }
-            },
-            "additionalProperties": false
-          }
         }
       },
       "additionalProperties": false

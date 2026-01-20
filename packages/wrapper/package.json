@@ -4,15 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rspack build",
-    "dev": "rspack dev --config rspack.dev.config.ts"
+    "build": "concurrently 'rspack build' 'bunx assetpack -- production'",
+    "dev": "concurrently 'rspack dev --config rspack.dev.config.ts' 'bunx assetpack -w -- development'"
   },
   "dependencies": {
-    "@falkura-pet/engine": "workspace:*",
-    "normalize.css": "^8.0.1"
+    "@falkura-pet/engine": "workspace:*"
   },
   "devDependencies": {
-    "@falkura-pet/configs": "workspace:*",
-    "@falkura-pet/types": "workspace:*"
+    "@falkura-pet/shared": "workspace:*"
   }
 }

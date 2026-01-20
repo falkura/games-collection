@@ -6,14 +6,13 @@
     "build": "bun run scripts/build.ts",
     "dev": "bun run scripts/dev.ts",
     "dev:wrapper": "bun run scripts/dev_wrapper.ts",
-    "serve": "serve dist -p 3002"
+    "serve": "serve dist -p 8080"
   },
   "dependencies": {
     "pixi.js": "^8.13.2"
   },
   "devDependencies": {
     "@assetpack/core": "^1.5.0",
-    "@rsbuild/core": "^1.7.2",
     "@rslib/core": "^0.19.1",
     "@rspack/cli": "^1.7.2",
     "@rspack/core": "^1.7.2",

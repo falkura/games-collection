@@ -1,4 +1,4 @@
 {
-  "extends": "@falkura-pet/configs/typescript/engine.json",
+  "extends": "@falkura-pet/shared/tsconfig/engine.json",
   "include": ["src"]
 }
