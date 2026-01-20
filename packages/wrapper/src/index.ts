@@ -1,16 +1,5 @@
-// TODO loader needed
-// import logoPNG from "./../assets/logo.png";
-
-// const png = document.createElement("img");
-// png.width = 100;
-// png.height = 100;
-// png.src = logoPNG;
-// root.appendChild(png);
-
 import "@falkura-pet/shared/normalize/normalize.css";
-
 import gamesMeta from "@gamesMeta";
-
 import Engine from "@falkura-pet/engine";
 
 Object.entries(gamesMeta).map(([gamePath, data]) => {
