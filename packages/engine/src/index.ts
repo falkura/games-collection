@@ -1,20 +1,42 @@
+import "@pixi/layout"; // required to ensure all systems and mixins are registered
+import { Application, Assets } from "pixi.js";
+import UI from "./ui/UI";
+
 import * as PIXI from "pixi.js";
-import { Assets } from "pixi.js";
+import gsap from "gsap";
+import PixiPlugin from "gsap/PixiPlugin.js";
 
-export class EngineClass {
+/**
+ * [Icons](https://marella.github.io/material-design-icons/demo/font/)
+ */
+class EngineClass {
+  ui: typeof UI;
+  app: Application;
+
+  constructor() {
+    gsap.registerPlugin(PixiPlugin);
+    PixiPlugin.registerPIXI(PIXI);
+
+    globalThis.PIXI = PIXI;
+    globalThis.gsap = gsap;
+  }
+
   async initEngine() {
-    const app = new PIXI.Application();
+    this.app = new Application();
 
-    await app.init({
-      backgroundColor: 0x191bff,
-      backgroundAlpha: 0.5,
-      preference: "webgl", // or 'webgpu'
+    await this.app.init({
+      backgroundAlpha: 0,
+      preference: "webgl",
       resizeTo: window,
+      antialias: true,
     });
 
-    root.appendChild(app.canvas);
+    root.appendChild(this.app.canvas);
 
-    globalThis.app = app;
+    globalThis.app = globalThis.__PIXI_APP__ = this.app;
+
+    this.ui = UI;
+    this.ui.init(this.app);
   }
 
   async initGame(config) {
@@ -32,15 +54,8 @@ export class EngineClass {
 
     console.log("Game assets loaded successfully", assets);
   }
-
-  startGame() {}
 }
 
 const Engine = new EngineClass();
-
-// @ts-ignore
-globalThis.PIXI = PIXI;
-
-console.log("Engine Loaded Successfully");
 
 export default Engine;
