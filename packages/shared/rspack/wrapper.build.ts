@@ -43,7 +43,7 @@ export default defineConfig({
       chunks: ["index"], // Include only wrapper script
       inject: "body",
       templateParameters: {
-        engine: `<script src="/engine/index.js"></script>`,
+        engine: `<script type="module" src="/engine/index.js"></script>`,
       },
     }),
 

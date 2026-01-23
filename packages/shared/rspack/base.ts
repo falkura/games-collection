@@ -18,6 +18,10 @@ export default defineConfig({
           },
         ],
       },
+      {
+        test: /\.svg$/,
+        type: "asset/source",
+      },
     ],
   },
   optimization: {

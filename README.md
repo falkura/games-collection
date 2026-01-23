@@ -1,5 +1,7 @@
 # pet1
 
+yoga weight ~72kB
+
 :1.6
 
 To install dependencies:

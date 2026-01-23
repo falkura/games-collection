@@ -52,10 +52,8 @@ PIXI.Assets.get("<asset-name-or-relative-path>")
 
 Game logic and functionality should be implemented as usual in `./src/`
 
-This includes gameplay logic, systems, state management, and any game-specific code.
-
 ## Additional information
 
-Extra dependencies can be added to the game if needed.
+Extra dependencies can be added to the package if needed.
 
-For architecture details and shared concepts, see the **monorepo root README**.
+For architecture details, see the **monorepo root README**.

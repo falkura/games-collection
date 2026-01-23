@@ -35,7 +35,7 @@ const build = (config: IGameConfig) => {
         base: `${config.route}/`,
         title: config.title,
         templateParameters: {
-          engine: `<script src="/engine/index.js"></script>`,
+          engine: `<script type="module" src="/engine/index.js"></script>`,
         },
       }),
     ],

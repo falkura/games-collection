@@ -6,6 +6,9 @@
     "dev": "rslib build -w --env-mode dev"
   },
   "dependencies": {
+    "@material-design-icons/svg": "^0.14.15",
+    "@pixi/layout": "^3.2.0",
+    "@pixi/ui": "^2.3.2",
     "gsap": "^3.13.0",
     "pixi.js": "^8.13.2"
   },

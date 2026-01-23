@@ -6,8 +6,8 @@ export default defineConfig(({ envMode }) => {
   const devLib: LibConfig = {
     format: "esm",
     syntax: "esnext",
-    bundle: true,
-    autoExternal: false,
+    bundle: false,
+    autoExternal: false, // can be true for dev ?
     dts: true,
   };
 
