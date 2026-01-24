@@ -1,6 +1,7 @@
 import { LayoutStyles } from "@pixi/layout";
 import { LayoutGraphics } from "@pixi/layout/components";
 import { ColorSource } from "pixi.js";
+import { Base64ToSvg } from "../../../Utils";
 
 export default class SVGGraphics extends LayoutGraphics {
   constructor(options: {
@@ -12,7 +13,7 @@ export default class SVGGraphics extends LayoutGraphics {
       layout: options.layout,
     });
 
-    this.slot.svg(options.svg);
+    this.slot.svg(Base64ToSvg(options.svg));
 
     if (options.color) {
       this.slot

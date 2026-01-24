@@ -1,12 +1,18 @@
 import { Application, Ticker } from "pixi.js";
 import ScreensController from "./components/controllers/ScreensController";
+import WindowsController from "./components/controllers/WindowsController";
+import { Background } from "./components/basic/Background";
 
 class UIClass {
   app: Application;
   screens: ScreensController;
+  windows: WindowsController;
+  background: Background;
+
   ticker: Ticker;
   data: {
     gameName: string;
+    bg?: string;
   };
 
   init(app: Application) {
@@ -33,10 +39,21 @@ class UIClass {
     this.ticker = new Ticker();
     this.ticker.start();
 
-    this.screens = new ScreensController(this.app);
-    this.screens.show("game");
+    this.background = new Background({
+      texture: this.data.bg,
+    });
+
+    this.screens = new ScreensController(this);
+    this.screens.setScreen("game");
+
+    this.windows = new WindowsController(this);
+    this.windows.showWindow("info");
+
+    this.app.stage.addChild(this.background, this.screens, this.windows);
   }
 }
+
+export type UIType = UIClass;
 
 const UI = new UIClass();
 

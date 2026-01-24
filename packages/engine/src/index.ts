@@ -1,6 +1,6 @@
 import "@pixi/layout"; // required to ensure all systems and mixins are registered
 import { Application, Assets } from "pixi.js";
-import UI from "./ui/UI";
+import UI, { UIType } from "./ui/UI";
 
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
@@ -10,7 +10,7 @@ import PixiPlugin from "gsap/PixiPlugin.js";
  * [Icons](https://marella.github.io/material-design-icons/demo/font/)
  */
 class EngineClass {
-  ui: typeof UI;
+  ui: UIType;
   app: Application;
 
   constructor() {

@@ -1,9 +1,5 @@
-import {
-  LayoutContainer,
-  LayoutContainerOptions,
-} from "@pixi/layout/components";
+import { LayoutContainer } from "@pixi/layout/components";
 import AppScreen from "../basic/AppScreen";
-import UI from "../../UI";
 import SVGButton from "../SVGButton";
 import { Text } from "pixi.js";
 
@@ -30,10 +26,8 @@ export class GameScreen extends AppScreen {
   levelLabel: Text;
   difficultyLabel: Text;
 
-  constructor(options?: LayoutContainerOptions) {
-    super({
-      ...options,
-    });
+  constructor(...args: ConstructorParameters<typeof AppScreen>) {
+    super(...args);
 
     this.layout = {
       justifyContent: "flex-start",
@@ -67,7 +61,7 @@ export class GameScreen extends AppScreen {
         top: 3,
         left: 5,
       },
-      text: UI.data.gameName,
+      text: this.ui.data.gameName,
     });
 
     this.timeLabel = new Text({

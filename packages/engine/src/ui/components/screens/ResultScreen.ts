@@ -1,4 +1,3 @@
-import { LayoutContainerOptions } from "@pixi/layout/components";
 import AppScreen from "../basic/AppScreen";
 import TextButton from "../TextButton";
 import { Text } from "pixi.js";
@@ -18,10 +17,8 @@ export class ResultScreen extends AppScreen {
   menuButton: TextButton;
   settingsButton: TextButton;
 
-  constructor(options?: LayoutContainerOptions) {
-    super({
-      ...options,
-    });
+  constructor(...args: ConstructorParameters<typeof AppScreen>) {
+    super(...args);
 
     this.layout = {
       justifyContent: "center",

@@ -3,14 +3,23 @@ import {
   LayoutContainerOptions,
 } from "@pixi/layout/components";
 import gsap from "gsap";
-import UI from "../../UI";
-import { DestroyOptions, Ticker } from "pixi.js";
+import { UIType } from "../../UI";
+import { Ticker } from "pixi.js";
+import AppWindow from "./AppWindow";
 
 export default class AppScreen extends LayoutContainer {
-  constructor(options?: LayoutContainerOptions) {
-    super({
-      ...options,
-    });
+  protected ui: UIType;
+  protected _active: boolean = false;
+  public id: string;
+
+  constructor(
+    { ui, id }: { ui: UIType; id: string },
+    options?: LayoutContainerOptions,
+  ) {
+    super({ ...options });
+
+    this.id = id;
+    this.ui = ui;
 
     this.layout = {
       width: "100%",
@@ -21,37 +30,24 @@ export default class AppScreen extends LayoutContainer {
 
     this.on("added", this._mount.bind(this));
     this.on("removed", this._unmount.bind(this));
-
-    this.onCreate();
   }
 
-  private _mount() {
-    this.onMount();
-    UI.ticker.add(this._tick, this);
+  public get active() {
+    return this._active;
   }
 
-  private _unmount() {
-    UI.ticker.remove(this._tick, this);
-    this.onUnmount();
-  }
+  public show(force?: boolean) {
+    if (this.active) return;
 
-  private _tick(ticker: Ticker) {
-    this.onTick(ticker);
-  }
-
-  override destroy(options?: DestroyOptions): void {
-    this.onDestroy();
-    super.destroy(options);
-  }
-
-  protected onDestroy() {}
-  protected onMount() {}
-  protected onUnmount() {}
-  protected onCreate() {}
-  protected onTick(ticker: Ticker) {}
-
-  public show() {
     gsap.killTweensOf(this);
+
+    this._active = true;
+
+    if (force) {
+      this.visible = true;
+      this.alpha = 1;
+      return;
+    }
 
     return gsap.fromTo(
       this,
@@ -60,23 +56,62 @@ export default class AppScreen extends LayoutContainer {
         alpha: 1,
         duration: 0.2,
         ease: "linear",
-        onStart: () => {
-          this.visible = true;
-        },
       },
     );
   }
 
-  public hide() {
+  public hide(force?: boolean) {
+    if (!this.active) return;
+
     gsap.killTweensOf(this);
+
+    if (force) {
+      this._active = false;
+      this.visible = false;
+      return;
+    }
 
     return gsap.to(this, {
       alpha: 0,
       duration: 0.2,
       ease: "linear",
       onComplete: () => {
-        this.visible = false;
+        this._active = false;
       },
     });
+  }
+
+  private _mount() {
+    this.visible = true;
+    this.ui.ticker.add(this._tick, this);
+
+    this.onMount();
+  }
+
+  private _unmount() {
+    this.visible = false;
+    this.ui.ticker.remove(this._tick, this);
+
+    this.onUnmount;
+  }
+
+  private _tick(ticker: Ticker) {
+    this.onTick(ticker);
+  }
+
+  public onMount() {
+    // override me
+  }
+  public onUnmount() {
+    // override me
+  }
+  public onTick(ticker: Ticker) {
+    // override me
+  }
+  public onWindowShow(window: AppWindow, force: boolean) {
+    // override me
+  }
+  public onWindowHide(window: AppWindow, force: boolean) {
+    // override me
   }
 }

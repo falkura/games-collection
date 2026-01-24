@@ -1,4 +1,3 @@
-import { LayoutContainerOptions } from "@pixi/layout/components";
 import AppScreen from "../basic/AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
 
@@ -12,10 +11,8 @@ export class LoadScreen extends AppScreen {
   spinner: Graphics;
   loadingLabel: Text;
 
-  constructor(options?: LayoutContainerOptions) {
-    super({
-      ...options,
-    });
+  constructor(...args: ConstructorParameters<typeof AppScreen>) {
+    super(...args);
 
     this.layout = {
       justifyContent: "center",
@@ -47,7 +44,7 @@ export class LoadScreen extends AppScreen {
     this.addChild(this.spinner, this.loadingLabel);
   }
 
-  protected override onTick(ticker: Ticker) {
+  public override onTick(ticker: Ticker) {
     if (!this.spinner) return;
 
     this.spinner.rotation += 0.15 * ticker.deltaTime;

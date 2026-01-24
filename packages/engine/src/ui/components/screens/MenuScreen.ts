@@ -1,6 +1,4 @@
-import { LayoutContainerOptions } from "@pixi/layout/components";
 import AppScreen from "../basic/AppScreen";
-import UI from "../../UI";
 import TextButton from "../TextButton";
 import { Text } from "pixi.js";
 
@@ -21,10 +19,8 @@ export class MenuScreen extends AppScreen {
   difficultyButton: TextButton;
   settingsButton: TextButton;
 
-  constructor(options?: LayoutContainerOptions) {
-    super({
-      ...options,
-    });
+  constructor(...args: ConstructorParameters<typeof AppScreen>) {
+    super(...args);
 
     this.layout = {
       justifyContent: "center",
@@ -44,7 +40,7 @@ export class MenuScreen extends AppScreen {
         top: 0,
         margin: 15,
       },
-      text: UI.data.gameName,
+      text: this.ui.data.gameName,
     });
 
     this.playButton = new TextButton({ text: "Play" });
