@@ -1,10 +1,6 @@
-import {
-  LayoutContainerOptions,
-  LayoutGraphics,
-  LayoutText,
-} from "@pixi/layout/components";
+import { LayoutContainerOptions } from "@pixi/layout/components";
 import AppScreen from "../basic/AppScreen";
-import { Ticker } from "pixi.js";
+import { Graphics, Text, Ticker } from "pixi.js";
 
 declare global {
   interface ScreensMap {
@@ -13,8 +9,8 @@ declare global {
 }
 
 export class LoadScreen extends AppScreen {
-  spinner: LayoutGraphics;
-  loading: LayoutText;
+  spinner: Graphics;
+  loadingLabel: Text;
 
   constructor(options?: LayoutContainerOptions) {
     super({
@@ -25,37 +21,30 @@ export class LoadScreen extends AppScreen {
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "column",
-      backgroundColor: "#66c1da",
+      backgroundColor: "#66c1daff",
     };
 
-    this.spinner = new LayoutGraphics({
+    this.spinner = new Graphics({
       layout: {
         width: 100,
         height: 100,
       },
-    });
-
-    this.spinner.slot
+    })
       .arc(0, 0, 50, 2 * Math.PI, (3 * Math.PI) / 2)
       .stroke({ width: 15, color: "#ffffff" });
-    this.addChild(this.spinner);
 
-    this.loading = new LayoutText({
+    this.loadingLabel = new Text({
       style: {
-        fontSize: 24,
-        fontWeight: "bold",
+        fontSize: 26,
         fill: "#ffffffff",
-        align: "center",
       },
       layout: {
-        width: 100,
-        height: 50,
         margin: 15,
       },
       text: "Loading",
     });
 
-    this.addChild(this.loading);
+    this.addChild(this.spinner, this.loadingLabel);
   }
 
   protected override onTick(ticker: Ticker) {

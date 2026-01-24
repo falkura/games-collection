@@ -30,13 +30,13 @@ export default class Button extends BaseButton {
     animations: StateAnimations = {
       hover: {
         props: {
-          scale: 1.1,
+          scale: 1.05,
         },
         duration: 0.1,
       },
       pressed: {
         props: {
-          scale: 0.9,
+          scale: 0.95,
         },
         duration: 0.1,
       },

@@ -21,13 +21,14 @@ export class GameScreen extends AppScreen {
   pauseButton: SVGButton;
   hintButton: SVGButton;
   infoButton: SVGButton;
-  topBar: LayoutContainer;
-  time: Text;
-  gameName: Text;
-  level: Text;
-  difficulty: Text;
 
-  gameView: LayoutContainer;
+  topBar: LayoutContainer;
+  gameContainer: LayoutContainer;
+
+  timeLabel: Text;
+  gameLabel: Text;
+  levelLabel: Text;
+  difficultyLabel: Text;
 
   constructor(options?: LayoutContainerOptions) {
     super({
@@ -38,7 +39,7 @@ export class GameScreen extends AppScreen {
       justifyContent: "flex-start",
       alignItems: "center",
       flexDirection: "column",
-      backgroundColor: "#7666daff",
+      backgroundColor: "#dacb66ff",
     };
 
     this.topBar = new LayoutContainer({
@@ -49,16 +50,14 @@ export class GameScreen extends AppScreen {
       },
     });
 
-    this.gameView = new LayoutContainer({
+    this.gameContainer = new LayoutContainer({
       layout: {
         width: "100%",
         height: "100%",
       },
     });
 
-    this.addChild(this.topBar, this.gameView);
-
-    this.gameName = new Text({
+    this.gameLabel = new Text({
       style: {
         fontSize: 20,
         fill: "#ffffffff",
@@ -71,7 +70,7 @@ export class GameScreen extends AppScreen {
       text: UI.data.gameName,
     });
 
-    this.time = new Text({
+    this.timeLabel = new Text({
       style: {
         fontSize: 20,
         fill: "#ffffffff",
@@ -84,8 +83,6 @@ export class GameScreen extends AppScreen {
       text: "09:16",
     });
 
-    this.addChild(this.gameName, this.time);
-
     const buttonsContainer = new LayoutContainer({
       layout: {
         position: "absolute",
@@ -96,36 +93,41 @@ export class GameScreen extends AppScreen {
       },
     });
 
-    this.pauseButton = new SVGButton({
-      svg: pause,
-      color: "#353535ff",
-      layout: {
+    const buttonsConfig = {
+      size: {
         width: 60,
         height: 60,
+      },
+      color: "#353535ff",
+    };
+
+    this.pauseButton = new SVGButton({
+      svg: pause,
+      color: buttonsConfig.color,
+      layout: {
         paddingInline: 15,
         paddingBlock: 14,
+        ...buttonsConfig.size,
       },
     });
 
     this.hintButton = new SVGButton({
       svg: lightbulb,
-      color: "#353535ff",
+      color: buttonsConfig.color,
       layout: {
-        width: 60,
-        height: 60,
         paddingInline: 15,
         paddingBlock: 10,
+        ...buttonsConfig.size,
       },
     });
 
     this.infoButton = new SVGButton({
       svg: info,
-      color: "#353535ff",
+      color: buttonsConfig.color,
       layout: {
-        width: 60,
-        height: 60,
         paddingInline: 12,
         paddingBlock: 12,
+        ...buttonsConfig.size,
       },
     });
 
@@ -135,7 +137,7 @@ export class GameScreen extends AppScreen {
       this.infoButton.view,
     );
 
-    this.gameView.addChild(buttonsContainer);
+    this.gameContainer.addChild(buttonsContainer);
 
     const levelInfo = new LayoutContainer({
       layout: {
@@ -147,7 +149,7 @@ export class GameScreen extends AppScreen {
       },
     });
 
-    this.level = new Text({
+    this.levelLabel = new Text({
       style: {
         fontSize: 20,
         fill: "#ffffffff",
@@ -156,7 +158,7 @@ export class GameScreen extends AppScreen {
       text: "Level: 13",
     });
 
-    this.difficulty = new Text({
+    this.difficultyLabel = new Text({
       style: {
         fontSize: 20,
         fill: "#ffffffff",
@@ -165,8 +167,15 @@ export class GameScreen extends AppScreen {
       text: "Difficulty: Medium",
     });
 
-    levelInfo.addChild(this.level, this.difficulty);
+    levelInfo.addChild(this.levelLabel, this.difficultyLabel);
 
-    this.gameView.addChild(levelInfo);
+    this.gameContainer.addChild(levelInfo);
+
+    this.addChild(
+      this.topBar,
+      this.gameContainer,
+      this.gameLabel,
+      this.timeLabel,
+    );
   }
 }

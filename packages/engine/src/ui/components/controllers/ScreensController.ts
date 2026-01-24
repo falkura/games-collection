@@ -3,6 +3,7 @@ import AppScreen from "../basic/AppScreen";
 import { LoadScreen } from "../screens/LoadScreen";
 import { MenuScreen } from "../screens/MenuScreen";
 import { GameScreen } from "../screens/GameScreen";
+import { ResultScreen } from "../screens/ResultScreen";
 
 declare global {
   interface ScreensMap {}
@@ -21,6 +22,7 @@ export default class ScreensController {
     this.add("load", LoadScreen);
     this.add("menu", MenuScreen);
     this.add("game", GameScreen);
+    this.add("result", ResultScreen);
   }
 
   public add<
