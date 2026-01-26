@@ -1,6 +1,6 @@
 <a id="readme-top"></a>
 <div align="center">
-  <h3 align="center">Games Collection</h3>
+  <h2 align="center">Games Collection</h2>
 
   <p align="center">
     A monorepo for building games on a shared engine and wrapper.
@@ -55,76 +55,74 @@
 - **GSAP** – animations -->
 
 <p align="left" style="margin-left: 25px;">
-
-<a href="https://pixijs.com/" style="text-decoration: none;">
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/pixijs.svg" height="20" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>PixiJS</strong> – graphics rendering</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://pixijs.com/">PixiJS</a></strong> – graphics rendering</span>
   </span>
 </a>
 <br/>
-
-<a href="https://rspack.rs/" style="text-decoration: none;">
+<br/>
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/rspack.svg" height="25" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>Rspack</strong> – bundling</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://rspack.rs/">Rspack</a></strong> – bundling</span>
   </span>
 </a>
 <br/>
-
-<a href="https://bun.com/" style="text-decoration: none;">
+<br/>
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/bun.svg" height="25" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>Bun</strong> – package manager and script runner</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://bun.com/">Bun</a></strong> – package manager and script runner</span>
   </span>
 </a>
 <br/>
-
-<a href="https://turborepo.dev/" style="text-decoration: none;">
+<br/>
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/turborepo.svg" height="24" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>Turbo</strong> – monorepo/workspace management</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://turborepo.dev/">Turbo</a></strong> – monorepo/workspace management</span>
   </span>
 </a>
 <br/>
-
-<a href="https://pixijs.io/assetpack/" style="text-decoration: none;">
+<br/>
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/assetpack.svg" height="23" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>AssetPack</strong> – asset bundling and management</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://pixijs.io/assetpack/">AssetPack</a></strong> – asset bundling and management</span>
   </span>
 </a>
 <br/>
-
-<a href="https://www.yogalayout.dev/" style="text-decoration: none;">
+<br/>
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/yoga.svg" height="32" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>Yoga</strong> – layout management</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://www.yogalayout.dev/">Yoga</a></strong> – layout management</span>
   </span>
 </a>
 <br/>
-
-<a href="https://gsap.com/" style="text-decoration: none;">
+<br/>
+<a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
       <img src="./packages/shared/github/images/gsap.svg" height="18" />
     </span>
-    <span>&nbsp;&nbsp;&nbsp;<strong>GSAP</strong> – animations</span>
+    <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://gsap.com/">GSAP</a></strong> – animations</span>
   </span>
 </a>
-
 </p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
