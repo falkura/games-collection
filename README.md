@@ -1,6 +1,6 @@
 <a id="readme-top"></a>
 <div align="center">
-  <h1 align="center">Games Collection</h1>
+  <h3 align="center">Games Collection</h3>
 
   <p align="center">
     A monorepo for building games on a shared engine and wrapper.
@@ -22,9 +22,9 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
+    <li><a href="#architecture">Architecture</a></li>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#architecture">Architecture</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -54,45 +54,127 @@
 - **Yoga** – layout management
 - **GSAP** – animations -->
 
-<p align="left" style="margin-left: 25;">
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://pixijs.com/">
-  <img src="./packages/shared/github/images/pixijs.svg" height="20" />
-  <span><strong>PixiJS</strong> - graphics rendering</span>
+<p align="left" style="margin-left: 25px;">
+
+<a href="https://pixijs.com/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/pixijs.svg" height="20" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>PixiJS</strong> – graphics rendering</span>
+  </span>
 </a>
 <br/>
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://rspack.rs/">
-  <img src="./packages/shared/github/images/rspack.svg" height="25" />
-  <span><strong>Rspack</strong> - bundling</span>
+
+<a href="https://rspack.rs/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/rspack.svg" height="25" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>Rspack</strong> – bundling</span>
+  </span>
 </a>
 <br/>
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://bun.com/">
-  <img src="./packages/shared/github/images/bun.svg" height="25" />
-  <span><strong>Bun</strong> - package manager and script runner</span>
+
+<a href="https://bun.com/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/bun.svg" height="25" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>Bun</strong> – package manager and script runner</span>
+  </span>
 </a>
 <br/>
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://turborepo.dev/">
-  <img src="./packages/shared/github/images/turborepo.svg" height="24" />
-  <span><strong>Turbo</strong> - monorepo/workspace management</span>
+
+<a href="https://turborepo.dev/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/turborepo.svg" height="24" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>Turbo</strong> – monorepo/workspace management</span>
+  </span>
 </a>
 <br/>
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://pixijs.io/assetpack/">
-  <img src="./packages/shared/github/images/assetpack.svg" height="23" />
-  <span><strong>AssetPack</strong> - asset bundling and management</span>
+
+<a href="https://pixijs.io/assetpack/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/assetpack.svg" height="23" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>AssetPack</strong> – asset bundling and management</span>
+  </span>
 </a>
 <br/>
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://www.yogalayout.dev/">
-  <img src="./packages/shared/github/images/yoga.svg" height="32" />
-  <span><strong>Yoga</strong> - layout management</span>
+
+<a href="https://www.yogalayout.dev/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/yoga.svg" height="32" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>Yoga</strong> – layout management</span>
+  </span>
 </a>
 <br/>
-<a style="display: inline-flex; align-items: center; gap: 8px;" href="https://gsap.com/">
-  <img src="./packages/shared/github/images/gsap.svg" height="18" />
-  <span><strong>GSAP</strong> - animations</span>
+
+<a href="https://gsap.com/" style="text-decoration: none;">
+  <span style="display: inline-flex; align-items: center;">
+    <span style="width: 34px; display: inline-flex; justify-content: center;">
+      <img src="./packages/shared/github/images/gsap.svg" height="18" />
+    </span>
+    <span>&nbsp;&nbsp;&nbsp;<strong>GSAP</strong> – animations</span>
+  </span>
 </a>
+
 </p>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Architecture
+
+TODO info about turborepo and bun 
+
+```sh
+/packages/
+├─ wrapper/   # Main application and game picker
+├─ engine/    # Core engine and UI for games
+├─ shared/    # Shared configs, tools and utilities
+└─ schemas/   # JSON schemas
+
+/scripts/
+├─ build.ts        # Build engine, wrapper, and games
+├─ dev.ts          # Develop a specific game
+└─ dev_wrapper.ts  # Develop the wrapper
+
+/games/
+└─ <game-name>/    # Individual games
+```
+
+#### Project consists of 5 parts:
+
+### [Engine][engine-readme]
+
+PixiJS powered library that controlls game rendering, loading, lifecycle, UI layout and interations. Engine is a **UMD** module that loads separately and use both for games and for wrapper. Is monorepo package.
+
+### [Wrapper][wrapper-readme]
+
+TODO info about wrapper
+
+### [Games][games-readme]
+
+Games are the subprojects, that uses Engine and contains a unique logic and gameplay.
+
+### [Shared][shared-readme]
+
+Shared is a monorepo package, that contains a collection of configs and tools for developing, building and bundling subprojects.
+
+### [Scripts][sripts-readme]
+
+TODO info about scripts
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 ## Getting Started
 
@@ -140,30 +222,6 @@ bun run <script-name>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Architecture
-
-```sh
-/packages/
-├─ wrapper/   # Main application and game picker
-├─ engine/    # Core engine and UI for games
-├─ shared/    # Shared configs, tools and utilities
-└─ schemas/   # JSON schemas
-
-/scripts/
-├─ build.ts        # Build engine, wrapper, and games
-├─ dev.ts          # Develop a specific game
-└─ dev_wrapper.ts  # Develop the wrapper
-
-/games/
-└─ <game-name>/    # Individual games
-```
-
-- **Wrapper**: Main entry point where games are selected
-- **Engine**: Shared runtime and UI layout
-- **Games**: Independent game modules
-- **Scripts**: Custom logic for builds and development
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Roadmap
 
@@ -189,3 +247,8 @@ License is **TBD**. Until a license is added, all rights are reserved by the aut
 
 
 [bun-url]: https://bun.com/
+[shared-readme]: ./packages/shared/README.md
+[games-readme]: ./games/template/README.md
+[engine-readme]: ./packages/engine/README.md
+[wrapper-readme]: ./packages/wrapper/README.md
+[sripts-readme]: ./scripts/README.md
