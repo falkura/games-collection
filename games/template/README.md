@@ -13,7 +13,7 @@ Follow these steps to create a new game from this template:
 2. Set a **unique** package name in `package.json`.
 3. Set a **unique** `route` value in `game.json`.
 
-Game is ready and will be added to next build.
+At this point the game is ready and will be added to next build.
 
 To develop the game run dev script from monorepo root and select the game by **game key**:
    ```bash
@@ -43,10 +43,10 @@ All game assets **must be placed inside** `./assets/` folder.
 Assets can be accessed in the game code using:
 
 ```ts
-PIXI.Assets.get("<asset-name-or-relative-path>")
-```
+import { Assets } from "pixi.js";
 
----
+Assets.get("<asset-name-or-relative-path>")
+```
 
 ### Source Code
 
@@ -54,6 +54,11 @@ Game logic and functionality should be implemented as usual in `./src/`
 
 ## Additional information
 
-Extra dependencies can be added to the package if needed.
+- Extra dependencies can be added to the package if needed.
+- For bundling information check [**shared** readme][shared-readme-games]
 
-For architecture details, see the **monorepo root README**.
+
+For more information, see the [**monorepo root README**][root-readme].
+
+[root-readme]: ../../README.md
+[shared-readme-games]: ../../packages/shared/README.md#games
