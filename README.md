@@ -64,7 +64,6 @@
   </span>
 </a>
 <br/>
-<br/>
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
@@ -73,7 +72,6 @@
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://rspack.rs/">Rspack</a></strong> – bundling</span>
   </span>
 </a>
-<br/>
 <br/>
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
@@ -84,7 +82,6 @@
   </span>
 </a>
 <br/>
-<br/>
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
@@ -93,7 +90,6 @@
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://turborepo.dev/">Turbo</a></strong> – monorepo/workspace management</span>
   </span>
 </a>
-<br/>
 <br/>
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
@@ -104,7 +100,6 @@
   </span>
 </a>
 <br/>
-<br/>
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
@@ -113,7 +108,6 @@
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://www.yogalayout.dev/">Yoga</a></strong> – layout management</span>
   </span>
 </a>
-<br/>
 <br/>
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
