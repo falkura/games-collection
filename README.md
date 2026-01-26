@@ -58,7 +58,7 @@
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
-      <img src="./packages/shared/github/images/pixijs.svg" height="20" />
+      <img src="./packages/shared/github/images/pixijs.svg" height="25" />
     </span>
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://pixijs.com/">PixiJS</a></strong> – graphics rendering</span>
   </span>
@@ -85,7 +85,7 @@
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
-      <img src="./packages/shared/github/images/turborepo.svg" height="24" />
+      <img src="./packages/shared/github/images/turborepo.svg" height="25" />
     </span>
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://turborepo.dev/">Turbo</a></strong> – monorepo/workspace management</span>
   </span>
@@ -94,7 +94,7 @@
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
-      <img src="./packages/shared/github/images/assetpack.svg" height="23" />
+      <img src="./packages/shared/github/images/assetpack.svg" height="25" />
     </span>
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://pixijs.io/assetpack/">AssetPack</a></strong> – asset bundling and management</span>
   </span>
@@ -103,7 +103,7 @@
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
-      <img src="./packages/shared/github/images/yoga.svg" height="32" />
+      <img src="./packages/shared/github/images/yoga.svg" height="25" />
     </span>
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://www.yogalayout.dev/">Yoga</a></strong> – layout management</span>
   </span>
@@ -112,7 +112,7 @@
 <a style="text-decoration: none;">
   <span style="display: inline-flex; align-items: center;">
     <span style="width: 34px; display: inline-flex; justify-content: center;">
-      <img src="./packages/shared/github/images/gsap.svg" height="18" />
+      <img src="./packages/shared/github/images/gsap.svg" height="25" />
     </span>
     <span>&nbsp;&nbsp;&nbsp;<strong><a href="https://gsap.com/">GSAP</a></strong> – animations</span>
   </span>
