@@ -17,6 +17,12 @@ class EngineClass {
     gsap.registerPlugin(PixiPlugin);
     PixiPlugin.registerPIXI(PIXI);
 
+    gsap.ticker.remove(gsap.updateRoot);
+
+    PIXI.Ticker.shared.add(({ lastTime }) => {
+      gsap.updateRoot(lastTime / 1000);
+    });
+
     globalThis.PIXI = PIXI;
     globalThis.gsap = gsap;
   }

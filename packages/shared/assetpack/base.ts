@@ -1,35 +1,39 @@
-import { pixiManifest } from "@assetpack/core/manifest";
+import { pixiManifest, PixiManifestOptions } from "@assetpack/core/manifest";
 import {
   texturePacker,
   texturePackerCacheBuster,
   texturePackerCompress,
 } from "@assetpack/core/texture-packer";
-import { compress, mipmap } from "@assetpack/core/image";
+import { compress, CompressOptions, mipmap } from "@assetpack/core/image";
 import { json } from "@assetpack/core/json";
 import { cacheBuster } from "@assetpack/core/cache-buster";
-import path from "path";
-import Bun from "bun";
+import { AssetPackConfig, AssetPipe } from "@assetpack/core";
 
-export const create = (dirname) => {
-  const resolutions = { default: 1 };
-  const doCacheBust = false;
-  const compression = {
+export const create = ({
+  output,
+  entry,
+  manifestOutput,
+}: {
+  output: string;
+  entry: string;
+  manifestOutput: string;
+}) => {
+  const resolutions: Record<string, number> = { default: 1 };
+  const doCacheBust: boolean = false;
+  const compression: CompressOptions = {
     png: true,
     jpg: true,
     webp: true,
   };
-  const manifestOptions = {
+
+  const manifestOptions: PixiManifestOptions = {
     createShortcuts: true,
     trimExtensions: true,
-    output: "manifest.json",
+    output: manifestOutput,
   };
 
-  const output = Bun.argv.includes("development")
-    ? path.resolve("dist", "assets")
-    : path.resolve("../../dist", "assets");
-
   return {
-    entry: "assets",
+    entry: entry,
     output: output,
     cache: doCacheBust,
 
@@ -48,15 +52,15 @@ export const create = (dirname) => {
 
       mipmap({ resolutions }),
 
-      compress({ ...compression }),
-      texturePackerCompress({ ...compression }),
+      compress(compression),
+      texturePackerCompress(compression),
 
       json(),
 
       doCacheBust && cacheBuster(),
       doCacheBust && texturePackerCacheBuster(),
 
-      pixiManifest({ ...manifestOptions }),
-    ],
-  };
+      pixiManifest(manifestOptions),
+    ] as AssetPipe[],
+  } satisfies AssetPackConfig;
 };

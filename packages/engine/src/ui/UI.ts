@@ -15,7 +15,16 @@ class UIClass {
     bg?: string;
   };
 
+  initialized = false;
+
   init(app: Application) {
+    if (this.initialized) {
+      console.error("UI is already initialized.");
+      return;
+    }
+
+    this.initialized = true;
+
     // Should be passed in function parameters
     this.data = {
       gameName: "Game Name",
@@ -53,8 +62,10 @@ class UIClass {
   }
 }
 
-export type UIType = UIClass;
-
+/**
+ * Singleton
+ */
 const UI = new UIClass();
+export type UIType = UIClass;
 
 export default UI;
