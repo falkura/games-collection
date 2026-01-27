@@ -1,12 +1,6 @@
 import AppScreen from "../basic/AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
 
-declare global {
-  interface ScreensMap {
-    load: LoadScreen;
-  }
-}
-
 export class LoadScreen extends AppScreen {
   spinner: Graphics;
   loadingLabel: Text;

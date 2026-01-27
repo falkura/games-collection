@@ -2,6 +2,7 @@ import { Application, Ticker } from "pixi.js";
 import ScreensController from "./components/controllers/ScreensController";
 import WindowsController from "./components/controllers/WindowsController";
 import { Background } from "./components/basic/Background";
+import { RegisterUI, UIOverrides } from "./components/UIRegister";
 
 class UIClass {
   app: Application;
@@ -17,7 +18,7 @@ class UIClass {
 
   initialized = false;
 
-  init(app: Application) {
+  init(app: Application, overrides?: UIOverrides) {
     if (this.initialized) {
       console.error("UI is already initialized.");
       return;
@@ -53,10 +54,9 @@ class UIClass {
     });
 
     this.screens = new ScreensController(this);
-    this.screens.setScreen("game");
-
     this.windows = new WindowsController(this);
-    this.windows.showWindow("info");
+
+    RegisterUI(this, overrides);
 
     this.app.stage.addChild(this.background, this.screens, this.windows);
   }

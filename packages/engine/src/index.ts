@@ -5,6 +5,7 @@ import UI, { UIType } from "./ui/UI";
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import PixiPlugin from "gsap/PixiPlugin.js";
+import { UIOverrides } from "./ui/components/UIRegister";
 
 /**
  * [Icons](https://marella.github.io/material-design-icons/demo/font/)
@@ -41,13 +42,6 @@ class EngineClass {
 
     globalThis.app = globalThis.__PIXI_APP__ = this.app;
 
-    this.ui = UI;
-    this.ui.init(this.app);
-  }
-
-  async initGame(config) {
-    console.log("Initializing Game", config);
-
     await Assets.init({ basePath: "./assets/" });
 
     Assets.add({ src: "manifest.json" });
@@ -56,9 +50,20 @@ class EngineClass {
 
     Assets.addBundle("default", manifest.bundles[0].assets);
 
-    const assets = await Assets.loadBundle("default");
+    await Assets.loadBundle("default");
+  }
 
-    console.log("Game assets loaded successfully", assets);
+  async initUI(overrides?: UIOverrides) {
+    this.ui = UI;
+    this.ui.init(this.app, overrides);
+  }
+
+  async initGame(config) {
+    console.log("Initializing Game", config);
+  }
+
+  async initWrapper(config) {
+    console.log("Initializing Wrapper", config);
   }
 }
 

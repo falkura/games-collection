@@ -12,8 +12,8 @@ Object.entries(gamesMeta).map(([gamePath, data]) => {
   root.appendChild(a);
 });
 
-Engine.initEngine();
-Engine.initGame(gamesMeta);
+await Engine.initEngine();
+await Engine.initUI();
+await Engine.initWrapper(gamesMeta);
 
-console.log("Wrapper Loaded Successfully");
-console.log(gamesMeta);
+Engine.ui.screens.setScreen("wrapper_intro");

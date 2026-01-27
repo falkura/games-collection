@@ -7,12 +7,6 @@ import pause from "@material-design-icons/svg/outlined/pause.svg";
 import lightbulb from "@material-design-icons/svg/outlined/lightbulb.svg";
 import info from "@material-design-icons/svg/outlined/info.svg";
 
-declare global {
-  interface ScreensMap {
-    game: GameScreen;
-  }
-}
-
 export class GameScreen extends AppScreen {
   pauseButton: SVGButton;
   hintButton: SVGButton;

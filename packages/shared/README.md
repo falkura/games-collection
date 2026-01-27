@@ -44,8 +44,6 @@ Contains [**RSPack**][rspack-url] configuration used for building and developing
 
 ### Games
 
----
-
 There is many parts involved in creating game build:
 
 - JS bundle by RSPack without engine dependency (!)
@@ -66,8 +64,6 @@ Although almost all the assets are managed by assetpack, RSPack is responsible f
 
 ### Wrapper
 
----
-
 Wrapper build is a final build of application. Output folder is the root folder of the project, so all the files are placed here. That includes:
 
 - All the games with assets
@@ -82,8 +78,6 @@ Development build is much simplier, because right now it's not possible to devel
 <a id="rspack-engine"></a>
 
 ### Engine
-
----
 
 The **production build** is a [UMD module][rslib-umd-url], allowing the bundle to run in browser globals. This ensures the engine is loaded only **once** for a wrapper or any game, then cached and reused when opening another game.
 

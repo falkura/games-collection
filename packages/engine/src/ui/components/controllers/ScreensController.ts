@@ -1,18 +1,11 @@
 import AppScreen from "../basic/AppScreen";
-import { LoadScreen } from "../screens/LoadScreen";
-import { MenuScreen } from "../screens/MenuScreen";
-import { GameScreen } from "../screens/GameScreen";
-import { ResultScreen } from "../screens/ResultScreen";
 import { Tail } from "../../../Utils";
 import { UIType } from "../../UI";
 import { LayoutContainer } from "@pixi/layout/components";
 
-declare global {
-  interface ScreensMap {}
-}
-
 export default class ScreensController extends LayoutContainer {
   private list: ScreensMap = {} as ScreensMap;
+  private listRaw: any = {};
   private _current: AppScreen;
 
   constructor(private ui: UIType) {
@@ -25,12 +18,6 @@ export default class ScreensController extends LayoutContainer {
         position: "absolute",
       },
     });
-
-    // Create UI config entry to get this data from
-    this.register("load", LoadScreen);
-    this.register("menu", MenuScreen);
-    this.register("game", GameScreen);
-    this.register("result", ResultScreen);
   }
 
   public get current() {
@@ -45,23 +32,16 @@ export default class ScreensController extends LayoutContainer {
     T extends keyof ScreensMap,
     Ctor extends new (...args: any[]) => ScreensMap[T],
   >(key: T, ScreenCtor: Ctor, ...args: Tail<ConstructorParameters<Ctor>>) {
-    if (this.list[key]) {
-      console.error(`Screen with key [${key}] already registrered!`);
-      return;
-    }
-
-    this.list[key] = new ScreenCtor({ ui: this.ui, id: key }, ...args);
+    this.listRaw[key] = arguments;
   }
 
-  public unregister<T extends keyof ScreensMap>(key: T) {
-    if (!this.list[key]) {
-      console.error(`Screen with key [${key}] does not registrered!`);
-      return;
-    }
-
-    this.list[key].destroy();
-
-    delete this.list[key];
+  public build() {
+    Object.values(this.listRaw).forEach((RawData: IArguments) => {
+      this.list[RawData[0]] = new RawData[1](
+        { ui: this.ui, id: RawData[0] },
+        ...Array.from(RawData).slice(2),
+      );
+    });
   }
 
   public async setScreen(key: keyof ScreensMap, force = false) {
@@ -88,7 +68,7 @@ export default class ScreensController extends LayoutContainer {
     }
   }
 
-  public getByKey<T extends keyof ScreensMap>(key: T): ScreensMap[T] {
+  private getByKey<T extends keyof ScreensMap>(key: T): ScreensMap[T] {
     if (!this.list[key]) {
       throw new Error(
         "Screen with key [" +

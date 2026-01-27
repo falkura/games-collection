@@ -3,12 +3,6 @@ import { LayoutContainer } from "@pixi/layout/components";
 import TextButton from "../TextButton";
 import AppWindow from "../basic/AppWindow";
 
-declare global {
-  interface WindowsMap {
-    info: InfoWindow;
-  }
-}
-
 export default class InfoWindow extends AppWindow {
   constructor(...args: ConstructorParameters<typeof AppWindow>) {
     super(...args);

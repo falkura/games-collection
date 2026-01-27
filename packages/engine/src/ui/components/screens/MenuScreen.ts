@@ -2,12 +2,6 @@ import AppScreen from "../basic/AppScreen";
 import TextButton from "../TextButton";
 import { Text } from "pixi.js";
 
-declare global {
-  interface ScreensMap {
-    menu: MenuScreen;
-  }
-}
-
 // - Level select button + level indicator on it
 // - Difficulty button + difficulty indicator on it
 

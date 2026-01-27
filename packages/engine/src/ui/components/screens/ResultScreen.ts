@@ -2,12 +2,6 @@ import AppScreen from "../basic/AppScreen";
 import TextButton from "../TextButton";
 import { Text } from "pixi.js";
 
-declare global {
-  interface ScreensMap {
-    result: ResultScreen;
-  }
-}
-
 export class ResultScreen extends AppScreen {
   resultLabel: Text;
   scoreLabel: Text;

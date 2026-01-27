@@ -1,16 +1,11 @@
 import AppWindow from "../basic/AppWindow";
-import PauseWindow from "../windows/PauseWindow";
 import { Tail } from "../../../Utils";
 import { UIType } from "../../UI";
 import { LayoutContainer } from "@pixi/layout/components";
-import InfoWindow from "../windows/InfoWindow";
-
-declare global {
-  interface WindowsMap {}
-}
 
 export default class WindowsController extends LayoutContainer {
   private list: WindowsMap = {} as WindowsMap;
+  private listRaw: any = {};
   private _current: AppWindow;
 
   constructor(private ui: UIType) {
@@ -23,10 +18,6 @@ export default class WindowsController extends LayoutContainer {
         position: "absolute",
       },
     });
-
-    // Create UI config entry to get this data from
-    this.register("pause", PauseWindow);
-    this.register("info", InfoWindow);
   }
 
   public get current() {
@@ -41,23 +32,16 @@ export default class WindowsController extends LayoutContainer {
     T extends keyof WindowsMap,
     Ctor extends new (...args: any[]) => WindowsMap[T],
   >(key: T, WindowCtor: Ctor, ...args: Tail<ConstructorParameters<Ctor>>) {
-    if (this.list[key]) {
-      console.error(`Window with key [${key}] already registrered!`);
-      return;
-    }
-
-    this.list[key] = new WindowCtor({ ui: this.ui, id: key }, ...args);
+    this.listRaw[key] = arguments;
   }
 
-  public unregister<T extends keyof WindowsMap>(key: T) {
-    if (!this.list[key]) {
-      console.error(`Window with key [${key}] does not registrered!`);
-      return;
-    }
-
-    this.list[key].destroy();
-
-    delete this.list[key];
+  public build() {
+    Object.values(this.listRaw).forEach((RawData: IArguments) => {
+      this.list[RawData[0]] = new RawData[1](
+        { ui: this.ui, id: RawData[0] },
+        ...Array.from(RawData).slice(2),
+      );
+    });
   }
 
   public async showWindow(windowKey: keyof WindowsMap, force = false) {
@@ -95,7 +79,7 @@ export default class WindowsController extends LayoutContainer {
     }
   }
 
-  public getByKey<T extends keyof WindowsMap>(key: T): WindowsMap[T] {
+  private getByKey<T extends keyof WindowsMap>(key: T): WindowsMap[T] {
     if (!this.list[key]) {
       throw new Error(
         "Window with key [" +

@@ -220,6 +220,7 @@ bun run <script-name>
 * [ ] Game template generator
 * [ ] Documentation per package
 * [ ] Scripts args description
+* [ ] https://marella.github.io/material-design-icons/demo/font/
 * [ ] Fill roadmap...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
