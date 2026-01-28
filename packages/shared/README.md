@@ -5,6 +5,8 @@ This package contains **shared configuration, tooling, and resources** used acro
 
 It centralizes common setup to ensure consistency between games, wrappers, and the engine, and to reduce duplication across packages.
 
+> This package is part of the [games collection][root-readme] project
+
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -21,7 +23,7 @@ It centralizes common setup to ensure consistency between games, wrappers, and t
 
 ## AssetPack
 
-Contains [**AssetPack**][assetpack-url] configuration used for bundling and optimizing assets for games and wrapper. There is no config for engine, because it should not have any assets.
+[**AssetPack**][assetpack-url] configuration used for bundling and optimizing assets for games and wrapper.
 
 This includes:
 
@@ -33,12 +35,14 @@ This includes:
 - Mip map images generation for scaled version of assets
 - JSON optimizatoin
 
+There is no config for engine, because it should not have any assets.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 ## RSPack
 
-Contains [**RSPack**][rspack-url] configuration used for building and developing games and wrapper and [**RSLib**][rslib-url] config for engine.
+[**RSPack**][rspack-url] configuration used for building and developing games and wrapper and [**RSLib**][rslib-url] config for engine.
 
 <a id="rspack-games"></a>
 
@@ -86,43 +90,31 @@ The **development build** uses a more classic approach - [ESM module][rslib-esm-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## TSConfig
+## Other
 
-Contains shared **TypeScript configuration files**.
+### TSConfig
 
-It also includes [types](#types).
+Contains shared **TypeScript configuration files**. It also enables [types](#types) for each subproject.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## HTML
+### HTML
 
 Provides the **HTML template** used by game projects ~~and wrapper~~.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## Types
+### Types
 
 Contains **shared TypeScript typings**.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+### Normalize
 
+Contains [**normalize.css**][normalize-url] styles. Used to ensure consistent default styling behavior across browsers for all games and wrapper.
 
-## Normalize
-
-Contains [**normalize.css**][normalize-url] styles.
-
-Used to ensure consistent default styling behavior across browsers for all games and wrapper.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## GitHub
+### GitHub
 
 Contains **GitHub-related files**
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+--- 
 
 For more information, see the [**monorepo root README**][root-readme].
 

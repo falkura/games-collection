@@ -5,6 +5,8 @@ This repository is a **game template** and should be used as the base for creati
 
 All games **must be created from this repository** to ensure compatibility with the engine, wrapper, and build system.
 
+> This is the part of the [games collection][root-readme] project
+
 ## Creating a New Game
 
 Follow these steps to create a new game from this template:

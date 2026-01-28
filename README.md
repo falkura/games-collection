@@ -1,14 +1,24 @@
 <a id="readme-top"></a>
 <div align="center">
-  <h2 align="center">Games Collection</h2>
+  <h3 align="center">Games Collection</h3>
 
   <p align="center">
     A monorepo for building games on a shared engine and wrapper.
     <br />
     Focused on clean architecture, fast builds, and easy game creation.
     <br />
-    <br />
     <a href="#getting-started"><strong>Get Started »</strong></a>
+    <br />
+    <br />
+    <a href="./packages/engine/README.md">Engine</a>
+    &middot;
+    <a href="./packages/wrapper/README.md">Wrapper</a>
+    &middot;
+    <a href="./games/template/README.md">Game</a>
+    &middot;
+    <a href="./packages/shared/README.md">Shared</a>
+    &middot;
+    <a href="./scripts/README.md">Scripts</a>
 
 </div>
 
@@ -150,7 +160,7 @@ PixiJS powered library that controlls game rendering, loading, lifecycle, UI lay
 
 ### [Wrapper][wrapper-readme]
 
-TODO info about wrapper
+Wrapper acts as a launcher and container for all games. It provides the start screen, handles game selection, and assembles the final production build.
 
 ### [Games][games-readme]
 

@@ -4,6 +4,8 @@ This repository contains the **core game engine** used across in games and a wra
 
 The engine is built around **PixiJS** and PixiJS libraries and is responsible for everything except game-specific logic.
 
+> This package is part of the [games collection][root-readme] project
+
 ## Overview
 
 The engine handles:
@@ -48,6 +50,8 @@ All assets belong to individual games, or wrappers. This ensures the engine rema
 - Shared systems and utilities should live here
 - Game logic and content should never be added to this package
 - For bundling information check [**shared** readme][shared-readme-engine]
+
+---
 
 For more information, see the [**monorepo root README**][root-readme].
 
