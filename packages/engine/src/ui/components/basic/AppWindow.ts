@@ -1,11 +1,13 @@
 import AppScreen from "./AppScreen";
 import { Text } from "pixi.js";
-import gsap, { Back } from "gsap";
+import UI from "../../UI";
 
-export default class AppWindow extends AppScreen {
+export default class AppWindow<
+  UIType extends UI = UI,
+> extends AppScreen<UIType> {
   title: Text;
 
-  constructor(...args: ConstructorParameters<typeof AppScreen>) {
+  constructor(...args: ConstructorParameters<typeof AppScreen<UIType>>) {
     super(...args);
 
     this.layout = {
@@ -32,69 +34,5 @@ export default class AppWindow extends AppScreen {
 
   public set titleText(v: string) {
     this.title.text = v;
-  }
-
-  public override show(force = false) {
-    if (this.active) return;
-
-    gsap.killTweensOf(this);
-
-    this._active = true;
-    this.visible = true;
-
-    if (force) {
-      this.alpha = 1;
-
-      return;
-    }
-
-    return gsap.fromTo(
-      this,
-      {
-        alpha: 0,
-        pixi: {
-          y: "+=100",
-        },
-      },
-      {
-        alpha: 1,
-        pixi: {
-          y: "-=100",
-        },
-        duration: 0.2,
-        ease: Back.easeOut.config(1.7),
-      },
-    );
-  }
-
-  public override hide(force = false) {
-    if (!this.active) return;
-
-    gsap.killTweensOf(this);
-
-    const onComplete = () => {
-      this._active = false;
-      this.visible = false;
-      this.position.y = 0;
-    };
-
-    if (force) {
-      onComplete();
-      return;
-    }
-
-    return gsap.fromTo(
-      this,
-      { alpha: 1 },
-      {
-        alpha: 0,
-        pixi: {
-          y: "+=100",
-        },
-        duration: 0.2,
-        ease: Back.easeIn.config(1.7),
-        onComplete,
-      },
-    );
   }
 }

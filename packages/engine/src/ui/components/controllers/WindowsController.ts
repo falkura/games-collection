@@ -1,93 +1,133 @@
-import AppWindow from "../basic/AppWindow";
-import { Tail } from "../../../Utils";
-import { UIType } from "../../UI";
-import { LayoutContainer } from "@pixi/layout/components";
+import { ModuleConstructor } from "../../../modules/ModuleManager";
+import UI from "../../UI";
+import gsap, { Back } from "gsap";
+import AppScreen from "../basic/AppScreen";
+import ScenesController from "./ScenesController";
 
-export default class WindowsController extends LayoutContainer {
-  private list: WindowsMap = {} as WindowsMap;
-  private listRaw: any = {};
-  private _current: AppWindow;
+export default class WindowsController<
+  UIType extends UI = UI,
+> extends ScenesController<UIType> {
+  protected history: AppScreen<UIType>[];
 
-  constructor(private ui: UIType) {
-    super({
-      layout: {
-        width: "100%",
-        height: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "absolute",
-      },
-    });
-  }
+  // todo add tint
+  public override show(moduleId: string, force?: boolean);
+  public override show<T extends ModuleConstructor<AppScreen<UIType>>>(
+    Ctor: T,
+    force?: boolean,
+  );
+  public override show<T extends ModuleConstructor<AppScreen<UIType>>>(
+    value: string | T,
+    force = false,
+  ) {
+    // @ts-expect-error TS is stupid.
+    const target = this.get(value);
 
-  public get current() {
-    return this._current;
-  }
+    if (this.current === target) return;
 
-  private set current(v: AppWindow) {
-    this._current = v;
-  }
-
-  public register<
-    T extends keyof WindowsMap,
-    Ctor extends new (...args: any[]) => WindowsMap[T],
-  >(key: T, WindowCtor: Ctor, ...args: Tail<ConstructorParameters<Ctor>>) {
-    this.listRaw[key] = arguments;
-  }
-
-  public build() {
-    Object.values(this.listRaw).forEach((RawData: IArguments) => {
-      this.list[RawData[0]] = new RawData[1](
-        { ui: this.ui, id: RawData[0] },
-        ...Array.from(RawData).slice(2),
-      );
-    });
-  }
-
-  public async showWindow(windowKey: keyof WindowsMap, force = false) {
-    const window = this.getByKey(windowKey);
-    const screen = this.ui.screens.current;
-
-    if (this.current === window) return;
+    let promise = Promise.resolve();
 
     if (this.current) {
-      await this.hideWindow(force);
+      promise = this.hideAnimation(this.current, force).then(() => {
+        this.view.removeChild(this.current);
+        this.onScreenRemoved(this.current);
+      }) as Promise<any>;
     }
 
-    this.current = window;
+    promise.then(() => {
+      this.current = target;
 
-    this.addChild(window);
+      this.view.addChild(this.current);
+      this.onScreenAdded(this.current);
 
-    screen.onWindowShow(window, force);
-
-    return window.show(force);
+      return this.showAnimation(this.current, force);
+    });
   }
 
-  public async hideWindow(force = false) {
-    const window = this.current;
+  // todo
+  public goBack() {}
 
-    this.current = undefined;
+  public hide(force?: boolean): { promise: Promise<void>; last: boolean } {
+    if (!this.current) return;
 
-    const screen = this.ui.screens.current;
+    const screen = this.current;
 
-    screen.onWindowHide(window, force);
+    delete this.current;
 
-    await window.hide(force);
+    // For history and goBack
+    const last = true;
 
-    if (window.parent) {
-      window.parent.removeChild(window);
-    }
+    // @ts-expect-error guess what
+    const promise = this.hideAnimation(screen, force).then(() => {
+      this.view.removeChild(screen);
+      this.onScreenRemoved(screen);
+    }) as Promise<void>;
+
+    return { promise, last };
   }
 
-  private getByKey<T extends keyof WindowsMap>(key: T): WindowsMap[T] {
-    if (!this.list[key]) {
-      throw new Error(
-        "Window with key [" +
-          key +
-          "] does not exist or not added via UI.windows.register",
-      );
+  public override onWindowShow() {
+    return;
+  }
+
+  public override onWindowHide(last: boolean) {
+    return;
+  }
+
+  protected override showAnimation(screen: AppScreen<UIType>, force = false) {
+    gsap.killTweensOf(screen);
+
+    screen.visible = true;
+
+    if (force) {
+      screen.alpha = 1;
+
+      return;
     }
 
-    return this.list[key];
+    return gsap.fromTo(
+      screen,
+      {
+        alpha: 0,
+        pixi: {
+          y: "+=100",
+        },
+      },
+      {
+        alpha: 1,
+        pixi: {
+          y: "-=100",
+        },
+        duration: 0.2,
+        ease: Back.easeOut.config(1.7),
+      },
+    );
+  }
+
+  protected override hideAnimation(screen: AppScreen<UIType>, force = false) {
+    gsap.killTweensOf(screen);
+
+    const onComplete = () => {
+      screen.visible = false;
+      screen.position.y = 0;
+    };
+
+    if (force) {
+      onComplete();
+      return;
+    }
+
+    return gsap.fromTo(
+      screen,
+      { alpha: 1 },
+      {
+        alpha: 0,
+        pixi: {
+          y: "+=100",
+        },
+        duration: 0.2,
+        ease: Back.easeIn.config(1.7),
+        onComplete,
+      },
+    );
   }
 }

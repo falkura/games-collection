@@ -2,14 +2,6 @@ import { findUp } from "find-up";
 import fs from "fs";
 import path from "path";
 
-export interface IGameConfig {
-  title: string;
-  description?: string;
-  icon?: string;
-  route: string;
-  enabled?: boolean;
-}
-
 /**
  * Walks through games folder, checking each file.
  * If file is a folder that contains game.json

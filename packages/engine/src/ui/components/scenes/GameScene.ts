@@ -6,8 +6,10 @@ import { Text } from "pixi.js";
 import pause from "@material-design-icons/svg/outlined/pause.svg";
 import lightbulb from "@material-design-icons/svg/outlined/lightbulb.svg";
 import info from "@material-design-icons/svg/outlined/info.svg";
+import { UIEvent } from "../../../events/IUIEvents";
+import UI from "../../UI";
 
-export class GameScreen extends AppScreen {
+export default class GameScene extends AppScreen {
   pauseButton: SVGButton;
   hintButton: SVGButton;
   infoButton: SVGButton;
@@ -55,7 +57,6 @@ export class GameScreen extends AppScreen {
         top: 3,
         left: 5,
       },
-      text: this.ui.data.gameName,
     });
 
     this.timeLabel = new Text({
@@ -165,5 +166,17 @@ export class GameScreen extends AppScreen {
       this.gameLabel,
       this.timeLabel,
     );
+  }
+
+  public override onInit(): void {
+    this.gameLabel.text = this.ui.gameConfig.title;
+
+    this.pauseButton.onPress.connect(() =>
+      this.ui.events.emit(UIEvent.PauseGame),
+    );
+
+    this.hintButton.onPress.connect(() => this.ui.events.emit(UIEvent.UseHint));
+
+    this.infoButton.onPress.connect(() => this.ui.onInfo());
   }
 }

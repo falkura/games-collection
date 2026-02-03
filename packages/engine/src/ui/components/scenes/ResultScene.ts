@@ -2,7 +2,7 @@ import AppScreen from "../basic/AppScreen";
 import TextButton from "../TextButton";
 import { Text } from "pixi.js";
 
-export class ResultScreen extends AppScreen {
+export default class ResultScene extends AppScreen {
   resultLabel: Text;
   scoreLabel: Text;
 

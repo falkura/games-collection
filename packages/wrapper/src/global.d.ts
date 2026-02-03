@@ -1,3 +1,4 @@
 declare module "@gamesMeta" {
-  export default any;
+  const gamesMeta: IGamesConfig;
+  export default gamesMeta;
 }

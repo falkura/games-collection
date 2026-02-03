@@ -1,7 +1,7 @@
 import AppScreen from "../basic/AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
 
-export class LoadScreen extends AppScreen {
+export default class LoadScene extends AppScreen {
   spinner: Graphics;
   loadingLabel: Text;
 

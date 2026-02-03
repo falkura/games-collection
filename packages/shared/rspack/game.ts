@@ -1,7 +1,6 @@
 import { rspack } from "@rspack/core";
 import { defineConfig } from "@rspack/cli";
 import path from "path";
-import { IGameConfig } from "../../../scripts/utils/games";
 
 const outDist = path.resolve("dist");
 

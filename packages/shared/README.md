@@ -31,7 +31,7 @@ This includes:
 - Bundling images in atlases to make assets loading faster
 - Generating manifest file with all the assets for universal loading
 - Cache busting to prevent asset update issues caused by browser caching
-- WEBP images generation for high quality and small assets weight
+- WEBP images generation for high quality and small assets size
 - Mip map images generation for scaled version of assets
 - JSON optimizatoin
 

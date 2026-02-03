@@ -5,6 +5,7 @@
     "": {
       "name": "@falkura-pet/mono",
       "dependencies": {
+        "gsap": "^3.13.0",
         "pixi.js": "^8.13.2",
       },
       "devDependencies": {
@@ -42,6 +43,7 @@
         "@pixi/ui": "^2.3.2",
         "gsap": "^3.13.0",
         "pixi.js": "^8.13.2",
+        "typed-signals": "^3.0.0",
       },
       "devDependencies": {
         "@falkura-pet/shared": "*",
@@ -1220,7 +1222,7 @@
 
     "type-is": ["type-is@1.6.18", "", { "dependencies": { "media-typer": "0.3.0", "mime-types": "~2.1.24" } }, "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g=="],
 
-    "typed-signals": ["typed-signals@2.5.0", "", {}, "sha512-m9lHc3eBCJerXYdx+G0uWZihyUXdqTzzgOdqiDDsoUo75WjhFJH6vP5/6w/xhyu04zoxHUqgYhf9FEt85dk/Ng=="],
+    "typed-signals": ["typed-signals@3.0.0", "", {}, "sha512-HpYkOenDGcyiNabkvJ7XC1FfTb4I/yx95GEblpXf1058C89eLBIJBlq4IMW2jFxju7NC2J5fTss2k2OPs27GiA=="],
 
     "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 
@@ -1321,6 +1323,8 @@
     "@node-rs/crc32-wasm32-wasi/@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
 
     "@pixi/svg2ttf/@xmldom/xmldom": ["@xmldom/xmldom@0.9.8", "", {}, "sha512-p96FSY54r+WJ50FIOsCOjyj/wavs8921hG5+kVMmZgKcvIKxMXHTrjNJvRgWa/zuX3B6t2lijLNFaOyuxUH+2A=="],
+
+    "@pixi/ui/typed-signals": ["typed-signals@2.5.0", "", {}, "sha512-m9lHc3eBCJerXYdx+G0uWZihyUXdqTzzgOdqiDDsoUo75WjhFJH6vP5/6w/xhyu04zoxHUqgYhf9FEt85dk/Ng=="],
 
     "@rsbuild/core/@rspack/core": ["@rspack/core@1.7.0", "", { "dependencies": { "@module-federation/runtime-tools": "0.22.0", "@rspack/binding": "1.7.0", "@rspack/lite-tapable": "1.1.0" }, "peerDependencies": { "@swc/helpers": ">=0.5.1" }, "optionalPeers": ["@swc/helpers"] }, "sha512-uDxPQsPh/+2DnOISuKnUiXZ9M0y2G1BOsI0IesxPJGp42ME2QW7axbJfUqD3bwp4bi3RN2zqh56NgxU/XETQvA=="],
 

@@ -22,6 +22,30 @@ export default defineConfig({
         test: /\.svg$/,
         type: "asset/source",
       },
+      // TODO setup swc
+      {
+        test: /\.ts$/,
+        use: [
+          {
+            loader: "builtin:swc-loader",
+            options: {
+              jsc: {
+                parser: {
+                  syntax: "typescript",
+                  // dynamicImport: true,
+                  decorators: true,
+                },
+                // baseUrl: "./",
+              },
+              // module: {
+              //   type: "es6",
+              // },
+              // minify: false,
+              env: { targets },
+            },
+          },
+        ],
+      },
     ],
   },
   optimization: {
