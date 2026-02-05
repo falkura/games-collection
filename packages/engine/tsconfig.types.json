@@ -1,0 +1,7 @@
+{
+  "extends": "@falkura-pet/shared/tsconfig/engine.types.json",
+  "compilerOptions": {
+    "outDir": "./dist/types"
+  },
+  "include": ["src"]
+}

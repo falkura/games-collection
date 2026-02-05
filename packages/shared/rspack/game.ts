@@ -18,9 +18,18 @@ const build = (config: IGameConfig) => {
       filename: "index.js",
       clean: false,
     },
-    externals: {
-      "@falkura-pet/engine": "__ENGINE__",
-    },
+    // devtool: false,
+    externals: [
+      ({ request }, callback) => {
+        if (request?.startsWith("@falkura-pet/engine")) {
+          return callback(
+            null,
+            request.replace("@falkura-pet/engine", "__ENGINE__").split("/"),
+          );
+        }
+        callback();
+      },
+    ],
     externalsType: "window",
     plugins: [
       new rspack.DefinePlugin({

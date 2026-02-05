@@ -1,6 +1,6 @@
 import "@falkura-pet/shared/normalize/normalize.css";
 import config from "../game.json";
-import Engine from "@falkura-pet/engine";
+import Engine from "@falkura-pet/engine/Engine";
 import Game from "@falkura-pet/engine/game/Game";
 import { System } from "@falkura-pet/engine/game/system/System";
 import UI from "@falkura-pet/engine/ui/UI";

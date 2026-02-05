@@ -1,5 +1,5 @@
 import { defineConfig } from "@rspack/cli";
-import { rspack } from "@rspack/core";
+import { rspack, SwcLoaderOptions } from "@rspack/core";
 
 // Target browsers, see: https://github.com/browserslist/browserslist
 const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
@@ -32,17 +32,10 @@ export default defineConfig({
               jsc: {
                 parser: {
                   syntax: "typescript",
-                  // dynamicImport: true,
-                  decorators: true,
                 },
-                // baseUrl: "./",
               },
-              // module: {
-              //   type: "es6",
-              // },
-              // minify: false,
               env: { targets },
-            },
+            } satisfies SwcLoaderOptions,
           },
         ],
       },

@@ -2,8 +2,11 @@
   "name": "@falkura-pet/engine",
   "version": "0.0.0",
   "scripts": {
-    "build": "rslib build",
-    "dev": "rslib build -w --env-mode dev"
+    "barrel": "bun run barrelsby -c barrelsby.json",
+    "types": "tsc -p tsconfig.types.json",
+    "dev:types": "tsc -p tsconfig.types.json -w",
+    "build": "bun run barrel && concurrently 'bun run types' 'rslib build'",
+    "dev": "concurrently 'bun run dev:types' 'rslib build -w --env-mode dev'"
   },
   "dependencies": {
     "@material-design-icons/svg": "^0.14.15",
@@ -15,13 +18,15 @@
   },
   "devDependencies": {
     "@falkura-pet/shared": "*",
-    "@types/greensock": "^1.15.32"
+    "@types/greensock": "^1.15.32",
+    "barrelsby": "^2.8.1"
   },
   "private": true,
   "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*.js"
+    "./*": {
+      "import": "./dist/esm/*.js",
+      "types": "./dist/types/*.d.ts"
+    }
   },
-  "types": "dist",
   "type": "module"
 }

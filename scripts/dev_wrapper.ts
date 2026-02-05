@@ -2,10 +2,14 @@ import { getGamesList } from "./utils/games";
 import { getArgs } from "./utils/utils";
 import { execa } from "execa";
 import fs from "fs";
+import path from "path";
 
 const games = await getGamesList();
 
-fs.writeFileSync("dist/meta.json", JSON.stringify(games));
+const outFile = path.resolve("dist/meta.json");
+
+fs.mkdirSync(path.dirname(outFile), { recursive: true });
+fs.writeFileSync(outFile, JSON.stringify(games));
 
 const args = getArgs();
 const flags = [];

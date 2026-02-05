@@ -7,8 +7,10 @@ export default defineConfig(({ envMode }) => {
     format: "esm",
     syntax: "esnext",
     bundle: false,
-    autoExternal: false, // can be true for dev ?
-    dts: true,
+    dts: false,
+    output: {
+      distPath: "./dist/esm",
+    },
   };
 
   const prodLib: LibConfig = {
@@ -17,7 +19,7 @@ export default defineConfig(({ envMode }) => {
     syntax: "esnext",
     bundle: true,
     autoExternal: false,
-    dts: true,
+    dts: false,
     output: {
       distPath: "./dist/umd",
     },

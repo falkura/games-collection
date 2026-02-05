@@ -9,6 +9,7 @@ const gameMetaPath = path.join(root, "dist", "meta.json");
 
 const gamesMeta = await import(gameMetaPath);
 const enginePath = path.join(root, "packages/engine/dist/umd");
+const engineExport = "@falkura-pet/engine";
 const engineModuleName = "__ENGINE__";
 
 // Games data
@@ -30,6 +31,7 @@ const copyPatterns = games.map((data) => {
 });
 
 export default defineConfig({
+  // devtool: false,
   extends: path.join(__dirname, "/wrapper.base.ts"),
   output: {
     path: distPath,
@@ -61,11 +63,19 @@ export default defineConfig({
     }),
   ],
   /**
-   * Transforms 'import Engine from "@falkura-pet/engine"' into
-   * const Engine = window.__ENGINE__
+   * Transforms 'import UI from "@falkura-pet/engine/ui/UI"' into
+   * module.exports = window.__ENGINE__.ui.UI;
    */
-  externals: {
-    "@falkura-pet/engine": engineModuleName,
-  },
+  externals: [
+    ({ request }, callback) => {
+      if (request?.startsWith(engineExport)) {
+        return callback(
+          null,
+          request.replace(engineExport, engineModuleName).split("/"),
+        );
+      }
+      callback();
+    },
+  ],
   externalsType: "window",
 });
