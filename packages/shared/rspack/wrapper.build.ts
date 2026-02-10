@@ -40,7 +40,7 @@ export default defineConfig({
   plugins: [
     // Project entry page
     new rspack.HtmlRspackPlugin({
-      template: "./public/index.html",
+      template: path.join(__dirname, "../html/wrapper.html"),
       filename: "index.html",
       chunks: ["index"], // Include only wrapper script
       inject: "body",
