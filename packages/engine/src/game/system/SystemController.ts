@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Container, Ticker } from "pixi.js";
 import ModuleManager, { ModuleConstructor } from "../../modules/ModuleManager";
 import Game from "../Game";
 import { System } from "./System";
@@ -65,26 +65,39 @@ export class SystemController<TGame extends Game = Game> extends ModuleManager<
     return true;
   }
 
-  public start = this.createSystemCaller("start");
+  public start() {
+    this.list.forEach((system) => {
+      system.start();
+    });
+  }
 
-  public finish = this.createSystemCaller("finish");
+  public finish() {
+    this.list.forEach((system) => {
+      system.finish();
+    });
+  }
 
-  public reset = this.createSystemCaller("reset");
+  public reset() {
+    this.list.forEach((system) => {
+      system.reset();
+    });
+  }
 
-  public pause = this.createSystemCaller("pause");
+  public pause() {
+    this.list.forEach((system) => {
+      system.pause();
+    });
+  }
 
-  public resume = this.createSystemCaller("resume");
+  public resume() {
+    this.list.forEach((system) => {
+      system.resume();
+    });
+  }
 
-  public tick = this.createSystemCaller("tick");
-
-  protected createSystemCaller<TMethod extends MethodKeys<System>>(
-    method: TMethod,
-  ) {
-    return (...args: Parameters<System[TMethod]>) => {
-      this.list.forEach((item) => {
-        // @ts-expect-error ts is stupid with complex generics
-        item[method](...args);
-      });
-    };
+  public tick(ticker: Ticker) {
+    this.list.forEach((system) => {
+      system.tick(ticker);
+    });
   }
 }

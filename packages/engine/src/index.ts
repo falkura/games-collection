@@ -9,7 +9,7 @@ import * as eventsIEngineEventsts from "./events/IEngineEvents";
 import * as eventsIGameEventsts from "./events/IGameEvents";
 import * as eventsIUIEventsts from "./events/IUIEvents";
 import * as gameGamets from "./game/Game";
-import * as gameIGamets from "./game/IGame";
+import * as gameGameTypests from "./game/GameTypes";
 import * as gamesystemSystemts from "./game/system/System";
 import * as gamesystemSystemControllerts from "./game/system/SystemController";
 import * as modulesModuleManagerts from "./modules/ModuleManager";
@@ -44,7 +44,7 @@ export const events = {
 };
 export const game = {
   Game: gameGamets,
-  IGame: gameIGamets,
+  GameTypes: gameGameTypests,
   system: {
     System: gamesystemSystemts,
     SystemController: gamesystemSystemControllerts,

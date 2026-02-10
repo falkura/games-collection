@@ -17,6 +17,8 @@ declare global {
 
   type Constructor<T> = new (...args: any[]) => T;
   type AbstractConstructor<T = any> = abstract new (...args: any[]) => T;
+
+  type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never;
 }
 
 export {};

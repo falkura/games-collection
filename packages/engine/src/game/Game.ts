@@ -1,10 +1,10 @@
 import { Container, EventEmitter, Ticker } from "pixi.js";
 import gsap from "gsap";
 import { SystemController } from "./system/SystemController";
-import { IGame } from "./IGame";
 import { IGameEvents } from "../events/IGameEvents";
+import { GameTypes } from "./GameTypes";
 
-export default class Game implements IGame {
+export default class Game implements GameTypes.GameClass {
   public readonly ticker: Ticker;
   public readonly systems: SystemController;
   public readonly timeline: GSAPTimeline;

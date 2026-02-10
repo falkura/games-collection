@@ -1,6 +1,9 @@
-// todo enums
+export enum GameEvent {
+  GameFinished = "game:finished",
+}
+
 export interface IGameEvents {
-  "game:finished": (data: Partial<IGameFinishData>) => void;
+  [GameEvent.GameFinished]: (data: Partial<IGameFinishData>) => void;
 }
 
 export interface IGameFinishData {

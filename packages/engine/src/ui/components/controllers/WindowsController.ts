@@ -19,7 +19,9 @@ export default class WindowsController<
     value: string | T,
     force = false,
   ) {
-    // @ts-expect-error TS is stupid.
+    // Following line wont show any errors with call like this:
+    // const target = typeof value === "string" ? this.get(value) : this.get(value);
+    // @ts-expect-error TS is stupid but i like it :).
     const target = this.get(value);
 
     if (this.current === target) return;

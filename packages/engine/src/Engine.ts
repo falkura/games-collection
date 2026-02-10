@@ -6,17 +6,17 @@ import PixiPlugin from "gsap/PixiPlugin.js";
 import "./types";
 
 import { EventSystem } from "./events/EventSystem";
-import { IGameFinishData } from "./events/IGameEvents";
+import { GameEvent, IGameFinishData } from "./events/IGameEvents";
 import { ISettings, UIEvent } from "./events/IUIEvents";
-import { GameConstructor, IGame } from "./game/IGame";
 import { UITypes } from "./ui/UITypes";
+import { GameTypes } from "./game/GameTypes";
 
 /**
  * [Icons](https://marella.github.io/material-design-icons/demo/font/)
  */
 class EngineClass {
   ui: UITypes.UIClass;
-  game: IGame;
+  game: GameTypes.GameClass;
   app: Application;
   events: EventSystem;
 
@@ -44,8 +44,7 @@ class EngineClass {
 
     this.events.ui.on(UIEvent.OpenMenu, this.backToMenu, this);
 
-    // TODO make enums
-    this.events.game.on("game:finished", this.onGameFinished, this);
+    this.events.game.on(GameEvent.GameFinished, this.onGameFinished, this);
   }
 
   private startGame() {}
@@ -128,7 +127,7 @@ class EngineClass {
     this.ui.onResize(this.app.screen.width, this.app.screen.height);
   }
 
-  public initGame(Ctor: GameConstructor, config: IGameConfig) {
+  public initGame(Ctor: GameTypes.GameConstructor, config: IGameConfig) {
     this.game = new Ctor(this.events.game, config);
     this.ui.initGame(config);
   }

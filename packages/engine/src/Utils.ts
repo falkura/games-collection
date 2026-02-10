@@ -4,8 +4,6 @@ export function AssetOrTexture(texture: Texture | string) {
   return typeof texture === "string" ? Assets.get(texture) : texture;
 }
 
-export type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never;
-
 export function Base64ToSvg(dataString: string) {
   let result: string;
 

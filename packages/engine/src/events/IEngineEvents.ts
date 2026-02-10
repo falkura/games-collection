@@ -1,15 +1,27 @@
 import { IGameFinishData } from "./IGameEvents";
 
-// todo enums
-export interface IEngineEvents {
-  "engine:game-started": () => void;
-  "engine:game-finished": (data: Partial<IGameFinishData>) => void;
-  "engine:game-paused": () => void;
-  "engine:game-resumed": () => void;
-  "engine:game-reseted": () => void;
-  "engine:game-hint-used": () => void;
-  "engine:game-closed": () => void;
+export enum EngineEvent {
+  GameStarted = "engine:game-started",
+  GameFinished = "engine:game-finished",
+  GamePaused = "engine:game-paused",
+  GameResumed = "engine:game-resumed",
+  GameReseted = "engine:game-reseted",
+  GameHintUsed = "engine:game-hint-used",
+  GameClosed = "engine:game-closed",
 
   // Wrapper event
-  "engine:game-chosen": (gameKey: string) => void;
+  GameChosen = "engine:game-chosen",
+}
+
+export interface IEngineEvents {
+  [EngineEvent.GameStarted]: () => void;
+  [EngineEvent.GameFinished]: (data: Partial<IGameFinishData>) => void;
+  [EngineEvent.GamePaused]: () => void;
+  [EngineEvent.GameResumed]: () => void;
+  [EngineEvent.GameReseted]: () => void;
+  [EngineEvent.GameHintUsed]: () => void;
+  [EngineEvent.GameClosed]: () => void;
+
+  // Wrapper event
+  [EngineEvent.GameChosen]: (gameKey: string) => void;
 }
