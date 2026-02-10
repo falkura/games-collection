@@ -159,6 +159,8 @@ export default class UI implements UITypes.UIClass {
     scene: UITypes.BaseGameScenes | UITypes.BaseWrapperScenes,
     force?: boolean,
   ): Promise<AppScreen>;
+  // Yeap, you need to do a bunch of shenanigans to make things work in typescript
+  public setScene(scene: string, force?: boolean): Promise<AppScreen>;
   public setScene(scene: string, force?: boolean): Promise<AppScreen> {
     this.hideWindow(true);
 
@@ -169,6 +171,7 @@ export default class UI implements UITypes.UIClass {
     window: UITypes.BaseWindows,
     force?: boolean,
   ): Promise<AppScreen>;
+  public showWindow(window: string, force?: boolean): Promise<AppScreen>;
   public showWindow(window: string, force?: boolean): Promise<AppScreen> {
     this.scenes.onWindowShow();
 
@@ -190,6 +193,7 @@ export default class UI implements UITypes.UIClass {
   public getScene<T extends AppScreen = AppScreen>(
     scene: UITypes.BaseGameScenes | UITypes.BaseWrapperScenes,
   ): T;
+  public getScene<T extends AppScreen = AppScreen>(scene: string): T;
   public getScene<T extends AppScreen = AppScreen>(scene: string): T {
     return this.scenes.get(scene);
   }
@@ -197,6 +201,7 @@ export default class UI implements UITypes.UIClass {
   public getWindow<T extends AppScreen = AppScreen>(
     window: UITypes.BaseWindows,
   ): T;
+  public getWindow<T extends AppScreen = AppScreen>(window: string): T;
   public getWindow<T extends AppScreen = AppScreen>(window: string): T {
     return this.windows.get(window);
   }
