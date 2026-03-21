@@ -26,7 +26,9 @@ class EngineClass {
     this.initGSAP();
     this.initEvents();
 
-    globalThis.engine = this;
+    if (__DEV__) {
+      globalThis.engine = this;
+    }
   }
 
   private initEvents() {
@@ -71,7 +73,9 @@ class EngineClass {
       gsap.updateRoot(lastTime / 1000);
     });
 
-    globalThis.gsap = gsap;
+    if (__DEV__) {
+      globalThis.gsap = gsap;
+    }
   }
 
   public async init() {
@@ -87,8 +91,10 @@ class EngineClass {
 
     root.appendChild(this.app.canvas);
 
-    globalThis.app = globalThis.__PIXI_APP__ = this.app;
-    globalThis.PIXI = PIXI;
+    if (__DEV__) {
+      globalThis.app = globalThis.__PIXI_APP__ = this.app;
+      globalThis.PIXI = PIXI;
+    }
   }
 
   public async loadAssets(

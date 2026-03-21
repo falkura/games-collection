@@ -26,8 +26,6 @@ export default class UI implements UITypes.UIClass {
     public events: EventEmitter<IUIEvents>,
     public view: Container,
   ) {
-    globalThis.ui = this;
-
     this.view.layout = {
       alignItems: "center",
       justifyContent: "center",
@@ -46,6 +44,10 @@ export default class UI implements UITypes.UIClass {
 
     // TODO make it as render layers https://pixijs.com/8.x/guides/concepts/render-layers
     this.view.addChild(this.background, this.scenes.view, this.windows.view);
+
+    if (__DEV__) {
+      globalThis.ui = this;
+    }
   }
 
   public onInfo() {

@@ -29,6 +29,10 @@ export default class Game implements GameTypes.GameClass {
     this.ticker.add((ticker) => this.systems.tick(ticker));
 
     this.init();
+
+    if (__DEV__) {
+      globalThis.game = this;
+    }
   }
 
   // Register systems here
