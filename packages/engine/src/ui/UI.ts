@@ -206,7 +206,17 @@ export default class UI implements UITypes.UIClass {
     return this.windows.get(window);
   }
 
-  public onResize(width: number, height: number) {
+  public onResize(width: number, height: number, resolution: number) {
+    const scale = 1 / resolution;
+
+    this.view.scale.set(scale);
+
+    const dx = width * (1 - scale);
+    const dy = height * (1 - scale);
+
+    this.view.x = -dx / 2;
+    this.view.y = -dy / 2;
+
     this.view.layout = { width, height };
   }
 }

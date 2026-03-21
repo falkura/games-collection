@@ -80,6 +80,7 @@ class EngineClass {
     await this.app.init({
       backgroundAlpha: 0,
       preference: "webgpu",
+      resolution: window.devicePixelRatio,
       resizeTo: window,
       antialias: true,
     });
@@ -120,11 +121,18 @@ class EngineClass {
   public initUI(Ctor: UITypes.UIConstructor) {
     this.ui = new Ctor(this.events.ui, this.app.stage);
 
-    this.app.renderer.on("resize", (width: number, height: number) => {
-      this.ui.onResize(width, height);
-    });
+    this.app.renderer.on("resize", this.onResize, this);
 
-    this.ui.onResize(this.app.screen.width, this.app.screen.height);
+    this.app.renderer.emit(
+      "resize",
+      window.innerWidth,
+      window.innerHeight,
+      this.app.renderer.resolution,
+    );
+  }
+
+  private onResize(width: number, height: number, resolution: number) {
+    this.ui.onResize(width, height, resolution);
   }
 
   public initGame(Ctor: GameTypes.GameConstructor, config: IGameConfig) {

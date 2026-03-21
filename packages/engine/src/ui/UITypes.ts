@@ -25,7 +25,7 @@ export declare namespace UITypes {
     getWindow(window: BaseWindows): AppScreen;
     getWindow(window: string): AppScreen;
 
-    onResize(width: number, height: number): void;
+    onResize(width: number, height: number, resolution: number): void;
   }
 
   interface UIConstructor {
