@@ -71,9 +71,9 @@ export class SystemController<TGame extends Game = Game> extends ModuleManager<
     });
   }
 
-  public finish() {
+  public finish(isWin?: boolean) {
     this.list.forEach((system) => {
-      system.finish();
+      system.finish(isWin);
     });
   }
 
