@@ -6,7 +6,7 @@
     "build": "bun run scripts/build.ts",
     "dev": "bun run scripts/dev.ts",
     "dev:wrapper": "bun run scripts/dev_wrapper.ts",
-    "serve": "serve dist -p 8080"
+    "serve": "serve dist -p 3000"
   },
   "dependencies": {
     "gsap": "^3.13.0",
