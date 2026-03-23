@@ -17,5 +17,3 @@ tasks:
     command: "bunx concurrently 'rspack build' 'assetpack'"
     inputs:
       - "src/**/*"
-    outputs:
-      - "dist"

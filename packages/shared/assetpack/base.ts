@@ -19,7 +19,7 @@ export const create = ({
   manifestOutput: string;
 }) => {
   const resolutions: Record<string, number> = { default: 1 };
-  const doCacheBust: boolean = false;
+  const doCacheBust: boolean = true;
   const compression: CompressOptions = {
     png: true,
     jpg: true,

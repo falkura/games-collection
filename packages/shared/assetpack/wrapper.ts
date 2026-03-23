@@ -1,9 +1,9 @@
 import { create as createBase } from "./base";
 import path from "path";
+import PATHS from "../paths";
 
-export const create = () =>
-  createBase({
-    output: path.resolve("../../build", "assets"),
-    entry: "assets",
-    manifestOutput: "manifest.json",
-  });
+export default createBase({
+  output: path.resolve(PATHS.buildPath, "assets"),
+  entry: "assets",
+  manifestOutput: "manifest.json",
+});

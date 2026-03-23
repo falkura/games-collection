@@ -2,20 +2,20 @@ import { defineConfig } from "@rspack/cli";
 import { rspack, RspackOptions } from "@rspack/core";
 import { generateGamesMeta } from "../scripts/gamesMeta";
 import path from "path";
+import PATHS from "../paths";
 import { rm } from "fs/promises";
 
-const workspaceRoot = path.resolve(__dirname, "../../../");
-const outDist = path.resolve(workspaceRoot, "build");
-const gamesDir = path.resolve(workspaceRoot, "games");
-const gamesMetaFile = path.resolve(outDist, "meta.json");
+const gamesMetaFile = path.resolve(PATHS.buildPath, "meta.json");
 
+// TODO simple serve
 export default defineConfig(async ({ RSPACK_SERVE }) => {
-  await rm(outDist, { recursive: true, force: true });
-  await generateGamesMeta(gamesDir, gamesMetaFile);
+  // TODO partial clear
+  await rm(PATHS.buildPath, { recursive: true, force: true });
+  await generateGamesMeta(PATHS.gamesPath, gamesMetaFile);
 
   const gamesMeta = (await import(gamesMetaFile)).default as IGamesConfig;
   const copyPatterns = Object.entries(gamesMeta).map(([gamePath, config]) => ({
-    from: path.join(gamesDir, gamePath, "dist"),
+    from: path.join(PATHS.gamesPath, gamePath, "dist"),
     to: config.route || gamePath,
   }));
 
@@ -28,13 +28,13 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
       },
     },
     output: {
-      path: outDist,
+      path: PATHS.buildPath,
     },
     devServer: {
       port: 3001,
       static: [
         {
-          directory: outDist,
+          directory: PATHS.buildPath,
           publicPath: "/",
           watch: true,
         },

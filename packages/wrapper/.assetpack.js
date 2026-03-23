@@ -1,3 +1,3 @@
-import { create } from "@falkura-pet/shared/assetpack/wrapper.ts";
+import config from "@falkura-pet/shared/assetpack/wrapper.ts";
 
-export default create(__dirname);
+export default config;
