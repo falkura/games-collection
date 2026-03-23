@@ -5,6 +5,7 @@ node_modules
 dist
 dist-ssr
 dist-assets
+build
 *.local
 .env
 .cache
@@ -12,6 +13,7 @@ dist-assets
 .generated
 server/dist
 tsconfig.tsbuildinfo
+.vscode
 # moon
 .moon/cache
 .moon/docker

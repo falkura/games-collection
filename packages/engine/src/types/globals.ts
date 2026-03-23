@@ -7,7 +7,6 @@ declare global {
     route: string;
     title: string;
     version: string;
-    $schema: string;
     enabled?: boolean;
   }
 

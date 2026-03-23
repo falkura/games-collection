@@ -52,7 +52,4 @@ export default defineConfig({
   experiments: {
     css: true,
   },
-  devServer: {
-    port: 3000,
-  },
 });

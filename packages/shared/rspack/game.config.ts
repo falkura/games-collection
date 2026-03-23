@@ -16,6 +16,7 @@ export default defineConfig(({ RSPACK_SERVE }) => {
       },
     },
     devServer: {
+      port: 3000,
       static: [
         {
           directory: outDist,

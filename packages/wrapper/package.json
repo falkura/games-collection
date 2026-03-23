@@ -1,12 +1,7 @@
 {
   "name": "@falkura-pet/wrapper",
   "version": "0.0.0",
-  "private": true,
   "type": "module",
-  "scripts": {
-    "build": "concurrently 'rspack build' 'bunx assetpack -- production'",
-    "dev": "concurrently 'rspack dev --config rspack.dev.config.ts' 'bunx assetpack -w -- development'"
-  },
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",
     "@falkura-pet/ui": "workspace:*"

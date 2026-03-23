@@ -12,7 +12,6 @@
     "concurrently": "^9.2.1",
     "enquirer": "^2.4.1",
     "execa": "^9.6.1",
-    "find-up": "^8.0.0",
     "serve": "^14.2.5",
     "typescript": "^5.9.3"
   },

@@ -1,0 +1,21 @@
+project:
+  name: wrapper
+
+language: "typescript"
+
+dependsOn:
+  - engine
+  - ui
+
+tasks:
+  dev:
+    command: "bunx concurrently 'rspack serve' 'assetpack -w'"
+    inputs:
+      - "src/**/*"
+
+  build:
+    command: "bunx concurrently 'rspack build' 'assetpack'"
+    inputs:
+      - "src/**/*"
+    outputs:
+      - "dist"

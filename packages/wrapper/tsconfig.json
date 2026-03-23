@@ -1,8 +1,15 @@
 {
-  "extends": "@falkura-pet/shared/tsconfig/wrapper.json",
+  "extends": "@falkura-pet/shared/tsconfig/wrapper.tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "./dist",
+    "baseUrl": "./"
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../../packages/engine"
+    },
+    {
+      "path": "../../packages/ui"
+    }
+  ]
 }
