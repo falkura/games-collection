@@ -1,5 +1,4 @@
 /// <reference types="@rslib/core/types" />
-/// <reference types="gsap" />
 
 export {};
 

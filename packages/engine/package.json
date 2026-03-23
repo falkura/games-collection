@@ -1,31 +1,30 @@
 {
   "name": "@falkura-pet/engine",
   "version": "0.0.0",
-  "scripts": {
-    "barrel": "bun run barrelsby -c barrelsby.json",
-    "types": "tsc -p tsconfig.types.json",
-    "dev:types": "tsc -p tsconfig.types.json -w",
-    "build": "bun run barrel && concurrently 'bun run types' 'rslib build'",
-    "dev": "concurrently 'bun run dev:types' 'rslib build -w --env-mode dev'"
-  },
   "dependencies": {
-    "@material-design-icons/svg": "^0.14.15",
-    "@pixi/layout": "^3.2.0",
-    "@pixi/ui": "^2.3.2",
     "gsap": "^3.13.0",
-    "pixi.js": "^8.13.2",
-    "typed-signals": "^3.0.0"
+    "pixi.js": "^8.13.2"
   },
   "devDependencies": {
-    "@falkura-pet/shared": "*",
-    "@types/greensock": "^1.15.32",
-    "barrelsby": "^2.8.1"
+    "@falkura-pet/shared": "workspace: *",
+    "@types/greensock": "^1.15.32"
   },
-  "private": true,
   "exports": {
-    "./*": {
-      "import": "./dist/esm/*.js",
-      "types": "./dist/types/*.d.ts"
+    "./types/UI": {
+      "import": "./dist/types/UI.js",
+      "types": "./dist/types/UI.d.ts"
+    },
+    "./types/Game": {
+      "import": "./dist/types/Game.js",
+      "types": "./dist/types/Game.d.ts"
+    },
+    "./types/globals": {
+      "import": "./dist/types/globals.js",
+      "types": "./dist/types/globals.d.ts"
+    },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "type": "module"

@@ -1,0 +1,21 @@
+{
+  "name": "@falkura-pet/game-base",
+  "version": "0.0.0",
+  "dependencies": {
+    "@falkura-pet/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@falkura-pet/shared": "workspace:*"
+  },
+  "peerDependencies": {
+    "gsap": "^3.13.0",
+    "pixi.js": "^8.13.2"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "type": "module"
+}

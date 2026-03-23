@@ -1,16 +1,16 @@
 {
-  "name": "@falkura-pet/games-template",
+  "name": "@falkura-pet/template",
   "version": "0.0.0",
-  "scripts": {
-    "build": "concurrently 'rspack build' 'assetpack'",
-    "dev": "concurrently 'rspack dev' 'assetpack -w'"
-  },
   "dependencies": {
-    "@falkura-pet/engine": "workspace:*"
+    "@falkura-pet/engine": "workspace:*",
+    "@falkura-pet/game-base": "workspace:*",
+    "@falkura-pet/shared": "workspace:*",
+    "@falkura-pet/ui": "workspace:*"
   },
-  "devDependencies": {
-    "@falkura-pet/shared": "workspace:*"
+  "peerDependencies": {
+    "@pixi/layout": "^3.2.0",
+    "gsap": "^3.13.0",
+    "pixi.js": "^8.17.1"
   },
-  "private": true,
   "type": "module"
 }

@@ -1,0 +1,8 @@
+projects:
+  globs:
+    - "packages/*"
+    - "games/*"
+
+vcs:
+  defaultBranch: "master"
+  provider: "github"

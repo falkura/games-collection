@@ -1,22 +1,16 @@
-import "@pixi/layout"; // required to ensure all systems and mixins are registered
 import { Application, Assets, ProgressCallback, Ticker } from "pixi.js";
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import PixiPlugin from "gsap/PixiPlugin.js";
-import "./types";
+import "./types/globals";
 
-import { EventSystem } from "./events/EventSystem";
-import { GameEvent, IGameFinishData } from "./events/IGameEvents";
-import { ISettings, UIEvent } from "./events/IUIEvents";
-import { UITypes } from "./ui/UITypes";
-import { GameTypes } from "./game/GameTypes";
+import { EventSystem } from "./EventSystem";
+import { UIConstructor, UIInstance, UISettings } from "./types/UI";
+import { GameConstructor, GameFinishData, GameInstance } from "./types/Game";
 
-/**
- * [Icons](https://marella.github.io/material-design-icons/demo/font/)
- */
 class EngineClass {
-  ui: UITypes.UIClass;
-  game: GameTypes.GameClass;
+  ui: UIInstance;
+  game: GameInstance;
   app: Application;
   events: EventSystem;
 
@@ -34,19 +28,19 @@ class EngineClass {
   private initEvents() {
     this.events = new EventSystem();
 
-    this.events.ui.on(UIEvent.StartGame, this.startGame, this);
-    this.events.ui.on(UIEvent.RestartGame, this.restartGame, this);
-    this.events.ui.on(UIEvent.PauseGame, this.pauseGame, this);
-    this.events.ui.on(UIEvent.ResumeGame, this.resumeGame, this);
-    this.events.ui.on(UIEvent.UseHint, this.hintGame, this);
+    this.events.ui.on("ui:start-game", this.startGame, this);
+    this.events.ui.on("ui:restart-game", this.restartGame, this);
+    this.events.ui.on("ui:pause-game", this.pauseGame, this);
+    this.events.ui.on("ui:resume-game", this.resumeGame, this);
+    this.events.ui.on("ui:hint-game", this.hintGame, this);
 
-    this.events.ui.on(UIEvent.SetLevel, this.changeLevel, this);
-    this.events.ui.on(UIEvent.SetDifficulty, this.changeDifficulty, this);
-    this.events.ui.on(UIEvent.SetSettings, this.changeSettings, this);
+    this.events.ui.on("ui:set-level", this.changeLevel, this);
+    this.events.ui.on("ui:set-difficulty", this.changeDifficulty, this);
+    this.events.ui.on("ui:set-settings", this.changeSettings, this);
 
-    this.events.ui.on(UIEvent.OpenMenu, this.backToMenu, this);
+    this.events.ui.on("ui:open-menu", this.backToMenu, this);
 
-    this.events.game.on(GameEvent.GameFinished, this.onGameFinished, this);
+    this.events.game.on("game:finished", this.onGameFinished, this);
   }
 
   private startGame() {}
@@ -57,11 +51,11 @@ class EngineClass {
 
   private changeLevel(level: number) {}
   private changeDifficulty(level: number) {}
-  private changeSettings(settings: Partial<ISettings>) {}
+  private changeSettings(settings: Partial<UISettings>) {}
 
   private backToMenu() {}
 
-  private onGameFinished(data: Partial<IGameFinishData>) {}
+  private onGameFinished(data: Partial<GameFinishData>) {}
 
   private initGSAP() {
     gsap.registerPlugin(PixiPlugin);
@@ -124,7 +118,7 @@ class EngineClass {
     await Assets.loadBundle(bundleName, options.onProgress);
   }
 
-  public initUI(Ctor: UITypes.UIConstructor) {
+  public initUI(Ctor: UIConstructor) {
     this.ui = new Ctor(this.events.ui, this.app.stage);
 
     this.app.renderer.on("resize", this.onResize, this);
@@ -141,8 +135,11 @@ class EngineClass {
     this.ui.onResize(width, height, resolution);
   }
 
-  public initGame(Ctor: GameTypes.GameConstructor, config: IGameConfig) {
-    this.game = new Ctor(this.events.game, config);
+  public initGame(Ctor: GameConstructor, config: IGameConfig) {
+    if (!this.ui) {
+      throw new Error("You must init ui before Game!");
+    }
+    this.game = new Ctor(this.events.game, config, this.ui);
     this.ui.initGame(config);
   }
 
@@ -151,6 +148,4 @@ class EngineClass {
   }
 }
 
-const Engine = new EngineClass();
-
-export default Engine;
+export const Engine = new EngineClass();

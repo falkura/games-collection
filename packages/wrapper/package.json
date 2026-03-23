@@ -8,7 +8,8 @@
     "dev": "concurrently 'rspack dev --config rspack.dev.config.ts' 'bunx assetpack -w -- development'"
   },
   "dependencies": {
-    "@falkura-pet/engine": "workspace:*"
+    "@falkura-pet/engine": "workspace:*",
+    "@falkura-pet/ui": "workspace:*"
   },
   "devDependencies": {
     "@falkura-pet/shared": "workspace:*"

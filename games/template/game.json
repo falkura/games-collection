@@ -1,5 +1,5 @@
 {
-  "$schema": "../../packages/schemas/game.schema.json",
+  "$schema": "../../packages/shared/schemas/game.schema.json",
   "title": "Template",
   "description": "template project",
   "version": "0.0.0",

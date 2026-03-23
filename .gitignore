@@ -11,3 +11,7 @@ dist-assets
 .assetpack
 .generated
 server/dist
+tsconfig.tsbuildinfo
+# moon
+.moon/cache
+.moon/docker

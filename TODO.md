@@ -1,12 +1,19 @@
 # TODO
 
+TEMPLATES
 - remove template from games folder and make...
 - ...make `bunx (npx) create-falkura-pet-template` project to create games template
 - empty games folder and add .gitkeep to it
+
+QOL
 - simple CLI for project
+
+COMPOSITION
 - ui as separate package (ui abstraction should stay in the engine)
 - game as separate package (game abstraction should stay in the engine)
-- graphics and texts resolution
+
+OTHER
+- readme for all projects))
 - graphics settings
 - .assetpack cache
 - schemas for game and project config
@@ -21,6 +28,5 @@
 - complete engines and games lifecycle
 - game access to menu screen background
 - go back functionality
-
-
+- pixi types add as /// <reference types="pixi.js" /> in packages\engine\src\types\globals.ts ? will it work for game without installation pixi.js in modules? as well as gsap?
 - ... make first game ...

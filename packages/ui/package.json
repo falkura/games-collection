@@ -1,0 +1,24 @@
+{
+  "name": "@falkura-pet/ui",
+  "version": "0.0.0",
+  "dependencies": {
+    "@falkura-pet/engine": "workspace:*",
+    "@material-design-icons/svg": "^0.14.15",
+    "@pixi/layout": "^3.2.0",
+    "@pixi/ui": "^2.3.2"
+  },
+  "devDependencies": {
+    "@falkura-pet/shared": "workspace:*"
+  },
+  "peerDependencies": {
+    "gsap": "^3.13.0",
+    "pixi.js": "^8.13.2"
+  },
+  "exports": {
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "type": "module"
+}

@@ -1,3 +1,3 @@
-import { create } from "@falkura-pet/shared/rspack/game";
+import config from "@falkura-pet/shared/rspack/game.config.ts";
 
-export default create(__dirname);
+export default config;

@@ -1,0 +1,247 @@
+import "@pixi/layout"; // required to ensure all systems and mixins are registered
+import { Container, EventEmitter, Ticker } from "pixi.js";
+import { ScenesController } from "./components/controllers/ScenesController";
+import { WindowsController } from "./components/controllers/WindowsController";
+import { Background } from "./components/basic/Background";
+import { GameScene } from "./components/scenes/GameScene";
+import { LoadScene } from "./components/scenes/LoadScene";
+import { MenuScene } from "./components/scenes/MenuScene";
+import { ResultScene } from "./components/scenes/ResultScene";
+import { IntroScene } from "./components/scenes/wrapper/IntroScene";
+import { InfoWindow } from "./components/windows/InfoWindow";
+import { PauseWindow } from "./components/windows/PauseWindow";
+import { AppScreen } from "./components/basic/AppScreen";
+
+import type {
+  UIInstance,
+  UIEvents,
+  GameScenes,
+  WrapperScenes,
+  GameWindows,
+  BaseGameScenes,
+  BaseWrapperScenes,
+  BaseWindows,
+} from "@falkura-pet/engine/types/UI";
+
+/**
+ * [Icons](https://marella.github.io/material-design-icons/demo/font/)
+ */
+
+/**
+ *
+ */
+export class UI implements UIInstance {
+  scenes: ScenesController;
+  windows: WindowsController;
+  background: Background;
+
+  ticker: Ticker;
+
+  gameConfig: IGameConfig;
+
+  constructor(
+    public events: EventEmitter<UIEvents>,
+    public view: Container,
+  ) {
+    this.view.layout = {
+      width: "100%",
+      height: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+    };
+
+    this.ticker = new Ticker();
+    this.ticker.start();
+
+    this.background = new Background({
+      // todo
+      texture: undefined,
+    });
+
+    this.scenes = new ScenesController(this);
+    this.windows = new WindowsController(this);
+
+    // TODO make it as render layers https://pixijs.com/8.x/guides/concepts/render-layers
+    this.view.addChild(this.background, this.scenes.view, this.windows.view);
+
+    if (__DEV__) {
+      globalThis.ui = this;
+    }
+  }
+
+  public onInfo() {
+    if (this.gameConfig) {
+      this.events.emit("ui:pause-game");
+
+      this.showGameInfo(this.gameConfig);
+    } else {
+      console.error("No game config");
+    }
+  }
+
+  public createView(): Container {
+    return new Container({
+      layout: {
+        width: "100%",
+        height: "100%",
+      },
+    });
+  }
+
+  public onPlay() {
+    // todo let engine decide to start the game
+    this.setScene("Game", false);
+  }
+
+  public onCloseInfo() {
+    this.hideWindow().then(() => this.events.emit("ui:resume-game"));
+  }
+
+  public showGameInfo(gameConfig: IGameConfig) {
+    const window = this.getWindow<InfoWindow>("Info");
+
+    window.setData({
+      title: gameConfig.title,
+      description: gameConfig.description,
+    });
+
+    this.showWindow("Info");
+  }
+
+  public initGame(config: IGameConfig) {
+    this.gameConfig = config;
+
+    const scenes = this.createGameScenes();
+
+    for (const key in scenes) {
+      const _scene = scenes[key];
+      _scene.MODULE_ID = key;
+      this.scenes.add(_scene);
+    }
+
+    const windows = this.createWindows();
+
+    for (const key in windows) {
+      const _window = windows[key];
+      _window.MODULE_ID = key;
+      this.windows.add(_window);
+    }
+
+    // todo check if engine should do that
+    this.setScene("Menu", true);
+  }
+
+  public initWrapper(config: IGamesConfig) {
+    const scenes = this.createWrapperScenes();
+
+    for (const key in scenes) {
+      const _scene = scenes[key];
+      _scene.MODULE_ID = key;
+      this.scenes.add(_scene);
+    }
+
+    const windows = this.createWindows();
+
+    for (const key in windows) {
+      const _window = windows[key];
+      _window.MODULE_ID = key;
+      this.windows.add(_window);
+    }
+
+    // todo check if engine should do that
+    this.showWrapper(config);
+  }
+
+  protected showWrapper(config: IGamesConfig) {
+    const intro = this.getScene<IntroScene>("Intro");
+
+    intro.addGames(config);
+
+    this.setScene("Intro", true);
+  }
+
+  // Override this method to override scenes
+  protected createGameScenes(): GameScenes<AppScreen> {
+    return {
+      Game: GameScene,
+      Load: LoadScene,
+      Menu: MenuScene,
+      Result: ResultScene,
+    };
+  }
+
+  // Override this method to override scenes
+  protected createWrapperScenes(): WrapperScenes<AppScreen> {
+    return {
+      Intro: IntroScene,
+    };
+  }
+
+  // Override this method to override scenes
+  protected createWindows(): GameWindows<AppScreen> {
+    return {
+      Info: InfoWindow,
+      Pause: PauseWindow,
+    };
+  }
+
+  public setScene(
+    scene: BaseGameScenes | BaseWrapperScenes,
+    force?: boolean,
+  ): Promise<AppScreen>;
+  // Yeap, you need to do a bunch of shenanigans to make things work in typescript
+  public setScene(scene: string, force?: boolean): Promise<AppScreen>;
+  public setScene(scene: string, force?: boolean): Promise<AppScreen> {
+    this.hideWindow(true);
+
+    return this.scenes.show(scene, force);
+  }
+
+  public showWindow(window: BaseWindows, force?: boolean): Promise<AppScreen>;
+  public showWindow(window: string, force?: boolean): Promise<AppScreen>;
+  public showWindow(window: string, force?: boolean): Promise<AppScreen> {
+    this.scenes.onWindowShow();
+
+    return this.windows.show(window, force);
+  }
+
+  public hideWindow(force?: boolean): Promise<void> {
+    const result = this.windows.hide(force);
+
+    if (!result) return;
+
+    const { promise, last } = result;
+
+    this.scenes.onWindowHide(last);
+
+    return promise;
+  }
+
+  public getScene<T extends AppScreen = AppScreen>(
+    scene: BaseGameScenes | BaseWrapperScenes,
+  ): T;
+  public getScene<T extends AppScreen = AppScreen>(scene: string): T;
+  public getScene<T extends AppScreen = AppScreen>(scene: string): T {
+    return this.scenes.get(scene);
+  }
+
+  public getWindow<T extends AppScreen = AppScreen>(window: BaseWindows): T;
+  public getWindow<T extends AppScreen = AppScreen>(window: string): T;
+  public getWindow<T extends AppScreen = AppScreen>(window: string): T {
+    return this.windows.get(window);
+  }
+
+  public onResize(width: number, height: number, resolution: number) {
+    const scale = 1 / resolution;
+
+    this.view.scale.set(scale);
+
+    const dx = width * (1 - scale);
+    const dy = height * (1 - scale);
+
+    this.view.x = -dx / 2;
+    this.view.y = -dy / 2;
+
+    this.view.layout = { width, height };
+  }
+}
