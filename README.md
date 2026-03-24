@@ -6,7 +6,7 @@
 2. run `bun i`
 
 ### Create new game
-1. to create new game with name <game-name> run `moon generate game` and pass <game-name>
+1. to create new game with name `<game-name>` run `moon generate game` and pass `<game-name>`
 2. run `bun i` (in root, you don't need to navigate inside game project)
 
 ### Run game
