@@ -1,0 +1,36 @@
+inheritedBy:
+  layers: ["tool"]
+
+tasks:
+  build-assets:
+    command: bunx assetpack -c @files(wrapper-assetpack)
+  build-sources:
+    command: bunx rspack build
+  build:
+    # TODO should i collect output?
+    deps:
+      - ^:build
+      - ~:build-assets
+      - ~:build-sources
+    inputs:
+      - "@group(wrapper-sources)"
+
+  dev-assets:
+    command: bunx assetpack -w -c @files(wrapper-assetpack)
+    options:
+      persistent: true
+      outputStyle: stream
+  dev-sources:
+    command: bunx rspack serve
+    options:
+      persistent: true
+      outputStyle: stream
+  dev:
+    deps:
+      - ^:dev
+      - ~:dev-assets
+      - ~:dev-sources
+    options:
+      persistent: true
+    inputs:
+      - "@group(wrapper-sources)"

@@ -1,3 +1,29 @@
+# Games Collection
+
+### Init
+1. install bun
+1. install moon? https://moonrepo.dev/docs/install
+2. run `bun i`
+
+### Create new game
+1. to create new game with name <game-name> run `moon generate game` and pass <game-name>
+2. run `bun i` (in root, you don't need to navigate inside game project)
+
+### Run game
+To build run `moon run <game-name>:build`
+To develop run `moon run <game-name>:dev`
+
+### Run wrapper
+To develop run `moon run games-wrapper:dev`
+
+### Build project
+1. Build all games by running `moon run #game:build`
+2. Build wrapper with this games `moon run games-wrapper:build --force`
+
+---
+## *OUTDATED*
+---
+
 <a id="readme-top"></a>
 <div align="center">
   <h3 align="center">Games Collection</h3>

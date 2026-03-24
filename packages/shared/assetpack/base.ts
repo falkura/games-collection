@@ -13,11 +13,15 @@ export const create = ({
   output,
   entry,
   manifestOutput,
+  overrides,
 }: {
   output: string;
   entry: string;
   manifestOutput: string;
+  overrides?: Partial<AssetPackConfig>;
 }) => {
+  overrides ??= {};
+
   const resolutions: Record<string, number> = { default: 1 };
   const doCacheBust: boolean = true;
   const compression: CompressOptions = {
@@ -62,5 +66,7 @@ export const create = ({
 
       pixiManifest(manifestOptions),
     ] as AssetPipe[],
+
+    ...overrides,
   } satisfies AssetPackConfig;
 };

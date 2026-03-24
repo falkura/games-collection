@@ -6,5 +6,19 @@
     "module": "esnext",
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "references": [
+    {
+      "path": "packages/engine"
+    },
+    {
+      "path": "packages/game-base"
+    },
+    {
+      "path": "packages/ui"
+    },
+    {
+      "path": "packages/wrapper"
+    }
+  ]
 }

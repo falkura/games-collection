@@ -1,14 +1,8 @@
 # TODO
 
-- remove template from games folder and make...
-- ...make `bunx (npx) create-falkura-pet-template` project to create games template
-- empty games folder and add .gitkeep to it
 - simple CLI for project
-<!-- - ui as separate package (ui abstraction should stay in the engine) -->
-<!-- - game as separate package (game abstraction should stay in the engine) -->
 - readme for all projects))
 - graphics settings
-<!-- - .assetpack cache -->
 - schemas for game and project config
 - assembly of all game icons into one atlas for wrapper
 - game custom options menu constructor (consider tweakpane for simulations)

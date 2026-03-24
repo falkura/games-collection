@@ -1,0 +1,25 @@
+inheritedBy:
+  layers: ["library"]
+
+tasks:
+  build:
+    command: "bunx rslib"
+    deps:
+      - ^:build
+    inputs:
+      - "@group(library-sources)"
+    outputs:
+      - "dist"
+    env:
+      # TODO custom process.env variables
+      TRIGGER: "build"
+  dev:
+    command: "bunx rslib -w --env-mode dev"
+    options:
+      persistent: true
+      # Hide from user, it will run automatically
+      internal: true
+    deps:
+      - ^:dev
+    inputs:
+      - "@group(library-sources)"

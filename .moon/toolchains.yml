@@ -1,0 +1,5 @@
+typescript:
+  packageManager: bun
+
+bun:
+  version: 1.3.5

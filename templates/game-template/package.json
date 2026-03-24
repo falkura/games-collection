@@ -1,5 +1,5 @@
 {
-  "name": "@falkura-pet/template",
+  "name": "@falkura-pet/{{ name | kebab_case }}",
   "version": "0.0.0",
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",

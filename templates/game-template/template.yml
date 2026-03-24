@@ -1,0 +1,13 @@
+$schema: ../../.moon/cache/schemas/template.json
+description: |
+  Package with engine, base game and ui implementation, assets management
+  and building / development pipelines.
+destination: "games/[name | kebab_case]"
+title: Game Template
+id: game
+variables:
+  name:
+    type: "string"
+    default: ""
+    required: true
+    prompt: "Enter a human-readable game name:"

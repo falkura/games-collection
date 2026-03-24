@@ -1,5 +1,5 @@
 import "@falkura-pet/shared/normalize/normalize.css";
-import config from "../game.json";
+import config from "../assets/game.json";
 import { Engine } from "@falkura-pet/engine";
 import { GameBase, System } from "@falkura-pet/game-base";
 import { UI } from "@falkura-pet/ui/UI";

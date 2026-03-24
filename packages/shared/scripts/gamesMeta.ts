@@ -2,9 +2,7 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Walks through games folder, checking each file.
- * If file is a folder that contains game.json
- * add game to result list in format
+ * Combines all game.json files from games
  * ```js
  * {
  *      [directoryName]: (game.json),
@@ -19,7 +17,7 @@ export async function generateGamesMeta(gamesDir: string, outFile: string) {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
 
-    const configPath = path.join(gamesDir, entry.name, "game.json");
+    const configPath = path.join(gamesDir, entry.name, "assets", "game.json");
     if (!fs.existsSync(configPath)) continue;
 
     const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));

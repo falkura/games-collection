@@ -3,13 +3,15 @@
   "compilerOptions": {
     "baseUrl": "./"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
   "references": [
     {
-      "path": "../../packages/engine"
+      "path": "../engine"
     },
     {
-      "path": "../../packages/ui"
+      "path": "../ui"
     }
   ]
 }

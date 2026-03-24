@@ -2,7 +2,7 @@ import { defineConfig } from "@rspack/cli";
 import path from "path";
 import { rspack, RspackOptions } from "@rspack/core";
 
-const config: IGameConfig = await import(path.resolve("game.json"));
+const config: IGameConfig = await import(path.resolve("assets", "game.json"));
 const outDist = path.resolve("dist");
 
 export default defineConfig(({ RSPACK_SERVE }) => {

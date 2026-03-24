@@ -46,8 +46,6 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
       }),
       new rspack.HtmlRspackPlugin({
         template: path.join(__dirname, "../html/wrapper.index.html"),
-        // base: RSPACK_SERVE ? undefined : `${config.route}/`,
-        // title: config.title,
       }),
       new rspack.CopyRspackPlugin({
         patterns: copyPatterns,

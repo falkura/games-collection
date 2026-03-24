@@ -1,19 +1,4 @@
-project:
-  name: game-base
-
+id: lib-game-base
+layer: library
 dependsOn:
-  - engine
-
-language: "typescript"
-
-tasks:
-  build:
-    command: "bunx rslib"
-    inputs:
-      - "src/**/*"
-    outputs:
-      - "dist"
-  dev:
-    command: "bunx rslib -w --env-mode dev"
-    inputs:
-      - "src/**/*"
+  - lib-engine

@@ -1,7 +1,7 @@
 projects:
   globs:
-    - "packages/*"
-    - "games/*"
+    - "packages/*/moon.yml"
+    - "games/*/moon.yml"
 
 vcs:
   defaultBranch: "master"

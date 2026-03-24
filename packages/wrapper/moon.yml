@@ -1,19 +1,5 @@
-project:
-  name: wrapper
-
-language: "typescript"
-
+id: "games-wrapper"
+layer: tool
 dependsOn:
-  - engine
-  - ui
-
-tasks:
-  dev:
-    command: "bunx concurrently 'rspack serve' 'assetpack -w'"
-    inputs:
-      - "src/**/*"
-
-  build:
-    command: "bunx concurrently 'rspack build' 'assetpack'"
-    inputs:
-      - "src/**/*"
+  - lib-engine
+  - lib-ui

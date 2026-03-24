@@ -1,9 +1,0 @@
-{
-  "$schema": "../../packages/shared/schemas/game.schema.json",
-  "title": "Template",
-  "description": "template project",
-  "version": "0.0.0",
-  "route": "game1",
-  "icon": "/template.png",
-  "enabled": true
-}

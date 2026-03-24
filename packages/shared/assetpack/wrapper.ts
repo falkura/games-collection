@@ -6,4 +6,7 @@ export default createBase({
   output: path.resolve(PATHS.buildPath, "assets"),
   entry: "assets",
   manifestOutput: "manifest.json",
+  overrides: {
+    cache: false,
+  },
 });

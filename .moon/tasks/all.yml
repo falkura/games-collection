@@ -1,0 +1,25 @@
+fileGroups:
+  wrapper-assetpack:
+    - /packages/shared/assetpack/wrapper.ts
+
+  game-assetpack:
+    - /packages/shared/assetpack/game.ts
+
+  library-sources:
+    - "src/**/*"
+    - "rslib.config.ts"
+    - "/packages/shared/rspack/engine.config.ts"
+
+  game-sources:
+    - "src/**/*"
+    - "assets/game.json"
+    - "rspack.config.ts"
+    - "/packages/shared/rspack/base.config.ts"
+    - "/packages/shared/rspack/game.config.ts"
+
+  wrapper-sources:
+    - "src/**/*"
+    - .assetpack.js
+    - "rspack.config.ts"
+    - "/packages/shared/rspack/base.config.ts"
+    - "/packages/shared/rspack/wrapper.config.ts"

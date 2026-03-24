@@ -19,8 +19,23 @@
         "typescript": "^5.9.3",
       },
     },
-    "games/template": {
-      "name": "@falkura-pet/template",
+    "games/my-game-1": {
+      "name": "@falkura-pet/my-game-1",
+      "version": "0.0.0",
+      "dependencies": {
+        "@falkura-pet/engine": "workspace:*",
+        "@falkura-pet/game-base": "workspace:*",
+        "@falkura-pet/shared": "workspace:*",
+        "@falkura-pet/ui": "workspace:*",
+      },
+      "peerDependencies": {
+        "@pixi/layout": "^3.2.0",
+        "gsap": "^3.13.0",
+        "pixi.js": "^8.17.1",
+      },
+    },
+    "games/my-game-2": {
+      "name": "@falkura-pet/my-game-2",
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
@@ -131,9 +146,11 @@
 
     "@falkura-pet/game-base": ["@falkura-pet/game-base@workspace:packages/game-base"],
 
-    "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
+    "@falkura-pet/my-game-1": ["@falkura-pet/my-game-1@workspace:games/my-game-1"],
 
-    "@falkura-pet/template": ["@falkura-pet/template@workspace:games/template"],
+    "@falkura-pet/my-game-2": ["@falkura-pet/my-game-2@workspace:games/my-game-2"],
+
+    "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
 
     "@falkura-pet/ui": ["@falkura-pet/ui@workspace:packages/ui"],
 

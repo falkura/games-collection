@@ -208,7 +208,7 @@ export class UI implements UIInstance {
   public hideWindow(force?: boolean): Promise<void> {
     const result = this.windows.hide(force);
 
-    if (!result) return;
+    if (!result) return Promise.resolve();
 
     const { promise, last } = result;
 

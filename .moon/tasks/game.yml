@@ -1,0 +1,48 @@
+inheritedBy:
+  # All projects with layer application will get this tasks
+  layers: ["application"]
+
+tasks:
+  # Build
+  build-assets:
+    command: bunx assetpack -c @files(game-assetpack)
+  build-sources:
+    command: bunx rspack build
+  build:
+    deps:
+      - ^:build
+      - ~:build-assets
+      - ~:build-sources
+    inputs:
+      - "@group(game-sources)"
+    # Output path to collect files in cache
+    outputs:
+      - "dist"
+
+  # Dev
+  dev-assets:
+    # @files(game-assetpack) is a path to assetpack config from all.yml
+    command: bunx assetpack -w -c @files(game-assetpack)
+    options:
+      # Run in parallel
+      persistent: true
+      # Logs won't work without it
+      outputStyle: stream
+  dev-sources:
+    command: bunx rspack serve
+    options:
+      persistent: true
+      outputStyle: stream
+  dev:
+    deps:
+      # depends on dev from all packages in `dependsOn` array
+      - ^:dev
+      # depends on dev-assets here
+      - ~:dev-assets
+      # and dev-sources also here
+      - ~:dev-sources
+    options:
+      persistent: true
+    inputs:
+      # React on changes in @group(game-sources) files
+      - "@group(game-sources)"

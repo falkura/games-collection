@@ -19,7 +19,7 @@ export default defineConfig(({ envMode }) => {
       },
     ],
     output: {
-      cleanDistPath: true,
+      cleanDistPath: false,
       target: "web",
       minify: false,
     },

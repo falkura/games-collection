@@ -59,6 +59,14 @@ export class InfoWindow extends AppWindow {
     this.addChild(this.continueButton.view);
   }
 
+  public onWindowShow(): void {
+    this.continueButton.view.interactive = true;
+  }
+
+  public onWindowHide(): void {
+    this.continueButton.view.interactive = false;
+  }
+
   public override onInit(): void {
     this.continueButton.onPress.connect(() => this.ui.onCloseInfo());
   }
