@@ -1,111 +1,82 @@
-import "@pixi/layout"; // required to ensure all systems and mixins are registered
-import { Container, EventEmitter, Ticker } from "pixi.js";
-import { ScenesController } from "./components/controllers/ScenesController";
-import { WindowsController } from "./components/controllers/WindowsController";
-import { Background } from "./components/basic/Background";
+import { Container, EventEmitter, Size, Ticker } from "pixi.js";
+import { ScenesController } from "./components/ScenesController";
 import { GameScene } from "./components/scenes/GameScene";
 import { LoadScene } from "./components/scenes/LoadScene";
-import { MenuScene } from "./components/scenes/MenuScene";
-import { ResultScene } from "./components/scenes/ResultScene";
-import { IntroScene } from "./components/scenes/wrapper/IntroScene";
-import { InfoWindow } from "./components/windows/InfoWindow";
-import { PauseWindow } from "./components/windows/PauseWindow";
-import { AppScreen } from "./components/basic/AppScreen";
+import { AppScreen } from "./components/AppScreen";
 
 import type {
   UIInstance,
   UIEvents,
   GameScenes,
   WrapperScenes,
-  GameWindows,
   BaseGameScenes,
   BaseWrapperScenes,
-  BaseWindows,
 } from "@falkura-pet/engine/types/UI";
 
-/**
- * [Icons](https://marella.github.io/material-design-icons/demo/font/)
- */
+import { LayoutManager } from "./layout/LayoutManager";
+import { LayoutContainer } from "./layout/LayoutContainer";
+import "./layout/LayoutHandlersDefault";
+import "./layout/LayoutHandlersCustom";
+import { WrapperScene } from "./components/scenes/WrapperScene";
 
-/**
- *
- */
 export class UI implements UIInstance {
+  layout: LayoutManager;
   scenes: ScenesController;
-  windows: WindowsController;
-  background: Background;
 
   ticker: Ticker;
 
   gameConfig: IGameConfig;
+  wrapperConfig: IGamesConfig;
+  /**
+   * UI.view is main game container to work with. It created in view
+   * constructor but added to the stage in GameScene.onInit method
+   */
+  view: LayoutContainer;
 
   constructor(
     public events: EventEmitter<UIEvents>,
-    public view: Container,
+    public stage: Container,
+    sizeLandscape?: Size,
+    sizePortrait?: Size,
   ) {
-    this.view.layout = {
-      width: "100%",
-      height: "100%",
-      alignItems: "center",
-      justifyContent: "center",
+    const landscape = sizeLandscape || { width: 1920, height: 1080 };
+    const portrait = {
+      width: sizePortrait?.width || (sizeLandscape || landscape).height,
+      height: sizePortrait?.height || (sizeLandscape || landscape).width,
     };
+
+    this.layout = new LayoutManager(stage, {
+      width: landscape.width,
+      height: landscape.height,
+      portrait: {
+        width: portrait.width,
+        height: portrait.height,
+      },
+    });
+
+    this.view = new LayoutContainer({
+      width: "sw",
+      height: "sh",
+    });
 
     this.ticker = new Ticker();
     this.ticker.start();
 
-    this.background = new Background({
-      // todo
-      texture: undefined,
-    });
-
     this.scenes = new ScenesController(this);
-    this.windows = new WindowsController(this);
 
     // TODO make it as render layers https://pixijs.com/8.x/guides/concepts/render-layers
-    this.view.addChild(this.background, this.scenes.view, this.windows.view);
+    this.stage.addChild(this.scenes.view);
 
     if (__DEV__) {
       globalThis.ui = this;
     }
   }
 
-  public onInfo() {
-    if (this.gameConfig) {
-      this.events.emit("ui:pause-game");
-
-      this.showGameInfo(this.gameConfig);
-    } else {
-      console.error("No game config");
-    }
-  }
-
-  public createView(): Container {
-    return new Container({
-      layout: {
-        width: "100%",
-        height: "100%",
-      },
+  public createGameView(): LayoutContainer {
+    return new LayoutContainer({
+      width: "sw",
+      height: "sh",
     });
-  }
-
-  public onPlay() {
-    // todo let engine decide to start the game
-    this.setScene("Game", false);
-  }
-
-  public onCloseInfo() {
-    this.hideWindow().then(() => this.events.emit("ui:resume-game"));
-  }
-
-  public showGameInfo(gameConfig: IGameConfig) {
-    const window = this.getWindow<InfoWindow>("Info");
-
-    window.setData({
-      title: gameConfig.title,
-      description: gameConfig.description,
-    });
-
-    this.showWindow("Info");
   }
 
   public initGame(config: IGameConfig) {
@@ -118,20 +89,11 @@ export class UI implements UIInstance {
       _scene.MODULE_ID = key;
       this.scenes.add(_scene);
     }
-
-    const windows = this.createWindows();
-
-    for (const key in windows) {
-      const _window = windows[key];
-      _window.MODULE_ID = key;
-      this.windows.add(_window);
-    }
-
-    // todo check if engine should do that
-    this.setScene("Menu", true);
   }
 
   public initWrapper(config: IGamesConfig) {
+    this.wrapperConfig = config;
+
     const scenes = this.createWrapperScenes();
 
     for (const key in scenes) {
@@ -139,25 +101,6 @@ export class UI implements UIInstance {
       _scene.MODULE_ID = key;
       this.scenes.add(_scene);
     }
-
-    const windows = this.createWindows();
-
-    for (const key in windows) {
-      const _window = windows[key];
-      _window.MODULE_ID = key;
-      this.windows.add(_window);
-    }
-
-    // todo check if engine should do that
-    this.showWrapper(config);
-  }
-
-  protected showWrapper(config: IGamesConfig) {
-    const intro = this.getScene<IntroScene>("Intro");
-
-    intro.addGames(config);
-
-    this.setScene("Intro", true);
   }
 
   // Override this method to override scenes
@@ -165,56 +108,23 @@ export class UI implements UIInstance {
     return {
       Game: GameScene,
       Load: LoadScene,
-      Menu: MenuScene,
-      Result: ResultScene,
     };
   }
 
   // Override this method to override scenes
   protected createWrapperScenes(): WrapperScenes<AppScreen> {
     return {
-      Intro: IntroScene,
-    };
-  }
-
-  // Override this method to override scenes
-  protected createWindows(): GameWindows<AppScreen> {
-    return {
-      Info: InfoWindow,
-      Pause: PauseWindow,
+      Wrapper: WrapperScene,
     };
   }
 
   public setScene(
     scene: BaseGameScenes | BaseWrapperScenes,
-    force?: boolean,
+    fast?: boolean,
   ): Promise<AppScreen>;
-  // Yeap, you need to do a bunch of shenanigans to make things work in typescript
-  public setScene(scene: string, force?: boolean): Promise<AppScreen>;
-  public setScene(scene: string, force?: boolean): Promise<AppScreen> {
-    this.hideWindow(true);
-
-    return this.scenes.show(scene, force);
-  }
-
-  public showWindow(window: BaseWindows, force?: boolean): Promise<AppScreen>;
-  public showWindow(window: string, force?: boolean): Promise<AppScreen>;
-  public showWindow(window: string, force?: boolean): Promise<AppScreen> {
-    this.scenes.onWindowShow();
-
-    return this.windows.show(window, force);
-  }
-
-  public hideWindow(force?: boolean): Promise<void> {
-    const result = this.windows.hide(force);
-
-    if (!result) return Promise.resolve();
-
-    const { promise, last } = result;
-
-    this.scenes.onWindowHide(last);
-
-    return promise;
+  public setScene(scene: string, fast?: boolean): Promise<AppScreen>;
+  public setScene(scene: string, fast?: boolean): Promise<AppScreen> {
+    return new Promise((resolve) => resolve(this.scenes.set(scene)));
   }
 
   public getScene<T extends AppScreen = AppScreen>(
@@ -225,23 +135,7 @@ export class UI implements UIInstance {
     return this.scenes.get(scene);
   }
 
-  public getWindow<T extends AppScreen = AppScreen>(window: BaseWindows): T;
-  public getWindow<T extends AppScreen = AppScreen>(window: string): T;
-  public getWindow<T extends AppScreen = AppScreen>(window: string): T {
-    return this.windows.get(window);
-  }
-
   public onResize(width: number, height: number, resolution: number) {
-    const scale = 1 / resolution;
-
-    this.view.scale.set(scale);
-
-    const dx = width * (1 - scale);
-    const dy = height * (1 - scale);
-
-    this.view.x = -dx / 2;
-    this.view.y = -dy / 2;
-
-    this.view.layout = { width, height };
+    this.layout.resize(width, height, resolution);
   }
 }

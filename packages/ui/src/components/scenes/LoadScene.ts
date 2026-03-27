@@ -1,41 +1,42 @@
-import { AppScreen } from "../basic/AppScreen";
+import { LayoutContainer } from "src/layout/LayoutContainer";
+import { AppScreen } from "../AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
 
 export class LoadScene extends AppScreen {
-  spinner: Graphics;
-  loadingLabel: Text;
+  background: LayoutContainer<Graphics>;
+  spinner: LayoutContainer<Graphics>;
+  loadingLabel: LayoutContainer<Text>;
 
-  constructor(...args: ConstructorParameters<typeof AppScreen>) {
-    super(...args);
-
-    this.layout = {
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
-      backgroundColor: "#66c1daff",
-    };
-
-    this.spinner = new Graphics({
-      layout: {
-        width: 100,
-        height: 100,
-      },
-    })
-      .arc(0, 0, 50, 2 * Math.PI, (3 * Math.PI) / 2)
-      .stroke({ width: 15, color: "#ffffff" });
-
-    this.loadingLabel = new Text({
-      style: {
-        fontSize: 26,
-        fill: "#ffffffff",
-      },
-      layout: {
-        margin: 15,
-      },
-      text: "Loading",
+  public override onInit(): void {
+    this.background = new LayoutContainer({
+      width: "sw",
+      height: "sh",
+      view: new Graphics().rect(0, 0, 1, 1).fill("#66c1da"),
     });
 
-    this.addChild(this.spinner, this.loadingLabel);
+    this.spinner = new LayoutContainer({
+      x: "sw/2",
+      y: "sh/2-100",
+      view: new Graphics()
+        .arc(0, 0, 100, 2 * Math.PI, (3 * Math.PI) / 2)
+        .stroke({ width: 20, color: "#ffffff" }),
+    });
+
+    this.loadingLabel = new LayoutContainer({
+      x: "sw/2",
+      y: "sh/2 + 150",
+      view: new Text({
+        style: {
+          fontSize: 86,
+          fontWeight: "600",
+          fill: "#ffffff",
+        },
+        anchor: 0.5,
+        text: "Loading",
+      }),
+    });
+
+    this.addChild(this.background, this.spinner, this.loadingLabel);
   }
 
   public override onTick(ticker: Ticker) {

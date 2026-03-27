@@ -1,182 +1,34 @@
-import { LayoutContainer } from "@pixi/layout/components";
-import { AppScreen } from "../basic/AppScreen";
-import { SVGButton } from "../SVGButton";
-import { Text } from "pixi.js";
-
-import pause from "@material-design-icons/svg/outlined/pause.svg";
-import lightbulb from "@material-design-icons/svg/outlined/lightbulb.svg";
-import info from "@material-design-icons/svg/outlined/info.svg";
+import { AppScreen } from "../AppScreen";
+import { Graphics, Text } from "pixi.js";
+import { LayoutContainer } from "../../layout/LayoutContainer";
 
 export class GameScene extends AppScreen {
-  pauseButton: SVGButton;
-  hintButton: SVGButton;
-  infoButton: SVGButton;
-
-  topBar: LayoutContainer;
+  background: LayoutContainer<Graphics>;
   gameContainer: LayoutContainer;
-
-  timeLabel: Text;
-  gameLabel: Text;
-  levelLabel: Text;
-  difficultyLabel: Text;
-
-  constructor(...args: ConstructorParameters<typeof AppScreen>) {
-    super(...args);
-
-    this.layout = {
-      justifyContent: "flex-start",
-      alignItems: "center",
-      flexDirection: "column",
-      backgroundColor: "#dacb66ff",
-    };
-
-    this.topBar = new LayoutContainer({
-      layout: {
-        width: "100%",
-        height: 30,
-        backgroundColor: "#00000088",
-      },
-    });
-
-    this.gameContainer = new LayoutContainer({
-      layout: {
-        width: "100%",
-        height: "100%",
-      },
-    });
-
-    this.gameLabel = new Text({
-      style: {
-        fontSize: 20,
-        fill: "#ffffffff",
-      },
-      layout: {
-        position: "absolute",
-        top: 3,
-        left: 5,
-      },
-    });
-
-    this.timeLabel = new Text({
-      style: {
-        fontSize: 20,
-        fill: "#ffffffff",
-      },
-      layout: {
-        position: "absolute",
-        top: 3,
-        right: 5,
-      },
-      text: "09:16",
-    });
-
-    const buttonsContainer = new LayoutContainer({
-      layout: {
-        position: "absolute",
-        flexDirection: "column",
-        right: 0,
-        gap: 10,
-        margin: 10,
-      },
-    });
-
-    const buttonsConfig = {
-      size: {
-        width: 60,
-        height: 60,
-      },
-      color: "#353535ff",
-    };
-
-    this.pauseButton = new SVGButton({
-      svg: pause,
-      color: buttonsConfig.color,
-      layout: {
-        paddingInline: 15,
-        paddingBlock: 14,
-        ...buttonsConfig.size,
-      },
-    });
-
-    this.hintButton = new SVGButton({
-      svg: lightbulb,
-      color: buttonsConfig.color,
-      layout: {
-        paddingInline: 15,
-        paddingBlock: 10,
-        ...buttonsConfig.size,
-      },
-    });
-
-    this.infoButton = new SVGButton({
-      svg: info,
-      color: buttonsConfig.color,
-      layout: {
-        paddingInline: 12,
-        paddingBlock: 12,
-        ...buttonsConfig.size,
-      },
-    });
-
-    buttonsContainer.addChild(
-      this.pauseButton.view,
-      this.hintButton.view,
-      this.infoButton.view,
-    );
-
-    this.gameContainer.addChild(buttonsContainer);
-
-    const levelInfo = new LayoutContainer({
-      layout: {
-        position: "absolute",
-        flexDirection: "column",
-        gap: 5,
-        marginTop: 5,
-        marginLeft: 7,
-      },
-    });
-
-    this.levelLabel = new Text({
-      style: {
-        fontSize: 20,
-        fill: "#ffffffff",
-      },
-      layout: true,
-      text: "Level: 13",
-    });
-
-    this.difficultyLabel = new Text({
-      style: {
-        fontSize: 20,
-        fill: "#ffffffff",
-      },
-      layout: true,
-      text: "Difficulty: Medium",
-    });
-
-    levelInfo.addChild(this.levelLabel, this.difficultyLabel);
-
-    this.gameContainer.addChild(levelInfo);
-
-    this.addChild(
-      this.topBar,
-      this.gameContainer,
-      this.gameLabel,
-      this.timeLabel,
-    );
-  }
+  gameLabel: LayoutContainer<Text>;
 
   public override onInit(): void {
-    this.gameLabel.text = this.ui.gameConfig.title;
+    this.background = new LayoutContainer({
+      width: "sw",
+      height: "sh",
+      view: new Graphics().rect(0, 0, 1, 1).fill("#252525"),
+    });
 
-    this.pauseButton.onPress.connect(() =>
-      this.ui.events.emit("ui:pause-game"),
-    );
+    this.gameContainer = this.ui.view;
 
-    this.hintButton.onPress.connect(() =>
-      this.ui.events.emit("ui:hint-game"),
-    );
+    this.gameLabel = new LayoutContainer({
+      x: 10,
+      y: 10,
+      view: new Text({
+        style: {
+          fontSize: 44,
+          fill: "#a9a9a9",
+        },
+        zIndex: 1000,
+        text: this.ui.gameConfig.title,
+      }),
+    });
 
-    this.infoButton.onPress.connect(() => this.ui.onInfo());
+    this.addChild(this.background, this.gameContainer, this.gameLabel);
   }
 }
