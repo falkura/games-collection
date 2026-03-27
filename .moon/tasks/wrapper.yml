@@ -4,8 +4,12 @@ inheritedBy:
 tasks:
   build-assets:
     command: bunx assetpack -c @files(wrapper-assetpack)
+    options:
+      internal: true
   build-sources:
     command: bunx rspack build
+    options:
+      internal: true
   build:
     # TODO should i collect output?
     deps:
@@ -20,11 +24,13 @@ tasks:
     options:
       persistent: true
       outputStyle: stream
+      internal: true
   dev-sources:
     command: bunx rspack serve
     options:
       persistent: true
       outputStyle: stream
+      internal: true
   dev:
     deps:
       - ^:dev

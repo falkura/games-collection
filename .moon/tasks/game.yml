@@ -6,8 +6,12 @@ tasks:
   # Build
   build-assets:
     command: bunx assetpack -c @files(game-assetpack)
+    options:
+      internal: true
   build-sources:
     command: bunx rspack build
+    options:
+      internal: true
   build:
     deps:
       - ^:build
@@ -28,11 +32,13 @@ tasks:
       persistent: true
       # Logs won't work without it
       outputStyle: stream
+      internal: true
   dev-sources:
     command: bunx rspack serve
     options:
       persistent: true
       outputStyle: stream
+      internal: true
   dev:
     deps:
       # depends on dev from all packages in `dependsOn` array

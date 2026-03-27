@@ -14,12 +14,13 @@ fileGroups:
     - "src/**/*"
     - "assets/game.json"
     - "rspack.config.ts"
+    - "/packages/shared/html/game.index.html"
     - "/packages/shared/rspack/base.config.ts"
     - "/packages/shared/rspack/game.config.ts"
 
   wrapper-sources:
     - "src/**/*"
-    - .assetpack.js
     - "rspack.config.ts"
+    - "/packages/shared/html/wrapper.index.html"
     - "/packages/shared/rspack/base.config.ts"
     - "/packages/shared/rspack/wrapper.config.ts"
