@@ -8,3 +8,5 @@ await Engine.loadAssets();
 
 Engine.initUI(UI);
 Engine.initWrapper(gamesMeta);
+
+Engine.ui.setScene("Wrapper");
