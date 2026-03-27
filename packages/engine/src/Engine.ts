@@ -1,4 +1,4 @@
-import { Application, Assets, ProgressCallback, Ticker } from "pixi.js";
+import { Application, Assets, ProgressCallback, Ticker, Size } from "pixi.js";
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import PixiPlugin from "gsap/PixiPlugin.js";
@@ -6,7 +6,7 @@ import "./types/globals";
 
 import { EventSystem } from "./EventSystem";
 import { UIConstructor, UIInstance, UISettings } from "./types/UI";
-import { GameConstructor, GameFinishData, GameInstance } from "./types/Game";
+import { GameConstructor, GameInstance } from "./types/Game";
 
 class EngineClass {
   ui: UIInstance;
@@ -32,30 +32,19 @@ class EngineClass {
     this.events.ui.on("ui:restart-game", this.restartGame, this);
     this.events.ui.on("ui:pause-game", this.pauseGame, this);
     this.events.ui.on("ui:resume-game", this.resumeGame, this);
-    this.events.ui.on("ui:hint-game", this.hintGame, this);
-
-    this.events.ui.on("ui:set-level", this.changeLevel, this);
-    this.events.ui.on("ui:set-difficulty", this.changeDifficulty, this);
-    this.events.ui.on("ui:set-settings", this.changeSettings, this);
-
-    this.events.ui.on("ui:open-menu", this.backToMenu, this);
+    this.events.ui.on("ui:close-game", this.closeGame, this);
+    this.events.ui.on("ui:update-settings", this.changeSettings, this);
 
     this.events.game.on("game:finished", this.onGameFinished, this);
   }
 
+  private closeGame() {}
   private startGame() {}
   private restartGame() {}
   private pauseGame() {}
   private resumeGame() {}
-  private hintGame() {}
-
-  private changeLevel(level: number) {}
-  private changeDifficulty(level: number) {}
   private changeSettings(settings: Partial<UISettings>) {}
-
-  private backToMenu() {}
-
-  private onGameFinished(data: Partial<GameFinishData>) {}
+  private onGameFinished(data: any) {}
 
   private initGSAP() {
     gsap.registerPlugin(PixiPlugin);
@@ -76,11 +65,11 @@ class EngineClass {
     this.app = new Application();
 
     await this.app.init({
-      backgroundAlpha: 0,
+      backgroundColor: "#272727",
       preference: "webgpu",
       resolution: window.devicePixelRatio,
       resizeTo: window,
-      antialias: true,
+      canvas: canvas,
     });
 
     root.appendChild(this.app.canvas);
@@ -118,8 +107,17 @@ class EngineClass {
     await Assets.loadBundle(bundleName, options.onProgress);
   }
 
-  public initUI(Ctor: UIConstructor) {
-    this.ui = new Ctor(this.events.ui, this.app.stage);
+  public initUI(
+    Ctor: UIConstructor,
+    sizeLandscape?: Size,
+    sizePortrait?: Size,
+  ) {
+    this.ui = new Ctor(
+      this.events.ui,
+      this.app.stage,
+      sizeLandscape,
+      sizePortrait,
+    );
 
     this.app.renderer.on("resize", this.onResize, this);
 

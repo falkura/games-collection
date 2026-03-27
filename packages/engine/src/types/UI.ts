@@ -1,4 +1,4 @@
-import { Container, EventEmitter } from "pixi.js";
+import { Container, EventEmitter, Size } from "pixi.js";
 import { ModuleConstructor } from "../utils/ModuleManager";
 
 export interface UIEvents {
@@ -6,13 +6,9 @@ export interface UIEvents {
   "ui:restart-game": () => void;
   "ui:pause-game": () => void;
   "ui:resume-game": () => void;
-  "ui:hint-game": () => void;
+  "ui:close-game": () => void;
 
-  "ui:set-level": (level: number) => void;
-  "ui:set-difficulty": (level: number) => void;
-  "ui:set-settings": (settings: Partial<UISettings>) => void;
-
-  "ui:open-menu": () => void;
+  "ui:update-settings": (settings: Partial<UISettings>) => void;
 }
 
 export interface UISettings {
@@ -30,31 +26,35 @@ export interface UIScreen<TUI extends UIInstance = any> extends Container {
 
 export interface UIInstance {
   view: Container;
+  createGameView(): Container;
+
   initGame(config: IGameConfig): void;
-  createView(): Container;
   initWrapper(config: IGamesConfig): void;
 
-  setScene(scene: string, force?: boolean): Promise<UIScreen>;
-  showWindow(window: string, force?: boolean): Promise<UIScreen>;
-  hideWindow(force?: boolean): Promise<void>;
+  setScene(scene: string, fast?: boolean): Promise<UIScreen>;
+  setScene(scene: BaseGameScenes, fast?: boolean): Promise<UIScreen>;
+  setScene(scene: BaseWrapperScenes, fast?: boolean): Promise<UIScreen>;
 
   getScene(scene: string): UIScreen;
-  getWindow(window: string): UIScreen;
+  getScene(scene: BaseGameScenes): UIScreen;
+  getScene(scene: BaseWrapperScenes): UIScreen;
 
   onResize(width: number, height: number, resolution: number): void;
 }
 
 export interface UIConstructor<T extends UIInstance = UIInstance> {
-  new (events: EventEmitter<UIEvents>, view: Container): T;
+  new (
+    events: EventEmitter<UIEvents>,
+    stage: Container,
+    sizeLandscape?: Size,
+    sizePortrait?: Size,
+  ): T;
 }
 
 export type ScreenConstructor<T extends UIScreen = UIScreen> =
   ModuleConstructor<T>;
-export type SceneMap = Record<string, ScreenConstructor>;
-export type WindowMap = Record<string, ScreenConstructor>;
-export type BaseGameScenes = "Game" | "Load" | "Menu" | "Result";
-export type BaseWrapperScenes = "Intro";
-export type BaseWindows = "Info" | "Pause";
+export type BaseGameScenes = "Game" | "Load";
+export type BaseWrapperScenes = "Wrapper";
 
 export type GameScenes<T extends UIScreen = UIScreen> = RecordLike<
   BaseGameScenes,
@@ -64,12 +64,6 @@ export type GameScenes<T extends UIScreen = UIScreen> = RecordLike<
 
 export type WrapperScenes<T extends UIScreen = UIScreen> = RecordLike<
   BaseWrapperScenes,
-  ScreenConstructor<T>
-> &
-  Record<string, ScreenConstructor<T>>;
-
-export type GameWindows<T extends UIScreen = UIScreen> = RecordLike<
-  BaseWindows,
   ScreenConstructor<T>
 > &
   Record<string, ScreenConstructor<T>>;

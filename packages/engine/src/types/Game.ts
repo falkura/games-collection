@@ -2,13 +2,7 @@ import { EventEmitter } from "pixi.js";
 import { UIInstance } from "./UI";
 
 export interface GameEvents {
-  "game:finished": (data: Partial<GameFinishData>) => void;
-}
-
-export interface GameFinishData {
-  score: number;
-  result: "win" | "lose";
-  [key: string]: any;
+  "game:finished": (data: any) => void;
 }
 
 export interface GameInstance {
