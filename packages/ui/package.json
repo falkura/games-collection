@@ -3,12 +3,11 @@
   "version": "0.0.0",
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",
-    "@material-design-icons/svg": "^0.14.15",
-    "@pixi/layout": "^3.2.0",
-    "@pixi/ui": "^2.3.2"
+    "tweakpane": "^4.0.5"
   },
   "devDependencies": {
-    "@falkura-pet/shared": "workspace:*"
+    "@falkura-pet/shared": "workspace:*",
+    "@tweakpane/core": "^2.0.5"
   },
   "peerDependencies": {
     "gsap": "^3.13.0",

@@ -9,6 +9,7 @@ export class LayoutContainer<T extends Container = any> extends Container {
   private _layoutLandscape!: Layout.Config<T>;
   private _layoutPortrait!: Layout.Config<T>;
   private _view: T;
+  private _onResize: Layout.Config["onResize"];
 
   /** @internal */
   public _layoutParams = {
@@ -124,5 +125,12 @@ export class LayoutContainer<T extends Container = any> extends Container {
         LayoutManager.HANDLERS["unknown"].call(this, { vars, key: k, value });
       }
     });
+
+    this._onResize &&
+      this._onResize({
+        manager,
+        vars,
+        layoutParams: this._layoutParams,
+      });
   }
 }

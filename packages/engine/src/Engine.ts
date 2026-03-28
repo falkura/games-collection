@@ -13,19 +13,19 @@ class EngineClass {
   game: GameInstance;
   app: Application;
   events: EventSystem;
+  wrapperConfig: IGamesConfig;
+  gameConfig: IGameConfig;
 
   constructor() {
     console.log("Engine created");
 
-    this.initGSAP();
-    this.initEvents();
-
     if (__DEV__) {
       globalThis.engine = this;
+      globalThis.PIXI = PIXI;
     }
   }
 
-  private initEvents() {
+  public initEvents() {
     this.events = new EventSystem();
 
     this.events.ui.on("ui:start-game", this.startGame, this);
@@ -46,7 +46,7 @@ class EngineClass {
   private changeSettings(settings: Partial<UISettings>) {}
   private onGameFinished(data: any) {}
 
-  private initGSAP() {
+  public initGSAP() {
     gsap.registerPlugin(PixiPlugin);
     PixiPlugin.registerPIXI(PIXI);
 
@@ -61,7 +61,7 @@ class EngineClass {
     }
   }
 
-  public async init() {
+  public async initApplication() {
     this.app = new Application();
 
     await this.app.init({
@@ -76,7 +76,6 @@ class EngineClass {
 
     if (__DEV__) {
       globalThis.app = globalThis.__PIXI_APP__ = this.app;
-      globalThis.PIXI = PIXI;
     }
   }
 
@@ -134,6 +133,8 @@ class EngineClass {
   }
 
   public initGame(Ctor: GameConstructor, config: IGameConfig) {
+    this.gameConfig = config;
+
     if (!this.ui) {
       throw new Error("You must init ui before Game!");
     }
@@ -142,7 +143,7 @@ class EngineClass {
   }
 
   public initWrapper(config: IGamesConfig) {
-    this.ui.initWrapper(config);
+    this.wrapperConfig = config;
   }
 }
 

@@ -1,5 +1,5 @@
 import { LayoutContainer } from "src/layout/LayoutContainer";
-import { AppScreen } from "../AppScreen";
+import { AppScreen } from "./AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
 
 export class LoadScene extends AppScreen {

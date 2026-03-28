@@ -1,6 +1,7 @@
 import { defineConfig } from "@rspack/cli";
 import { rspack, RspackOptions } from "@rspack/core";
 import { generateGamesMeta } from "../scripts/gamesMeta";
+import { copyGameIcons } from "../scripts/copyGameIcons";
 import path from "path";
 import PATHS from "../paths";
 import { rm } from "fs/promises";
@@ -11,7 +12,8 @@ const gamesMetaFile = path.resolve(PATHS.buildPath, "meta.json");
 export default defineConfig(async ({ RSPACK_SERVE }) => {
   // TODO partial clear
   await rm(PATHS.buildPath, { recursive: true, force: true });
-  await generateGamesMeta(PATHS.gamesPath, gamesMetaFile);
+  const metaData = await generateGamesMeta(PATHS.gamesPath, gamesMetaFile);
+  await copyGameIcons(metaData);
 
   const gamesMeta = (await import(gamesMetaFile)).default as IGamesConfig;
   const copyPatterns = Object.entries(gamesMeta).map(([gamePath, config]) => ({
@@ -38,6 +40,10 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
           publicPath: "/",
           watch: true,
         },
+        {
+          directory: "public",
+          publicPath: "/",
+        },
       ],
     },
     plugins: [
@@ -45,7 +51,7 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
         __DEV__: true,
       }),
       new rspack.HtmlRspackPlugin({
-        template: path.join(__dirname, "../html/wrapper.index.html"),
+        template: "public/index.html",
       }),
       new rspack.CopyRspackPlugin({
         patterns: copyPatterns,

@@ -27,17 +27,13 @@ export interface UIScreen<TUI extends UIInstance = any> extends Container {
 export interface UIInstance {
   view: Container;
   createGameView(): Container;
-
   initGame(config: IGameConfig): void;
-  initWrapper(config: IGamesConfig): void;
 
   setScene(scene: string, fast?: boolean): Promise<UIScreen>;
   setScene(scene: BaseGameScenes, fast?: boolean): Promise<UIScreen>;
-  setScene(scene: BaseWrapperScenes, fast?: boolean): Promise<UIScreen>;
 
   getScene(scene: string): UIScreen;
   getScene(scene: BaseGameScenes): UIScreen;
-  getScene(scene: BaseWrapperScenes): UIScreen;
 
   onResize(width: number, height: number, resolution: number): void;
 }
@@ -54,16 +50,9 @@ export interface UIConstructor<T extends UIInstance = UIInstance> {
 export type ScreenConstructor<T extends UIScreen = UIScreen> =
   ModuleConstructor<T>;
 export type BaseGameScenes = "Game" | "Load";
-export type BaseWrapperScenes = "Wrapper";
 
 export type GameScenes<T extends UIScreen = UIScreen> = RecordLike<
   BaseGameScenes,
-  ScreenConstructor<T>
-> &
-  Record<string, ScreenConstructor<T>>;
-
-export type WrapperScenes<T extends UIScreen = UIScreen> = RecordLike<
-  BaseWrapperScenes,
   ScreenConstructor<T>
 > &
   Record<string, ScreenConstructor<T>>;

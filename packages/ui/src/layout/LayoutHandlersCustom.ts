@@ -1,4 +1,4 @@
-import { Container, PointData } from "pixi.js";
+import { Container, PointData, Size } from "pixi.js";
 import { LayoutContainer } from "./LayoutContainer";
 import { LayoutManager } from "./LayoutManager";
 import { isObject, calculateLayoutString } from "./LayoutUtils";
@@ -13,6 +13,15 @@ declare global {
       zIndex?: number;
       anchor?: PointData | string | number;
       scale?: PointData | string | number;
+      onResize?: ({
+        manager,
+        vars,
+        layoutParams,
+      }: {
+        manager: LayoutManager;
+        vars: Layout.LayoutVars;
+        layoutParams: Size;
+      }) => void;
     }
   }
 }
@@ -49,6 +58,13 @@ export function heightHandler(
   this.view[key] = this._layoutParams.height;
 }
 
+export function onResizeHandler(
+  this: LayoutContainer,
+  { value }: Layout.HandlerOptions<"onResize">,
+) {
+  (this as any)._onResize = value.bind(this);
+}
+
 export function setHandler(
   this: LayoutContainer,
   { key, value, vars }: Layout.HandlerOptions<"anchor" | "scale">,
@@ -70,5 +86,6 @@ LayoutManager.registerLayoutHandler("height", heightHandler);
 LayoutManager.registerLayoutHandler("anchor", setHandler);
 LayoutManager.registerLayoutHandler("scale", setHandler);
 LayoutManager.registerLayoutHandler("zIndex", zIndexHandler);
+LayoutManager.registerLayoutHandler("onResize", onResizeHandler);
 
 export {};

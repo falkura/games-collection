@@ -21,6 +21,6 @@ fileGroups:
   wrapper-sources:
     - "src/**/*"
     - "rspack.config.ts"
-    - "/packages/shared/html/wrapper.index.html"
+    - "public/**/*"
     - "/packages/shared/rspack/base.config.ts"
     - "/packages/shared/rspack/wrapper.config.ts"

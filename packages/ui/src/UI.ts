@@ -1,32 +1,27 @@
 import { Container, EventEmitter, Size, Ticker } from "pixi.js";
 import { ScenesController } from "./components/ScenesController";
-import { GameScene } from "./components/scenes/GameScene";
-import { LoadScene } from "./components/scenes/LoadScene";
+import { GameScene } from "./components/GameScene";
+import { LoadScene } from "./components/LoadScene";
 import { AppScreen } from "./components/AppScreen";
 
 import type {
   UIInstance,
   UIEvents,
   GameScenes,
-  WrapperScenes,
   BaseGameScenes,
-  BaseWrapperScenes,
 } from "@falkura-pet/engine/types/UI";
 
 import { LayoutManager } from "./layout/LayoutManager";
 import { LayoutContainer } from "./layout/LayoutContainer";
 import "./layout/LayoutHandlersDefault";
 import "./layout/LayoutHandlersCustom";
-import { WrapperScene } from "./components/scenes/WrapperScene";
 
 export class UI implements UIInstance {
   layout: LayoutManager;
   scenes: ScenesController;
-
   ticker: Ticker;
 
   gameConfig: IGameConfig;
-  wrapperConfig: IGamesConfig;
   /**
    * UI.view is main game container to work with. It created in view
    * constructor but added to the stage in GameScene.onInit method
@@ -91,18 +86,6 @@ export class UI implements UIInstance {
     }
   }
 
-  public initWrapper(config: IGamesConfig) {
-    this.wrapperConfig = config;
-
-    const scenes = this.createWrapperScenes();
-
-    for (const key in scenes) {
-      const _scene = scenes[key];
-      _scene.MODULE_ID = key;
-      this.scenes.add(_scene);
-    }
-  }
-
   // Override this method to override scenes
   protected createGameScenes(): GameScenes<AppScreen> {
     return {
@@ -111,25 +94,13 @@ export class UI implements UIInstance {
     };
   }
 
-  // Override this method to override scenes
-  protected createWrapperScenes(): WrapperScenes<AppScreen> {
-    return {
-      Wrapper: WrapperScene,
-    };
-  }
-
-  public setScene(
-    scene: BaseGameScenes | BaseWrapperScenes,
-    fast?: boolean,
-  ): Promise<AppScreen>;
+  public setScene(scene: BaseGameScenes, fast?: boolean): Promise<AppScreen>;
   public setScene(scene: string, fast?: boolean): Promise<AppScreen>;
   public setScene(scene: string, fast?: boolean): Promise<AppScreen> {
     return new Promise((resolve) => resolve(this.scenes.set(scene)));
   }
 
-  public getScene<T extends AppScreen = AppScreen>(
-    scene: BaseGameScenes | BaseWrapperScenes,
-  ): T;
+  public getScene<T extends AppScreen = AppScreen>(scene: BaseGameScenes): T;
   public getScene<T extends AppScreen = AppScreen>(scene: string): T;
   public getScene<T extends AppScreen = AppScreen>(scene: string): T {
     return this.scenes.get(scene);

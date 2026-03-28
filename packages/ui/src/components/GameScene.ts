@@ -1,6 +1,6 @@
-import { AppScreen } from "../AppScreen";
+import { AppScreen } from "./AppScreen";
 import { Graphics, Text } from "pixi.js";
-import { LayoutContainer } from "../../layout/LayoutContainer";
+import { LayoutContainer } from "../layout/LayoutContainer";
 
 export class GameScene extends AppScreen {
   background: LayoutContainer<Graphics>;

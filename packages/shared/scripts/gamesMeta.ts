@@ -29,4 +29,6 @@ export async function generateGamesMeta(gamesDir: string, outFile: string) {
 
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, JSON.stringify(result));
+
+  return result;
 }
