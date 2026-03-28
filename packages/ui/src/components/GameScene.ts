@@ -21,18 +21,13 @@ export class GameScene extends AppScreen {
       y: 10,
       view: new Text({
         style: {
-          fill: "#6f6f6f",
+          fill: "#757575",
         },
         zIndex: 1,
         text: this.ui.gameConfig.title,
       }),
-      onResize(this: LayoutContainer<Text>) {
-        this.view.style.fontSize = 24;
-      },
-      portrait: {
-        onResize(this: LayoutContainer<Text>) {
-          this.view.style.fontSize = 34;
-        },
+      onResize(this: LayoutContainer<Text>, { manager }) {
+        this.view.style.fontSize = manager.isPortrait ? 34 : 24;
       },
     });
 
