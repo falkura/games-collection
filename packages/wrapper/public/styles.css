@@ -143,6 +143,13 @@ body {
   border-radius: 8px;
 }
 
+.game-card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 /* Game info */
 .game-card-info {
   display: flex;
@@ -251,6 +258,10 @@ body {
     height: 80px;
     font-size: 40px;
     flex-shrink: 0;
+  }
+
+  .game-card-icon img {
+    border-radius: 8px;
   }
 
   .game-card-info {

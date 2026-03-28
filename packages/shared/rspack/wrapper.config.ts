@@ -54,7 +54,16 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
         template: "public/index.html",
       }),
       new rspack.CopyRspackPlugin({
-        patterns: copyPatterns,
+        patterns: [
+          ...copyPatterns,
+          {
+            from: "public",
+            to: ".",
+            globOptions: {
+              ignore: ["**/index.html"],
+            },
+          },
+        ],
       }),
     ],
   } satisfies RspackOptions;

@@ -16,6 +16,8 @@ class EngineClass {
   wrapperConfig: IGamesConfig;
   gameConfig: IGameConfig;
 
+  private _manifestName: string;
+
   constructor() {
     console.log("Engine created");
 
@@ -79,6 +81,23 @@ class EngineClass {
     }
   }
 
+  public async loadManifest(
+    options?: Partial<{
+      basePath: string;
+      manifest: string;
+    }>,
+  ) {
+    options ??= {};
+
+    this._manifestName = options.manifest || "manifest.json";
+    const basePath = options.basePath || "./assets/";
+
+    await Assets.init({ basePath });
+
+    Assets.add({ src: this._manifestName });
+    await Assets.load(this._manifestName);
+  }
+
   public async loadAssets(
     options?: Partial<{
       onProgress: ProgressCallback;
@@ -89,17 +108,12 @@ class EngineClass {
   ) {
     options ??= {};
 
-    const manifestName = options.manifest || "manifest.json";
-    const basePath = options.basePath || "./assets/";
+    if (!this._manifestName) {
+      await this.loadManifest(options);
+    }
+
     const bundleName = options.defaultBundle || "default";
-
-    await Assets.init({ basePath });
-
-    // Add and load manifest file first
-    Assets.add({ src: manifestName });
-    const manifest = await Assets.load(manifestName);
-
-    // Loader assets bundle can be added here
+    const manifest = await Assets.load(this._manifestName);
 
     // Add and load main bundle
     Assets.addBundle(bundleName, manifest.bundles[0].assets);

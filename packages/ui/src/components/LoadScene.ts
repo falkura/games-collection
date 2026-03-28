@@ -11,7 +11,7 @@ export class LoadScene extends AppScreen {
     this.background = new LayoutContainer({
       width: "sw",
       height: "sh",
-      view: new Graphics().rect(0, 0, 1, 1).fill("#66c1da"),
+      view: new Graphics().rect(0, 0, 1, 1).fill("#252525"),
     });
 
     this.spinner = new LayoutContainer({

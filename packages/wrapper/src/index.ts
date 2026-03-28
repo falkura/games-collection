@@ -12,13 +12,16 @@ Engine.initWrapper(gamesMeta);
 document.getElementById("header-title")!.innerHTML = wrapperConfig.title;
 document.getElementById("header-subtitle")!.innerHTML = wrapperConfig.subtitle;
 
-wrapper.innerHTML = Object.values(gamesMeta)
-  .map(
-    (game) => `
+wrapper.innerHTML = Object.entries(gamesMeta)
+  .map(([gameFolder, game]) => {
+    const iconExt = game.icon
+      ? game.icon.substring(game.icon.lastIndexOf("."))
+      : ".png";
+    return `
       <div class="game-card">
         <div class="game-card-left">
           <div class="game-card-icon">
-            <span class="material-symbols-outlined">games</span>
+            <img src="/icons/${gameFolder}${iconExt}" alt="${game.title}" />
           </div>
           <div class="game-card-info">
             <h2 class="game-card-title">${game.title}</h2>
@@ -28,14 +31,9 @@ wrapper.innerHTML = Object.values(gamesMeta)
         </div>
         <button class="button-play" data-route="${game.route}">Play Now</button>
       </div>
-    `,
-  )
+    `;
+  })
   .join("");
-
-let game1 = wrapper.innerHTML;
-for (let i = 0; i < 5; i++) {
-  wrapper.innerHTML += game1;
-}
 
 document.addEventListener("click", (e) => {
   const btn = (e.target as HTMLElement).closest(".button-play");

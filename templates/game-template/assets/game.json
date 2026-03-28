@@ -4,6 +4,6 @@
   "description": "template project",
   "version": "0.0.0",
   "route": "{{ name | kebab_case }}",
-  "icon": "/template.png",
+  "icon": "icon.png",
   "enabled": true
 }

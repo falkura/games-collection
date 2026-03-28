@@ -13,7 +13,8 @@ build
 .generated
 server/dist
 tsconfig.tsbuildinfo
-.vscode
+.vscode/settings.json
+*/wrapper/public/icons
 # moon
 .moon/cache
 .moon/docker

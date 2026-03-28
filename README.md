@@ -17,7 +17,7 @@ To develop run `moon run <game-name>:dev`
 To develop run `moon run games-wrapper:dev`
 
 ### Build project
-1. Build all games by running `moon run #game:build`
+1. Build all games by running `moon run '#game:build'`
 2. Build wrapper with this games `moon run games-wrapper:build --force`
 
 ---

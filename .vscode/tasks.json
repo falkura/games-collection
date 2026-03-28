@@ -1,0 +1,77 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Wrapper",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoLogo", "-NoExit"],
+      "options": {
+        "cwd": "${workspaceFolder}/packages/wrapper",
+        "env": {
+          "POWERSHELL_UPDATECHECK": "Off"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": {
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "UI",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoLogo", "-NoExit"],
+      "options": {
+        "cwd": "${workspaceFolder}/packages/ui",
+        "env": {
+          "POWERSHELL_UPDATECHECK": "Off"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": {
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Game Base",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoLogo", "-NoExit"],
+      "options": {
+        "cwd": "${workspaceFolder}/packages/game-base",
+        "env": {
+          "POWERSHELL_UPDATECHECK": "Off"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": {
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Engine",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoLogo", "-NoExit"],
+      "options": {
+        "cwd": "${workspaceFolder}/packages/engine",
+        "env": {
+          "POWERSHELL_UPDATECHECK": "Off"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": {
+        "panel": "dedicated"
+      }
+    }
+  ]
+}

@@ -10,17 +10,14 @@ import PATHS from "../paths";
  * Reads game.json["icon"] for each game to determine the icon filename.
  */
 export async function copyGameIcons(gamesMeta: IGamesConfig) {
-  return;
-
-  // WIP
-  const iconDir = path.resolve(PATHS.rootPath, "packages/wrapper/public/icons");
+  const iconDir = path.resolve("public/icons");
 
   await rm(iconDir, { recursive: true, force: true });
   fs.mkdirSync(iconDir, { recursive: true });
 
   for (const [gamePath, config] of Object.entries(gamesMeta)) {
     if (!config.icon) {
-      console.warn(`⚠️  No icon specified for game: ${gamePath}`);
+      console.warn(`No icon specified for game: ${gamePath}`);
       continue;
     }
 
@@ -32,18 +29,13 @@ export async function copyGameIcons(gamesMeta: IGamesConfig) {
     );
 
     if (!fs.existsSync(sourceIconPath)) {
-      console.warn(`⚠️  Icon not found: ${sourceIconPath}`);
+      console.warn(`Icon not found: ${sourceIconPath}`);
       continue;
     }
 
-    // Extract file extension
     const ext = path.extname(config.icon);
     const destIconPath = path.join(iconDir, `${gamePath}${ext}`);
 
-    // Copy the icon
     fs.copyFileSync(sourceIconPath, destIconPath);
-    console.log(`✓ Copied icon: ${gamePath}${ext}`);
   }
-
-  console.log(`✓ All game icons copied to ${iconDir}`);
 }

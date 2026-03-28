@@ -19,6 +19,34 @@
         "typescript": "^5.9.3",
       },
     },
+    "games/game-two": {
+      "name": "@falkura-pet/game-two",
+      "version": "0.0.0",
+      "dependencies": {
+        "@falkura-pet/engine": "workspace:*",
+        "@falkura-pet/game-base": "workspace:*",
+        "@falkura-pet/shared": "workspace:*",
+        "@falkura-pet/ui": "workspace:*",
+      },
+      "peerDependencies": {
+        "gsap": "^3.13.0",
+        "pixi.js": "^8.17.1",
+      },
+    },
+    "games/ne-znayu": {
+      "name": "@falkura-pet/ne-znayu",
+      "version": "0.0.0",
+      "dependencies": {
+        "@falkura-pet/engine": "workspace:*",
+        "@falkura-pet/game-base": "workspace:*",
+        "@falkura-pet/shared": "workspace:*",
+        "@falkura-pet/ui": "workspace:*",
+      },
+      "peerDependencies": {
+        "gsap": "^3.13.0",
+        "pixi.js": "^8.17.1",
+      },
+    },
     "games/test-game": {
       "name": "@falkura-pet/test-game",
       "version": "0.0.0",
@@ -89,9 +117,6 @@
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
       },
-      "peerDependencies": {
-        "pixi.js": "^8.17.1",
-      },
     },
   },
   "trustedDependencies": [
@@ -131,6 +156,10 @@
     "@falkura-pet/engine": ["@falkura-pet/engine@workspace:packages/engine"],
 
     "@falkura-pet/game-base": ["@falkura-pet/game-base@workspace:packages/game-base"],
+
+    "@falkura-pet/game-two": ["@falkura-pet/game-two@workspace:games/game-two"],
+
+    "@falkura-pet/ne-znayu": ["@falkura-pet/ne-znayu@workspace:games/ne-znayu"],
 
     "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
 
