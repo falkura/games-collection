@@ -11,7 +11,7 @@ export class GameScene extends AppScreen {
     this.background = new LayoutContainer({
       width: "sw",
       height: "sh",
-      view: new Graphics().rect(0, 0, 1, 1).fill("#252525"),
+      view: new Graphics().rect(0, 0, 1, 1).fill("#1e1e1e"),
     });
 
     this.gameContainer = this.ui.view;
@@ -21,12 +21,19 @@ export class GameScene extends AppScreen {
       y: 10,
       view: new Text({
         style: {
-          fontSize: 44,
-          fill: "#a9a9a9",
+          fill: "#6f6f6f",
         },
-        zIndex: 1000,
+        zIndex: 1,
         text: this.ui.gameConfig.title,
       }),
+      onResize(this: LayoutContainer<Text>) {
+        this.view.style.fontSize = 24;
+      },
+      portrait: {
+        onResize(this: LayoutContainer<Text>) {
+          this.view.style.fontSize = 34;
+        },
+      },
     });
 
     this.addChild(this.background, this.gameContainer, this.gameLabel);
