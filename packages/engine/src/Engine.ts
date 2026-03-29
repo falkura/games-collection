@@ -124,7 +124,7 @@ class EngineClass {
     this.app = new Application();
 
     await this.app.init({
-      backgroundColor: "#272727",
+      backgroundColor: "#1e1e1e",
       preference: "webgpu",
       resolution: window.devicePixelRatio,
       resizeTo: window,
