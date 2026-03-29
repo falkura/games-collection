@@ -4,10 +4,14 @@
     "moduleResolution": "bundler",
     "target": "esnext",
     "module": "esnext",
+    "outDir": "build",
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
   "references": [
+    {
+      "path": "games/boids-simulation"
+    },
     {
       "path": "packages/engine"
     },

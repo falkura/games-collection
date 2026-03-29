@@ -45,6 +45,6 @@ tasks:
   
   assemble:
     script: |
-      moon run '#game:build'
-      moon run games-wrapper:build -f
+      bunx moon run '#game:build'
+      bunx moon run games-wrapper:build -f
 
