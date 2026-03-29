@@ -7,6 +7,7 @@ declare global {
   const wrapper: HTMLDivElement;
 }
 
+Engine.initEvents();
 Engine.initWrapper(gamesMeta);
 
 document.getElementById("header-title")!.innerHTML = wrapperConfig.title;
@@ -36,8 +37,11 @@ wrapper.innerHTML = Object.entries(gamesMeta)
   .join("");
 
 document.addEventListener("click", (e) => {
-  const btn = (e.target as HTMLElement).closest(".button-play");
-  if (!btn) return;
+  const button = (e.target as HTMLElement).closest(".button-play");
+  if (!button) return;
 
-  window.location.href = btn.getAttribute("data-route")!;
+  const route = button.getAttribute("data-route")!;
+
+  Engine.events.ui.emit("wrapper:chose-game", route);
+  window.location.href = route;
 });

@@ -1,3 +1,7 @@
+---
+to: tsconfig.json
+---
+
 {
   "extends": "@falkura-pet/shared/tsconfig/game.tsconfig.json",
   "compilerOptions": {

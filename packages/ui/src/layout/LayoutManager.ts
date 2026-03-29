@@ -41,6 +41,10 @@ export class LayoutManager {
     this.options = options;
 
     LayoutManager.instance = this;
+
+    if (__DEV__) {
+      globalThis.layout = this;
+    }
   }
 
   public static registerLayoutHandler(

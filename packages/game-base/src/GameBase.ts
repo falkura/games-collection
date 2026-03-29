@@ -3,12 +3,15 @@ import gsap from "gsap";
 import { SystemController } from "./system/SystemController";
 import { GameEvents, GameInstance } from "@falkura-pet/engine/types/Game";
 import { UIInstance } from "@falkura-pet/engine/types/UI";
+import { Pane } from "tweakpane";
+import { ControlPanel } from "./ControlPanel";
 
 export abstract class GameBase implements GameInstance {
   public readonly ticker: Ticker;
   public readonly systems: SystemController;
   public readonly timeline: GSAPTimeline;
   public readonly view: Container;
+  public readonly pane: Pane;
 
   constructor(
     public readonly events: EventEmitter<GameEvents>,
@@ -16,6 +19,7 @@ export abstract class GameBase implements GameInstance {
     public readonly ui: UIInstance,
   ) {
     this.view = ui.view;
+    this.pane = new Pane();
 
     this.view.sortableChildren = true;
     this.systems = new SystemController(this);
@@ -24,11 +28,18 @@ export abstract class GameBase implements GameInstance {
 
     this.ticker.add((ticker) => this.systems.tick(ticker));
 
+    ControlPanel.init(this);
     this.init();
 
     if (__DEV__) {
       globalThis.game = this;
     }
+  }
+
+  public onSystemAdded(system: string) {
+    if (!ControlPanel.initialized) return;
+
+    ControlPanel.onSystemAdded(system, this);
   }
 
   // Register systems here
@@ -65,16 +76,6 @@ export abstract class GameBase implements GameInstance {
     this.timeline.resume();
     this.systems.resume();
   }
-
-  // TODO
-  // public save() {}
-  // public load() {}
-  // public changeDifficulty;
-  // public changeLevel;
-  // ?
-  // private volume;
-  // private music;
-  // private graphic;
 
   private _resetTimelines() {
     this.timeline.getChildren(false).forEach((tl: GSAPTimeline) => tl.clear());

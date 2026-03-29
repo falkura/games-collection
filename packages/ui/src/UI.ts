@@ -57,11 +57,6 @@ export class UI implements UIInstance {
     this.ticker = new Ticker();
     this.ticker.start();
 
-    this.scenes = new ScenesController(this);
-
-    // TODO make it as render layers https://pixijs.com/8.x/guides/concepts/render-layers
-    this.stage.addChild(this.scenes.view);
-
     if (__DEV__) {
       globalThis.ui = this;
     }
@@ -76,6 +71,9 @@ export class UI implements UIInstance {
 
   public initGame(config: IGameConfig) {
     this.gameConfig = config;
+
+    this.scenes = new ScenesController(this);
+    this.stage.addChild(this.scenes.view);
 
     const scenes = this.createGameScenes();
 
@@ -103,7 +101,7 @@ export class UI implements UIInstance {
   public getScene<T extends AppScreen = AppScreen>(scene: BaseGameScenes): T;
   public getScene<T extends AppScreen = AppScreen>(scene: string): T;
   public getScene<T extends AppScreen = AppScreen>(scene: string): T {
-    return this.scenes.get(scene);
+    return this.scenes.get(scene) as T;
   }
 
   public onResize(width: number, height: number, resolution: number) {

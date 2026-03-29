@@ -8,6 +8,13 @@ import { EventSystem } from "./EventSystem";
 import { UIConstructor, UIInstance, UISettings } from "./types/UI";
 import { GameConstructor, GameInstance } from "./types/Game";
 
+export enum GAME_STATE {
+  Init = "Init",
+  Started = "Started",
+  Paused = "Paused",
+  Finished = "Finished",
+}
+
 class EngineClass {
   ui: UIInstance;
   game: GameInstance;
@@ -15,11 +22,18 @@ class EngineClass {
   events: EventSystem;
   wrapperConfig: IGamesConfig;
   gameConfig: IGameConfig;
+  state: GAME_STATE;
+  muted: boolean;
+  graphics: UISettings["graphics"];
 
   private _manifestName: string;
 
   constructor() {
     console.log("Engine created");
+
+    this.state = GAME_STATE.Init;
+    this.muted = false;
+    this.graphics = "High";
 
     if (__DEV__) {
       globalThis.engine = this;
@@ -27,26 +41,69 @@ class EngineClass {
     }
   }
 
+  // #region lifecycle
+
+  public start() {
+    if (this.state === GAME_STATE.Init) {
+      this.events.internal.emit("engine:game-started");
+      this.game.start();
+      this.state = GAME_STATE.Started;
+    }
+  }
+
+  private restartGame() {
+    this.resetGame();
+    this.start();
+  }
+
+  private resetGame() {
+    this.game.reset();
+    this.state = GAME_STATE.Init;
+    this.events.internal.emit("engine:game-reseted");
+  }
+
+  private changeGamePause() {
+    if (this.state === GAME_STATE.Started) {
+      this.pauseGame();
+    } else if (this.state === GAME_STATE.Paused) {
+      this.resumeGame();
+    }
+  }
+
+  private pauseGame() {
+    this.state = GAME_STATE.Paused;
+    this.game.pause();
+    this.events.internal.emit("engine:game-paused");
+  }
+
+  private resumeGame() {
+    this.state = GAME_STATE.Started;
+    this.game.resume();
+    this.events.internal.emit("engine:game-resumed");
+  }
+
+  private onGameFinished(data: any) {
+    if (this.state !== GAME_STATE.Finished) {
+      this.state = GAME_STATE.Finished;
+      this.game.finish();
+      this.events.internal.emit("engine:game-finished", data);
+    }
+  }
+
+  // #endregion lifecycle
+
+  // #region initialization
+
   public initEvents() {
     this.events = new EventSystem();
 
-    this.events.ui.on("ui:start-game", this.startGame, this);
     this.events.ui.on("ui:restart-game", this.restartGame, this);
-    this.events.ui.on("ui:pause-game", this.pauseGame, this);
-    this.events.ui.on("ui:resume-game", this.resumeGame, this);
-    this.events.ui.on("ui:close-game", this.closeGame, this);
+    this.events.ui.on("ui:change-game-paused", this.changeGamePause, this);
     this.events.ui.on("ui:update-settings", this.changeSettings, this);
+    this.events.ui.on("wrapper:chose-game", this.onGameChosen, this);
 
     this.events.game.on("game:finished", this.onGameFinished, this);
   }
-
-  private closeGame() {}
-  private startGame() {}
-  private restartGame() {}
-  private pauseGame() {}
-  private resumeGame() {}
-  private changeSettings(settings: Partial<UISettings>) {}
-  private onGameFinished(data: any) {}
 
   public initGSAP() {
     gsap.registerPlugin(PixiPlugin);
@@ -80,6 +137,45 @@ class EngineClass {
       globalThis.app = globalThis.__PIXI_APP__ = this.app;
     }
   }
+
+  public initUI(
+    Ctor: UIConstructor,
+    sizeLandscape?: Size,
+    sizePortrait?: Size,
+  ) {
+    this.ui = new Ctor(
+      this.events.ui,
+      this.app.stage,
+      sizeLandscape,
+      sizePortrait,
+    );
+
+    this.app.renderer.on("resize", this.onResize, this);
+
+    this.app.renderer.resize(
+      window.innerWidth,
+      window.innerHeight,
+      this.app.renderer.resolution,
+    );
+  }
+
+  public initGame(Ctor: GameConstructor, config: IGameConfig) {
+    this.gameConfig = config;
+
+    if (!this.ui) {
+      throw new Error("You must init ui before Game!");
+    }
+    this.game = new Ctor(this.events.game, config, this.ui);
+    this.ui.initGame(config);
+  }
+
+  public initWrapper(config: IGamesConfig) {
+    this.wrapperConfig = config;
+  }
+
+  // #endregion initialization
+
+  // #region loading
 
   public async loadManifest(
     options?: Partial<{
@@ -120,44 +216,28 @@ class EngineClass {
     await Assets.loadBundle(bundleName, options.onProgress);
   }
 
-  public initUI(
-    Ctor: UIConstructor,
-    sizeLandscape?: Size,
-    sizePortrait?: Size,
-  ) {
-    this.ui = new Ctor(
-      this.events.ui,
-      this.app.stage,
-      sizeLandscape,
-      sizePortrait,
-    );
+  // #endregion loading
 
-    this.app.renderer.on("resize", this.onResize, this);
+  private onGameChosen(gameKey: string) {
+    console.log("Open game:", gameKey);
 
-    this.app.renderer.emit(
-      "resize",
-      window.innerWidth,
-      window.innerHeight,
-      this.app.renderer.resolution,
-    );
+    this.events.internal.emit("engine:game-chosen", gameKey);
+  }
+
+  private changeSettings({ graphics, mute }: Partial<UISettings>) {
+    if (typeof mute === "boolean") {
+      this.muted = mute;
+    }
+
+    if (typeof graphics === "string") {
+      this.graphics = graphics;
+    }
+
+    this.events.internal.emit("engine:settings-updated", { graphics, mute });
   }
 
   private onResize(width: number, height: number, resolution: number) {
     this.ui.onResize(width, height, resolution);
-  }
-
-  public initGame(Ctor: GameConstructor, config: IGameConfig) {
-    this.gameConfig = config;
-
-    if (!this.ui) {
-      throw new Error("You must init ui before Game!");
-    }
-    this.game = new Ctor(this.events.game, config, this.ui);
-    this.ui.initGame(config);
-  }
-
-  public initWrapper(config: IGamesConfig) {
-    this.wrapperConfig = config;
   }
 }
 

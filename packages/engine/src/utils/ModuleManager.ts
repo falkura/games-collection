@@ -3,12 +3,9 @@ export interface ModuleConstructor<T> extends Constructor<T> {
   MODULE_ID: string;
 }
 
-// TODO make TBase extends abstract class constructor
 export class ModuleManager<TBase> {
-  // Service store
   protected readonly list: Map<string, TBase> = new Map();
 
-  // Singleton
   public add<T extends ModuleConstructor<TBase>>(
     Ctor: T,
     ...args: ConstructorParameters<T>
@@ -34,30 +31,13 @@ export class ModuleManager<TBase> {
     return instance as InstanceType<T>;
   }
 
-  // DI
   protected onInit<T extends TBase>(instance: T): T {
     return instance;
   }
 
-  // Singleton
-  public addAsync<T extends ModuleConstructor<TBase>>(
-    Ctor: T,
-    ...args: ConstructorParameters<T>
-  ): Promise<InstanceType<T>> {
-    const instance = this.add(Ctor, ...args);
-
-    return this.onInitAsync(instance);
-  }
-
-  // DI
-  protected onInitAsync<T extends TBase>(instance: T): Promise<T> {
-    return new Promise<T>((resolve) => resolve(instance));
-  }
-
-  // Service locator
-  public get<T extends ModuleConstructor<TBase>>(moduleId: string);
-  public get<T extends ModuleConstructor<TBase>>(Ctor: T);
-  public get<T extends ModuleConstructor<TBase>>(value: T | string) {
+  public get<T extends ModuleConstructor<TBase>>(moduleId: string): TBase;
+  public get<T extends ModuleConstructor<TBase>>(Ctor: T): TBase;
+  public get<T extends ModuleConstructor<TBase>>(value: T | string): TBase {
     let result;
 
     if (typeof value === "string") {

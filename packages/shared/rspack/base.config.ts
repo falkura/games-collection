@@ -41,6 +41,9 @@ export default defineConfig({
       },
     ],
   },
+  resolve: {
+    extensions: [".ts", ".js", ".mjs", ".json"],
+  },
   optimization: {
     minimizer: [
       new rspack.SwcJsMinimizerRspackPlugin(),

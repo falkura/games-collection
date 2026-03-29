@@ -1,0 +1,23 @@
+{% set component_name = name | pascal_case %}
+
+---
+to: src/index.ts
+---
+
+import "@falkura-pet/shared/normalize/normalize.css";
+import { Engine } from "@falkura-pet/engine";
+import { UI } from "@falkura-pet/ui/UI";
+import config from "../assets/game.json";
+import { {{ component_name }} } from "./{{ component_name }}";
+
+Engine.initEvents();
+Engine.initGSAP();
+
+await Engine.initApplication();
+await Engine.loadAssets();
+
+Engine.initUI(UI);
+Engine.initGame({{ component_name }}, config);
+
+Engine.ui.setScene("Game");
+Engine.start();

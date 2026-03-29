@@ -8,8 +8,10 @@
     "@falkura-pet/ui": "workspace:*"
   },
   "peerDependencies": {
+    "@tweakpane/core": "^2.0.5",
     "gsap": "^3.13.0",
-    "pixi.js": "^8.17.1"
+    "pixi.js": "^8.17.1",
+    "tweakpane": "^4.0.5"
   },
   "type": "module"
 }

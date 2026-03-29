@@ -2,19 +2,15 @@ import { Container, EventEmitter, Size } from "pixi.js";
 import { ModuleConstructor } from "../utils/ModuleManager";
 
 export interface UIEvents {
-  "ui:start-game": () => void;
   "ui:restart-game": () => void;
-  "ui:pause-game": () => void;
-  "ui:resume-game": () => void;
-  "ui:close-game": () => void;
-
+  "ui:change-game-paused": () => void;
   "ui:update-settings": (settings: Partial<UISettings>) => void;
+  "wrapper:chose-game": (gameKey: string) => void;
 }
 
 export interface UISettings {
-  volume: number;
-  music: number;
-  graphics: number;
+  mute: boolean;
+  graphics: "Low" | "Medium" | "High";
 }
 
 export interface UIScreen<TUI extends UIInstance = any> extends Container {

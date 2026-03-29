@@ -1,6 +1,6 @@
 import { EventEmitter } from "pixi.js";
 import { GameEvents } from "./types/Game";
-import { UIEvents } from "./types/UI";
+import { UIEvents, UISettings } from "./types/UI";
 
 export interface EngineEvents {
   "engine:game-started": () => void;
@@ -8,7 +8,7 @@ export interface EngineEvents {
   "engine:game-paused": () => void;
   "engine:game-resumed": () => void;
   "engine:game-reseted": () => void;
-  "engine:game-closed": () => void;
+  "engine:settings-updated": (settings: Partial<UISettings>) => void;
 
   // Wrapper event
   "engine:game-chosen": (gameKey: string) => void;

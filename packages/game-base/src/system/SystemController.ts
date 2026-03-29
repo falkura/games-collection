@@ -1,4 +1,4 @@
-import { Container, Ticker } from "pixi.js";
+import { Ticker } from "pixi.js";
 import { GameBase } from "../GameBase";
 import { System } from "./System";
 import gsap from "gsap";
@@ -11,6 +11,17 @@ export class SystemController<
 
   constructor(private readonly game: TGame) {
     super();
+  }
+
+  public override add<T extends ModuleConstructor<System<TGame>>>(
+    Ctor: T,
+    ...args: ConstructorParameters<T>
+  ): InstanceType<T> {
+    const result = super.add(Ctor, ...args);
+
+    this.game.onSystemAdded(Ctor.MODULE_ID);
+
+    return result;
   }
 
   protected override onInit<T extends System<TGame>>(instance: T): T {
@@ -29,13 +40,18 @@ export class SystemController<
 
   public disable<TModule extends System<TGame>>(
     Ctor: ModuleConstructor<TModule>,
+  ): boolean;
+  public disable(MODULE_ID: string): boolean;
+  public disable<TModule extends System<TGame>>(
+    value: ModuleConstructor<TModule> | string,
   ): boolean {
-    if (!this.list.has(Ctor.MODULE_ID)) return false;
+    const MODULE_ID = typeof value === "string" ? value : value.MODULE_ID;
+    if (!this.list.has(MODULE_ID)) return false;
 
-    const system = this.list.get(Ctor.MODULE_ID);
-    this.list.delete(Ctor.MODULE_ID);
+    const system = this.list.get(MODULE_ID);
+    this.list.delete(MODULE_ID);
 
-    this.disabledRegistry.set(Ctor.MODULE_ID, system);
+    this.disabledRegistry.set(MODULE_ID, system);
     system.enabled = false;
 
     this.game.view.removeChild(system.view);
@@ -45,13 +61,18 @@ export class SystemController<
 
   public enable<TModule extends System<TGame>>(
     Ctor: ModuleConstructor<TModule>,
+  ): boolean;
+  public enable(MODULE_ID: string): boolean;
+  public enable<TModule extends System<TGame>>(
+    value: ModuleConstructor<TModule> | string,
   ): boolean {
-    if (!this.disabledRegistry.has(Ctor.MODULE_ID)) return false;
+    const MODULE_ID = typeof value === "string" ? value : value.MODULE_ID;
+    if (!this.disabledRegistry.has(MODULE_ID)) return false;
 
-    const system = this.disabledRegistry.get(Ctor.MODULE_ID);
-    this.disabledRegistry.delete(Ctor.MODULE_ID);
+    const system = this.disabledRegistry.get(MODULE_ID);
+    this.disabledRegistry.delete(MODULE_ID);
 
-    this.list.set(Ctor.MODULE_ID, system);
+    this.list.set(MODULE_ID, system);
     system.enabled = true;
 
     this.game.view.addChild(system.view);
@@ -72,6 +93,10 @@ export class SystemController<
   }
 
   public reset() {
+    for (const key of this.disabledRegistry.keys()) {
+      this.enable(key);
+    }
+
     this.list.forEach((system) => {
       system.reset();
     });
