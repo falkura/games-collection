@@ -1,7 +1,7 @@
 {% set component_name = name | pascal_case %}
 
 ---
-to: src/systems/MainSystem.ts
+to: src/core/MainSystem.ts
 ---
 
 import { System } from "@falkura-pet/game-base";

@@ -4,6 +4,7 @@ inheritedBy:
 tasks:
   build:
     command: "bunx rslib"
+    toolchains: ['bun']
     deps:
       - ^:build
     inputs:
@@ -15,6 +16,7 @@ tasks:
       TRIGGER: "build"
   dev:
     command: "bunx rslib -w --env-mode dev"
+    toolchains: ['bun']
     options:
       persistent: true
       # Hide from user, it will run automatically

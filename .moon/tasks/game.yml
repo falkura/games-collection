@@ -13,6 +13,7 @@ tasks:
     options:
       internal: true
   build:
+    toolchains: ['bun']
     deps:
       - ^:build
       - ~:build-assets
@@ -40,6 +41,7 @@ tasks:
       outputStyle: stream
       internal: true
   dev:
+    toolchains: ['bun']
     deps:
       # depends on dev from all packages in `dependsOn` array
       - ^:dev

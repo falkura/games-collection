@@ -5,7 +5,7 @@ to: src/{{ component_name }}.ts
 ---
 
 import { GameBase } from "@falkura-pet/game-base";
-import { MainSystem } from "./systems/MainSystem";
+import { MainSystem } from "./core/MainSystem";
 
 export class {{ component_name }} extends GameBase {
   protected override init(): void {

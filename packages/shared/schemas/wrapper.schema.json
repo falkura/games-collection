@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/project.schema.json",
+  "title": "Wrapper config",
+  "description": "Wrapper configuration",
+  "type": "object",
+  "required": [
+    "title",
+    "subtitle"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The schema to verify this config against."
+    },
+    "title": {
+      "type": "string",
+      "description": "Wrapper title"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Wrapper description"
+    }
+  },
+  "additionalProperties": true
+}

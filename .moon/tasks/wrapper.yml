@@ -11,6 +11,7 @@ tasks:
     options:
       internal: true
   build:
+    toolchains: ['bun']
     # TODO should i collect output?
     deps:
       - ^:build
@@ -32,6 +33,7 @@ tasks:
       outputStyle: stream
       internal: true
   dev:
+    toolchains: ['bun']
     deps:
       - ^:dev
       - ~:dev-assets
@@ -40,3 +42,9 @@ tasks:
       persistent: true
     inputs:
       - "@group(wrapper-sources)"
+  
+  assemble:
+    script: |
+      moon run '#game:build'
+      moon run games-wrapper:build -f
+

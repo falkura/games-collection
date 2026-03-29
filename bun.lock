@@ -19,24 +19,8 @@
         "typescript": "^5.9.3",
       },
     },
-    "games/game-second": {
-      "name": "@falkura-pet/game-second",
-      "version": "0.0.0",
-      "dependencies": {
-        "@falkura-pet/engine": "workspace:*",
-        "@falkura-pet/game-base": "workspace:*",
-        "@falkura-pet/shared": "workspace:*",
-        "@falkura-pet/ui": "workspace:*",
-      },
-      "peerDependencies": {
-        "@tweakpane/core": "^2.0.5",
-        "gsap": "^3.13.0",
-        "pixi.js": "^8.17.1",
-        "tweakpane": "^4.0.5",
-      },
-    },
-    "games/test-game": {
-      "name": "@falkura-pet/test-game",
+    "games/boids-simulation": {
+      "name": "@falkura-pet/boids-simulation",
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
@@ -144,15 +128,13 @@
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.2.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-N10dEJNSsUx41Z6pZsXU8FjPjpBEplgH24sfkmITrBED1/U2Esum9F3lfLrMjKHHjmi557zQn7kR9R+XWXu5Rg=="],
 
+    "@falkura-pet/boids-simulation": ["@falkura-pet/boids-simulation@workspace:games/boids-simulation"],
+
     "@falkura-pet/engine": ["@falkura-pet/engine@workspace:packages/engine"],
 
     "@falkura-pet/game-base": ["@falkura-pet/game-base@workspace:packages/game-base"],
 
-    "@falkura-pet/game-second": ["@falkura-pet/game-second@workspace:games/game-second"],
-
     "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
-
-    "@falkura-pet/test-game": ["@falkura-pet/test-game@workspace:games/test-game"],
 
     "@falkura-pet/ui": ["@falkura-pet/ui@workspace:packages/ui"],
 
