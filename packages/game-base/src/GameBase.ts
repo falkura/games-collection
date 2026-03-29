@@ -1,4 +1,4 @@
-import 'pixi.js/math-extras';
+import "pixi.js/math-extras";
 import { Container, EventEmitter, Ticker } from "pixi.js";
 import gsap from "gsap";
 import { SystemController } from "./system/SystemController";
@@ -62,6 +62,9 @@ export abstract class GameBase implements GameInstance {
 
   public reset() {
     this.ticker.stop();
+    this.ticker.speed = 1;
+    ControlPanel.reset();
+
     this._resetTimelines();
     this.systems.reset();
   }

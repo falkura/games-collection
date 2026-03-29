@@ -8,35 +8,31 @@ export class Boid extends Point {
   constructor(x: number, y: number) {
     super(x, y);
 
-    this.acceleration = new Point(0, 0);
     this.velocity = new Point(
       (Math.random() - 0.5) * 2,
       (Math.random() - 0.5) * 2,
     );
-    this.graphics = this.draw();
-    this.graphics.position.copyFrom(this);
-  }
 
-  draw() {
-    const graphics = new Graphics()
+    this.acceleration = new Point();
+
+    this.graphics = new Graphics()
       .moveTo(-6, -6)
       .lineTo(6, 0)
       .lineTo(-6, 6)
       .closePath()
       .fill("#ffffff");
 
-    return graphics;
+    this.graphics.position.copyFrom(this);
   }
 
-  update() {
-    // apply acceleration
-    this.velocity.add(this.acceleration, this.velocity);
+  update(dt: number) {
+    this.velocity.x += this.acceleration.x * dt;
+    this.velocity.y += this.acceleration.y * dt;
 
-    // reset acceleration
-    this.acceleration.set(0);
+    this.x += this.velocity.x * dt;
+    this.y += this.velocity.y * dt;
 
-    // apply velocity to move
-    this.add(this.velocity, this);
+    this.acceleration.set(0, 0);
 
     this.graphics.position.copyFrom(this);
     this.graphics.rotation = Math.atan2(this.velocity.y, this.velocity.x);

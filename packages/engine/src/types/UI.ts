@@ -9,7 +9,6 @@ export interface UIEvents {
 }
 
 export interface UISettings {
-  mute: boolean;
   graphics: "Low" | "Medium" | "High";
 }
 

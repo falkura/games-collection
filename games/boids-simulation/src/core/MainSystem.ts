@@ -17,7 +17,7 @@ const configDefault = {
 };
 
 export class MainSystem extends System<BoidsSimulation> {
-  static MODULE_ID = "MAIN";
+  static MODULE_ID = "main";
 
   boids: Boid[] = [];
   config!: typeof configDefault;
@@ -59,7 +59,7 @@ export class MainSystem extends System<BoidsSimulation> {
     this.config = JSON.parse(JSON.stringify(configDefault));
     this.resize();
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 500; i++) {
       this.addBoid();
     }
 
@@ -106,8 +106,8 @@ export class MainSystem extends System<BoidsSimulation> {
     this.boids = [];
   }
 
-  distance(a: Point, b: Point) {
-    return a.subtract(b).magnitude();
+  distanceSquared(a: Point, b: Point) {
+    return a.subtract(b).magnitudeSquared();
   }
 
   initTweakpane() {
@@ -194,23 +194,27 @@ export class MainSystem extends System<BoidsSimulation> {
     const cohesion = new Point(0, 0);
     let total = 0;
 
+    const r2 = this.config.perceptionRadius * this.config.perceptionRadius;
+
     for (const other of this.boids) {
       if (other === b) continue;
 
-      const distance = this.distance(b, other);
+      const distance = this.distanceSquared(b, other);
+      if (distance > r2) continue;
 
-      if (distance < this.config.perceptionRadius) {
-        // Separation
-        separation.x += (b.x - other.x) / distance;
-        separation.y += (b.y - other.y) / distance;
+      total++;
 
-        // Alignment
-        alignment.add(other.velocity, alignment);
+      // Separation
+      separation.x += (b.x - other.x) / distance;
+      separation.y += (b.y - other.y) / distance;
 
-        // Cohesion
-        cohesion.add(other, cohesion);
-        total++;
-      }
+      // Alignment
+      alignment.x += other.velocity.x;
+      alignment.y += other.velocity.y;
+
+      // Cohesion
+      cohesion.x += other.x;
+      cohesion.y += other.y;
     }
 
     if (total > 0) {
@@ -242,7 +246,7 @@ export class MainSystem extends System<BoidsSimulation> {
       this.updateRules(b);
       this.limitMagnitude(b.velocity, this.config.maxSpeed);
       this.wrap(b);
-      b.update();
+      b.update(ticker.deltaTime);
     }
   }
 }

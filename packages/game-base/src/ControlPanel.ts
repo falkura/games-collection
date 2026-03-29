@@ -1,30 +1,55 @@
 import { Engine, GAME_STATE } from "@falkura-pet/engine";
 import { Assets } from "pixi.js";
-import { FolderApi } from "tweakpane";
+import { FolderApi, Pane } from "tweakpane";
 import { GameBase } from "./GameBase";
 
 export class ControlPanel {
   static engineFolder: FolderApi;
   static gameSystemsFolder: FolderApi;
   static initialized = false;
+  static gameSpeedControl: ReturnType<Pane["addBinding"]>;
+  static stats = {
+    fps: 0,
+    gameSpeed: 1,
+  };
 
   public static init(game: GameBase) {
     if (ControlPanel.initialized) return;
     ControlPanel.initialized = true;
 
     game.pane.title = Assets.get("game.json").title;
+
+    game.pane.addBinding(this.stats, "fps", {
+      label: "FPS",
+      readonly: true,
+    });
+
+    game.ticker.add(() => (this.stats.fps = game.ticker.FPS));
+
     ControlPanel.engineFolder = game.pane.addFolder({
       title: "Engine",
       expanded: false,
     });
 
+    ControlPanel.gameSpeedControl = ControlPanel.engineFolder
+      .addBinding(ControlPanel.stats, "gameSpeed", {
+        label: "Game speed",
+        min: 0,
+        max: 10,
+      })
+      .on("change", ({ value }) => (game.ticker.speed = value));
+
     ControlPanel.addGameControls(ControlPanel.engineFolder);
-    ControlPanel.addMusicButton(ControlPanel.engineFolder);
     ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
 
     ControlPanel.gameSystemsFolder = ControlPanel.engineFolder.addFolder({
       title: "Systems",
     });
+  }
+
+  public static reset() {
+    ControlPanel.stats.gameSpeed = 1;
+    ControlPanel.gameSpeedControl.refresh();
   }
 
   public static onSystemAdded(system: string, game: GameBase) {
@@ -80,26 +105,6 @@ export class ControlPanel {
 
     parent.addButton({ title: "Restart" }).on("click", () => {
       Engine.events.ui.emit("ui:restart-game");
-    });
-  }
-
-  public static addMusicButton(parent: FolderApi) {
-    const getMusicTitle = () => {
-      return Engine.muted ? "Music OFF" : "Music ON";
-    };
-
-    const musicBtn = parent.addButton({
-      title: getMusicTitle(),
-    });
-
-    musicBtn.on("click", () => {
-      Engine.events.ui.emit("ui:update-settings", {
-        mute: !Engine.muted,
-      });
-    });
-
-    Engine.events.internal.on("engine:settings-updated", () => {
-      musicBtn.title = getMusicTitle();
     });
   }
 

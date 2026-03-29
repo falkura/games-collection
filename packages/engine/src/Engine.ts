@@ -23,7 +23,6 @@ class EngineClass {
   wrapperConfig: IGamesConfig;
   gameConfig: IGameConfig;
   state: GAME_STATE;
-  muted: boolean;
   graphics: UISettings["graphics"];
 
   private _manifestName: string;
@@ -32,7 +31,6 @@ class EngineClass {
     console.log("Engine created");
 
     this.state = GAME_STATE.Init;
-    this.muted = false;
     this.graphics = "High";
 
     if (__DEV__) {
@@ -224,16 +222,12 @@ class EngineClass {
     this.events.internal.emit("engine:game-chosen", gameKey);
   }
 
-  private changeSettings({ graphics, mute }: Partial<UISettings>) {
-    if (typeof mute === "boolean") {
-      this.muted = mute;
+  private changeSettings(opts: Partial<UISettings>) {
+    if (typeof opts.graphics === "string") {
+      this.graphics = opts.graphics;
     }
 
-    if (typeof graphics === "string") {
-      this.graphics = graphics;
-    }
-
-    this.events.internal.emit("engine:settings-updated", { graphics, mute });
+    this.events.internal.emit("engine:settings-updated", opts);
   }
 
   private onResize(width: number, height: number, resolution: number) {

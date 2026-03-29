@@ -8,5 +8,5 @@ import { System } from "@falkura-pet/game-base";
 import { {{ component_name }} } from "../{{ component_name }}";
 
 export class MainSystem extends System<{{ component_name }}> {
-  static MODULE_ID = "MAIN";
+  static MODULE_ID = "main";
 }
