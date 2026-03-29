@@ -1,0 +1,20 @@
+{
+  "extends": "@falkura-pet/shared/tsconfig/game.tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "references": [
+    {
+      "path": "../../packages/engine"
+    },
+    {
+      "path": "../../packages/game-base"
+    },
+    {
+      "path": "../../packages/ui"
+    }
+  ]
+}

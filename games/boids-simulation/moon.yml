@@ -1,0 +1,7 @@
+layer: application
+tags:
+  - game
+dependsOn:
+  - lib-engine
+  - lib-game-base
+  - lib-ui
