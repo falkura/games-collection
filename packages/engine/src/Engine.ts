@@ -237,6 +237,7 @@ class EngineClass {
   }
 
   private onResize(width: number, height: number, resolution: number) {
+    this.game && this.game.resize();
     this.ui.onResize(width, height, resolution);
   }
 }

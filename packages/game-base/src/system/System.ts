@@ -12,5 +12,6 @@ export abstract class System<T extends GameBase = GameBase> {
   public reset() {}
   public pause() {}
   public resume() {}
+  public resize() {}
   public tick(ticker: Ticker) {}
 }

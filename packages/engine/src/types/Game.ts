@@ -11,6 +11,7 @@ export interface GameInstance {
   pause(): void;
   resume(): void;
   reset(): void;
+  resize(): void;
 }
 
 export type GameConstructor<T extends GameInstance = GameInstance> = new (

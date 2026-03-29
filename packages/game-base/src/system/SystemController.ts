@@ -114,6 +114,12 @@ export class SystemController<
     });
   }
 
+  public resize() {
+    this.list.forEach((system) => {
+      system.resize();
+    });
+  }
+
   public tick(ticker: Ticker) {
     this.list.forEach((system) => {
       system.tick(ticker);
