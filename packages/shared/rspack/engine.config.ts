@@ -13,7 +13,7 @@ export default defineConfig(({ envMode }) => {
         },
         source: {
           define: {
-            __DEV__: JSON.stringify(envMode),
+            __DEV__: process.env.NODE_ENV === "development",
           },
         },
       },

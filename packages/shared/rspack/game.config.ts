@@ -5,7 +5,7 @@ import { rspack, RspackOptions } from "@rspack/core";
 const config: IGameConfig = await import(path.resolve("assets", "game.json"));
 const outDist = path.resolve("dist");
 
-export default defineConfig(({ RSPACK_SERVE }) => {
+export default defineConfig(() => {
   return {
     extends: path.join(__dirname, "/base.config.ts"),
     entry: "./src/index.ts",
@@ -27,11 +27,12 @@ export default defineConfig(({ RSPACK_SERVE }) => {
     },
     plugins: [
       new rspack.DefinePlugin({
-        __DEV__: true,
+        __DEV__: process.env.NODE_ENV === "development",
       }),
       new rspack.HtmlRspackPlugin({
         template: path.join(__dirname, "../html/game.index.html"),
-        base: RSPACK_SERVE ? undefined : `${config.route}/`,
+        base:
+          process.env.DEPLOYMENT === "true" ? undefined : `${config.route}/`,
         title: config.title,
       }),
     ],

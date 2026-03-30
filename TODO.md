@@ -2,5 +2,6 @@
 
 - readme for all projects
 - graphics settings
-- figma project design
-- build prod version
+- tsgo
+- other games
+- fix __DEV__ flag

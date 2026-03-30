@@ -8,21 +8,22 @@ tasks:
     command: bunx assetpack -c @files(game-assetpack)
     options:
       internal: true
+      cache: false
   build-sources:
     command: bunx rspack build
     options:
       internal: true
+      cache: false
   build:
-    toolchains: ['bun']
+    toolchains: ["bun"]
     deps:
       - ^:build
       - ~:build-assets
       - ~:build-sources
     inputs:
       - "@group(game-sources)"
-    # Output path to collect files in cache
-    outputs:
-      - "dist"
+    options:
+      cache: false
 
   # Dev
   dev-assets:
@@ -41,7 +42,7 @@ tasks:
       outputStyle: stream
       internal: true
   dev:
-    toolchains: ['bun']
+    toolchains: ["bun"]
     deps:
       # depends on dev from all packages in `dependsOn` array
       - ^:dev

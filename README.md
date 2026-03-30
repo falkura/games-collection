@@ -1,5 +1,7 @@
 # Games Collection
 
+[Project deploy](https://mute-band-a644.vlad-trollon.workers.dev/)
+
 ### Init
 1. install moon? https://moonrepo.dev/docs/install
 2. install bun?
@@ -18,6 +20,8 @@ Develop wrapper: `moon run games-wrapper:dev`
 
 ### Build project
 Run: `moon run games-wrapper:assemble`
+
+`/build` folder contains all the files for deploy
 
 ---
 ## *OUTDATED*

@@ -9,10 +9,11 @@ import fs from "fs";
 
 const gamesMetaFile = path.resolve(PATHS.buildPath, "meta.json");
 
-// TODO simple serve
 export default defineConfig(async ({ RSPACK_SERVE }) => {
-  // TODO partial clear
-  await rm(PATHS.buildPath, { recursive: true, force: true });
+  // No need to clear for dev server
+  if (RSPACK_SERVE) {
+    await rm(PATHS.buildPath, { recursive: true, force: true });
+  }
   const metaData = await generateGamesMeta(PATHS.gamesPath, gamesMetaFile);
   await copyGameIcons(metaData);
 
@@ -59,7 +60,7 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
     },
     plugins: [
       new rspack.DefinePlugin({
-        __DEV__: true,
+        __DEV__: process.env.NODE_ENV === "development",
       }),
       new rspack.HtmlRspackPlugin({
         template: "public/index.html",
