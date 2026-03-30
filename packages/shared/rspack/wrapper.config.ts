@@ -5,6 +5,7 @@ import { copyGameIcons } from "../scripts/copyGameIcons";
 import path from "path";
 import PATHS from "../paths";
 import { rm } from "fs/promises";
+import fs from "fs";
 
 const gamesMetaFile = path.resolve(PATHS.buildPath, "meta.json");
 
@@ -16,10 +17,20 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
   await copyGameIcons(metaData);
 
   const gamesMeta = (await import(gamesMetaFile)).default as IGamesConfig;
-  const copyPatterns = Object.entries(gamesMeta).map(([gamePath, config]) => ({
-    from: path.join(PATHS.gamesPath, gamePath, "dist"),
-    to: config.route || gamePath,
-  }));
+  const copyPatterns = Object.entries(gamesMeta)
+    .map(([gamePath, config]) => {
+      const gameDist = path.join(PATHS.gamesPath, gamePath, "dist");
+      if (!fs.existsSync(gameDist)) {
+        console.error(gameDist, " folder not exists!");
+        return undefined;
+      }
+
+      return {
+        from: gameDist,
+        to: config.route || gamePath,
+      };
+    })
+    .filter((item) => item != undefined);
 
   return {
     extends: path.join(__dirname, "/base.config.ts"),
