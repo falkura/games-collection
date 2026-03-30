@@ -1,4 +1,4 @@
-import { create as createBase } from "./base";
+import { create as createBase } from "./base.ts";
 import path from "path";
 
 export default createBase({
