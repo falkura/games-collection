@@ -20,6 +20,9 @@
   "trustedDependencies": [
     "@moonrepo/cli"
   ],
+  "engines": {
+    "node": ">=22.18"
+  },
   "workspaces": [
     "packages/*",
     "games/*"

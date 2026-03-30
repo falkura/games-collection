@@ -9,7 +9,7 @@ tasks:
     options:
       internal: true
   build-sources:
-    command: bunx rspack build
+    command: bunx rspack build --configLoader=native
     options:
       internal: true
   build:
