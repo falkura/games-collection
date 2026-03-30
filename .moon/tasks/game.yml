@@ -9,11 +9,11 @@ tasks:
     options:
       internal: true
   build-sources:
-    command: bunx rspack build --configLoader=native
+    command: bunx rspack build
     options:
       internal: true
   build:
-    toolchains: ['bun', 'node']
+    toolchains: ['bun']
     deps:
       - ^:build
       - ~:build-assets
