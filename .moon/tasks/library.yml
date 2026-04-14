@@ -3,7 +3,7 @@ inheritedBy:
 
 tasks:
   build:
-    command: "bun --bun rslib"
+    command: "bunx rslib"
     toolchains: ["bun"]
     deps:
       - ^:build
@@ -12,7 +12,7 @@ tasks:
     outputs:
       - "dist"
   dev:
-    command: "bun --bun rslib -w --env-mode dev"
+    command: "bunx rslib -w --env-mode dev"
     toolchains: ["bun"]
     options:
       persistent: true
