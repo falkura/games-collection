@@ -1,18 +1,12 @@
 import { Container, RectangleLike } from "pixi.js";
 import { LayoutContainer } from "./LayoutContainer";
-
-declare global {
-  namespace Layout {
-    interface ManagerOptions {
-      width: number;
-      height: number;
-      portrait: {
-        width: number;
-        height: number;
-      };
-    }
-  }
-}
+import {
+  HandlerOptions,
+  LayoutConfig,
+  LayoutVars,
+  ManagerOptions,
+  RegisterHandlers,
+} from "./LayoutHandlers";
 
 export class LayoutManager {
   public isPortrait: boolean;
@@ -27,31 +21,32 @@ export class LayoutManager {
   public screen = {} as RectangleLike;
 
   private readonly root: Container;
-  private readonly options: Layout.ManagerOptions;
-  private scale: number;
+  private readonly options: ManagerOptions;
   private static _instance: LayoutManager;
 
-  public static HANDLERS: Record<
-    keyof Layout.Config<Container> | "unknown",
-    Layout.Handler
+  public handlers: Record<
+    keyof LayoutConfig<Container> | "unknown",
+    (opts: HandlerOptions<any>) => void
   > = {} as any;
 
-  constructor(root: Container, options: Layout.ManagerOptions) {
+  constructor(root: Container, options: ManagerOptions) {
     this.root = root;
     this.options = options;
 
     LayoutManager.instance = this;
+
+    RegisterHandlers();
 
     if (__DEV__) {
       globalThis.layout = this;
     }
   }
 
-  public static registerLayoutHandler(
-    key: keyof typeof LayoutManager.HANDLERS,
-    handler: Layout.Handler,
+  public registerLayoutHandler(
+    key: keyof typeof this.handlers,
+    handler: (opts: HandlerOptions<any>) => void,
   ) {
-    LayoutManager.HANDLERS[key] = handler;
+    this.handlers[key] = handler;
   }
 
   public static get instance() {
@@ -72,7 +67,6 @@ export class LayoutManager {
 
     // calculate the largest scale that fits the game inside the screen without cropping
     const scaleFit = Math.min(width / targetWidth, height / targetHeight);
-    this.scale = scaleFit / 1;
 
     // convert physical screen pixels into game size pixes relative to this.options
     this.screen.width = width / scaleFit;
@@ -84,11 +78,10 @@ export class LayoutManager {
     this.game.width = targetWidth;
     this.game.height = targetHeight;
 
-    this.root.scale.set(this.scale);
+    this.root.scale.set(scaleFit / 1);
     this.updateCanvasSize(width, height);
 
-    const vars = this.createLayoutVars(this.root);
-    this.update(this.root, vars);
+    this.update(this.root, this.layoutContext);
   }
 
   public updateCanvasSize(width, height) {
@@ -104,7 +97,7 @@ export class LayoutManager {
   }
 
   public updateSingleNode(node: LayoutContainer, includeChildren = true) {
-    const vars = this.createLayoutVars(node);
+    const vars = this.layoutContext;
 
     if (includeChildren) {
       this.update(node, vars);
@@ -113,10 +106,8 @@ export class LayoutManager {
     }
   }
 
-  private createLayoutVars(
-    target: LayoutContainer | Container,
-  ): Layout.LayoutVars {
-    const vars: Layout.LayoutVars = {
+  private get layoutContext(): LayoutVars {
+    return {
       gx: this.game.x,
       gy: this.game.y,
       gw: this.game.width,
@@ -126,37 +117,12 @@ export class LayoutManager {
       sh: this.screen.height,
 
       smax: Math.max(this.screen.width, this.screen.height),
-
-      gs: this.scale,
-
-      pw: null,
-      ph: null,
     };
-
-    return this.updateLayoutVarsParent(target, vars);
   }
 
-  private updateLayoutVarsParent(
-    target: LayoutContainer | Container,
-    vars: Layout.LayoutVars,
-  ): Layout.LayoutVars {
-    let pw = vars.gw;
-    let ph = vars.gh;
-
-    if (target.parent instanceof LayoutContainer) {
-      pw = target.parent._layoutParams.width || pw;
-      ph = target.parent._layoutParams.height || pw;
-    }
-
-    vars.pw = pw;
-    vars.ph = ph;
-
-    return vars;
-  }
-
-  private update(node: LayoutContainer | Container, vars: Layout.LayoutVars) {
+  private update(node: LayoutContainer | Container, vars: LayoutVars) {
     if (node instanceof LayoutContainer) {
-      node.updateLayout(this, this.updateLayoutVarsParent(node, vars));
+      node.updateLayout(this, vars);
     }
 
     for (const child of node.children) {

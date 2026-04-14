@@ -1,59 +1,20 @@
 # Engine
 
-This repository contains the **core game engine** used across in games and a wrapper.
+Core game engine built on PixiJS. Handles rendering, GSAP animations, asset loading, and game lifecycle. Built as an unbundled ESM library with Rslib.
 
-The engine is built around **PixiJS** and PixiJS libraries and is responsible for everything except game-specific logic.
+> Part of the [Games Collection](../../README.md) monorepo
 
-> This package is part of the [games collection][root-readme] project
+```bash
+# No direct commands needed — develop by running any game:
+moon run <game-name>:dev    # engine changes are picked up automatically
+```
 
-## Overview
+## Details
 
-The engine handles:
+The engine is responsible for everything except game-specific logic: PixiJS rendering, GSAP animations (with PixiPlugin integration and ticker sync), game loop and lifecycle management (init, start, pause, resume, reset, finish), asset loading via AssetPack manifests, events handling.
 
-- Rendering via **PixiJS**
-- UI layout using [**@pixi/layout**](https://layout.pixijs.io/) (Yoga-powered)
-- Animations via **GSAP**
-- Game loop and lifecycle management
-- Asset loading and management
-- Input and interactions handling
-- Save / load of game data
+It is designed to stay **game-agnostic** — no game logic, no game assets. Only SVG icons are allowed for built-in UI elements. Games and the wrapper consume it as a dependency.
 
-## Architecture
+The engine defines `GameInstance` and `UIInstance` interfaces. Any package that implements these interfaces can be plugged into the engine — `game-base` and `ui` are the default implementations, but they are not the only possible ones.
 
-- The engine is a **monorepo package**
-- It must not contain any assets
-- It is designed to be consumed by games and wrappers in the monorepo
-- All build and development steps are **fully automated**
-
-> [!IMPORTANT]
-> Although the engine can be built and developed like a standalone package, it is a part of the monorepo.
-> You do not need to run any scripts from this package directly.
-> To develop or test the engine, run a **game or wrapper** from the monorepo root.
-
-## Development
-
-To develop the engine run any game from the monorepo root. Any changes made to the engine will be picked up automatically.
-
-## Assets
-
-The engine **must not include any assets**.
-
-All assets belong to individual games, or wrappers. This ensures the engine remains generic, lightweight, and reusable.
-
-> [!NOTE]
-> Only SVG files are allowed to be used as icons for the UI elements.
-
-
-## Additional Information
-
-- Engine code should remain game-agnostic
-- Shared systems and utilities should live here
-- Game logic and content should never be added to this package
-- For bundling information check [**shared** readme][shared-readme-engine]
-
----
-
-For more information, see the [**monorepo root README**][root-readme].
-
-[root-readme]: ../../README.md
-[shared-readme-engine]: ../shared/README.md#engine
+Built with Rslib as unbundled ESM (`bundle: false`) — each source file compiles to a separate `.js` + `.d.ts` output. Exports are fully controlled in `index.ts`.

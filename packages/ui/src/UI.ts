@@ -13,8 +13,7 @@ import type {
 
 import { LayoutManager } from "./layout/LayoutManager";
 import { LayoutContainer } from "./layout/LayoutContainer";
-import "./layout/LayoutHandlersDefault";
-import "./layout/LayoutHandlersCustom";
+import "./layout/LayoutHandlers";
 
 export class UI implements UIInstance {
   layout: LayoutManager;

@@ -1,4 +1,4 @@
-import { LayoutContainer } from "src/layout/LayoutContainer";
+import { LayoutContainer } from "../layout/LayoutContainer";
 import { AppScreen } from "./AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
 

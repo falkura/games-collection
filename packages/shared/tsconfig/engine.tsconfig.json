@@ -8,17 +8,21 @@
     "noImplicitAny": false,
     "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2023", "DOM"],
+    "lib": [
+      "es2023",
+      "DOM"
+    ],
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "target": "esnext",
     "module": "esnext",
     "esModuleInterop": true,
     "useDefineForClassFields": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-
-    "types": ["@falkura-pet/shared/types/global.d.ts"],
+    "types": [
+      "@falkura-pet/shared/types/global.d.ts"
+    ],
     "composite": true
   }
 }

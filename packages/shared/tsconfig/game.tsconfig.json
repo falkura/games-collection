@@ -6,12 +6,16 @@
     "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
-    "lib": ["ES2023", "DOM"],
-    "ignoreDeprecations": "6.0",
+    "lib": [
+      "ES2023",
+      "DOM"
+    ],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "composite": true,
-    "types": ["@falkura-pet/shared/types/global.d.ts"]
+    "types": [
+      "@falkura-pet/shared/types/global.d.ts"
+    ]
   }
 }

@@ -31,8 +31,6 @@ export default defineConfig(() => {
       }),
       new rspack.HtmlRspackPlugin({
         template: path.join(__dirname, "../html/game.index.html"),
-        base:
-          process.env.DEPLOYMENT === "true" ? undefined : `${config.route}/`,
         title: config.title,
       }),
     ],

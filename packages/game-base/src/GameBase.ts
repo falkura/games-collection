@@ -86,6 +86,11 @@ export abstract class GameBase implements GameInstance {
   }
 
   private _resetTimelines() {
-    this.timeline.getChildren(false).forEach((tl: GSAPTimeline) => tl.clear());
+    this.timeline
+      .getChildren(false)
+      .forEach(
+        (tl: GSAPTween | GSAPTimeline) =>
+          tl instanceof gsap.core.Timeline && tl.clear(),
+      );
   }
 }

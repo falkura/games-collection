@@ -1,7 +1,6 @@
 {
   "extends": "@falkura-pet/shared/tsconfig/engine.tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
     "rootDir": "src"
   },
   "include": ["src/**/*"],
