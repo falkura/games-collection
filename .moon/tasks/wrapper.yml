@@ -3,32 +3,35 @@ inheritedBy:
 
 tasks:
   build-assets:
-    command: bunx assetpack -c @files(wrapper-assetpack)
+    command: bunx --bun assetpack -c @files(wrapper-assetpack)
     options:
       internal: true
       cache: false
   build-sources:
-    command: bunx rspack build
+    command: bunx --bun rspack build
+    deps:
+      - ^:build
     options:
       internal: true
       cache: false
   build:
     toolchains: ["bun"]
     deps:
-      - ^:build
       - ~:build-assets
       - ~:build-sources
     inputs:
       - "@group(wrapper-sources)"
 
   dev-assets:
-    command: bunx assetpack -w -c @files(wrapper-assetpack)
+    command: bunx --bun assetpack -w -c @files(wrapper-assetpack)
     options:
       persistent: true
       outputStyle: stream
       internal: true
   dev-sources:
-    command: bunx rspack serve
+    command: bunx --bun rspack serve
+    deps:
+      - ^:dev
     options:
       persistent: true
       outputStyle: stream
@@ -36,7 +39,6 @@ tasks:
   dev:
     toolchains: ["bun"]
     deps:
-      - ^:dev
       - ~:dev-assets
       - ~:dev-sources
     options:
