@@ -1,33 +1,44 @@
 # Games Collection
 
-[Project deploy](https://mute-band-a644.vlad-trollon.workers.dev/)
-
 ### Init
-1. install moon? https://moonrepo.dev/docs/install
-2. install bun?
-3. run `bun i`
+
+1. install [bun](https://bun.com/docs/installation)
+2. run `bun i`
+3. install [moon](https://moonrepo.dev/docs/install)
 
 ### Create new game
+
 1. Create: `moon generate game`
 2. Install dependencies: `bun i`
 
 ### Run game
+
 Build game: `moon run <game-name>:build`
 Develop game: `moon run <game-name>:dev`
 
 ### Run wrapper
+
 Develop wrapper: `moon run games-wrapper:dev`
 
 ### Build project
+
 Run: `moon run games-wrapper:assemble`
 
 `/build` folder contains all the files for deploy
 
+in deployment variables, add:
+DEPLOYMENT: "true"
+NODE_ENV: "production"
+**DEV**: "false"
+
 ---
-## *OUTDATED*
+
+## _OUTDATED_
+
 ---
 
 <a id="readme-top"></a>
+
 <div align="center">
   <h3 align="center">Games Collection</h3>
 
@@ -70,7 +81,6 @@ Run: `moon run games-wrapper:assemble`
   </ol>
 </details>
 
-
 ## About The Project
 
 **games-collection** is a project for developing, building, and running small games, along with a shared game engine and a wrapper application that ties everything together. It focuses on clear build pipelines and simple, reliable asset management.
@@ -81,7 +91,6 @@ Run: `moon run games-wrapper:assemble`
 - Keep the engine versatile, scalable, and as simple as possible
 - Build a strong monorepo architecture that is easy to navigate and maintain
 - Reduce carbon emissions by relying on fast modern bundlers and efficient caching
-
 
 ### Built With
 
@@ -160,10 +169,9 @@ Run: `moon run games-wrapper:assemble`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 ## Architecture
 
-TODO info about turborepo and bun 
+TODO info about turborepo and bun
 
 ```sh
 /packages/
@@ -203,9 +211,7 @@ Shared is a monorepo package, that contains a collection of configs and tools fo
 
 TODO info about scripts
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 ## Getting Started
 
@@ -225,7 +231,6 @@ cd ./games-collection
 # Install dependencies
 bun install
 ```
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -253,17 +258,15 @@ bun run <script-name>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 ## Roadmap
 
-* [ ] Game template generator
-* [ ] Documentation per package
-* [ ] Scripts args description
-* [ ] https://marella.github.io/material-design-icons/demo/font/
-* [ ] Fill roadmap...
+- [ ] Game template generator
+- [ ] Documentation per package
+- [ ] Scripts args description
+- [ ] https://marella.github.io/material-design-icons/demo/font/
+- [ ] Fill roadmap...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 ## Contributing
 
@@ -276,7 +279,6 @@ This is a personal pet project and is not currently accepting contributions.
 License is **TBD**. Until a license is added, all rights are reserved by the author.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 [bun-url]: https://bun.com/
 [shared-readme]: ./packages/shared/README.md
