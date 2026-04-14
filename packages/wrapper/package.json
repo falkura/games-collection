@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@falkura-pet/engine": "workspace:*"
+    "@falkura-pet/engine": "workspace:*",
+    "@falkura-pet/ui": "workspace:*"
   },
   "devDependencies": {
     "@falkura-pet/shared": "workspace:*"

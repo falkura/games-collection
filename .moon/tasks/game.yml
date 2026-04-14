@@ -5,12 +5,12 @@ inheritedBy:
 tasks:
   # Build
   build-assets:
-    command: bunx assetpack -c @files(game-assetpack)
+    command: bun --bun assetpack -c @files(game-assetpack)
     options:
       internal: true
       cache: false
   build-sources:
-    command: bunx rspack build
+    command: bun --bun rspack build
     options:
       internal: true
       cache: false
@@ -28,7 +28,7 @@ tasks:
   # Dev
   dev-assets:
     # @files(game-assetpack) is a path to assetpack config from all.yml
-    command: bunx assetpack -w -c @files(game-assetpack)
+    command: bun --bun assetpack -w -c @files(game-assetpack)
     options:
       # Run in parallel
       persistent: true
@@ -36,7 +36,7 @@ tasks:
       outputStyle: stream
       internal: true
   dev-sources:
-    command: bunx rspack serve
+    command: bun --bun rspack serve
     options:
       persistent: true
       outputStyle: stream

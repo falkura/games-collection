@@ -3,12 +3,12 @@ inheritedBy:
 
 tasks:
   build-assets:
-    command: bunx assetpack -c @files(wrapper-assetpack)
+    command: bun --bun assetpack -c @files(wrapper-assetpack)
     options:
       internal: true
       cache: false
   build-sources:
-    command: bunx rspack build
+    command: bun --bun rspack build
     options:
       internal: true
       cache: false
@@ -22,13 +22,13 @@ tasks:
       - "@group(wrapper-sources)"
 
   dev-assets:
-    command: bunx assetpack -w -c @files(wrapper-assetpack)
+    command: bun --bun assetpack -w -c @files(wrapper-assetpack)
     options:
       persistent: true
       outputStyle: stream
       internal: true
   dev-sources:
-    command: bunx rspack serve
+    command: bun --bun rspack serve
     options:
       persistent: true
       outputStyle: stream
@@ -43,14 +43,3 @@ tasks:
       persistent: true
     inputs:
       - "@group(wrapper-sources)"
-
-  assemble:
-    script: |
-      bunx moon run '#game:build' -f
-      bunx moon run games-wrapper:build
-    options:
-      cache: false
-    env:
-      DEPLOYMENT: "true"
-      # Set production to set __DEV__ to false
-      NODE_ENV: "production"
