@@ -1,11 +1,14 @@
 {
   "name": "@falkura-pet/boids-simulation",
   "version": "0.0.0",
+  "templateVersion": "0.0.0",
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",
     "@falkura-pet/game-base": "workspace:*",
-    "@falkura-pet/shared": "workspace:*",
     "@falkura-pet/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@falkura-pet/shared": "workspace:*"
   },
   "peerDependencies": {
     "@tweakpane/core": "^2.0.5",

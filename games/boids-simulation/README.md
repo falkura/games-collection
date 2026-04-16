@@ -1,3 +1,18 @@
-# boids-simulation
+# Boids Simulation
 
-This readme file will be added to the generated game
+A flocking behavior simulation. Boids follow three simple local rules — separation, alignment, and cohesion — to produce realistic emergent group movement like birds or fish.
+
+> Part of the [Games Collection](../../README.md) monorepo — built on shared [engine](../../packages/engine/README.md), shared [game-base](../../packages/game-base/README.md), and shared [ui](../../packages/ui/README.md).
+
+### Install dependencies
+
+```bash
+bun install
+```
+
+### Usage
+
+```bash
+moon run boids-simulation:dev       # http://localhost:3000
+moon run boids-simulation:build     # production build
+```

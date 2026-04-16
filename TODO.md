@@ -1,7 +1,8 @@
 # TODO
 
-- readme for all projects
 - graphics settings
 - tsgo
 - other games
-- fix __DEV__ flag
+- NODE_ENV flag
+- claude instructions
+- extended info for each subproject?

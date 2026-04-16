@@ -1,80 +1,23 @@
 # Wrapper
 
-The wrapper acts as a launcher and container for all games. It provides the start screen, handles game selection, and assembles the final production build.
+Launcher and container for all games. Provides a game selection screen and assembles the final production build into a single deployable bundle.
 
-> This package is part of the [games collection][root-readme] project
+> Part of the [Games Collection](../../README.md) monorepo
 
-## Overview
+### Development
 
-The wrapper is responsible for:
-
-- Serving as the application **entry** page
-- Providing a game selection/start screen
-- Integrating built games into a single distributable app
-
-*AssetPack is available for this package. [More information here][assetpack-readme].*
-
-## Build Output Structure
-
-During build, the wrapper assembles the full project into the final `./dist/` directory at the root of monorepo.
-
-The structure looks like this:
-
-```sh
-dist/
-│
-├── index.html              # Wrapper entry page
-├── index.js                # Wrapper application bundle
-├── assets/                 # Wrapper static assets (from AssetPack)
-│   └── ...
-│
-├── engine/                 # Compiled engine package
-│   └── ...
-│
-├── game-1/                 # Built game
-│   ├── assets/             # Game-specific assets
-│   │   └── ...
-│   └── ...                 # Game bundle and files
-│
-├── game-1/                 # Built game
-│   ├── assets/             # Game-specific assets
-│   │   └── ...
-│   └── ...                 # Game bundle and files
-│
-└── ...
+```bash
+moon run games-wrapper:dev    # http://localhost:3001
 ```
 
-### What happens during build
+### Build
 
-- The **wrapper bundle** is built into `dist/`
-- Wrapper **assets** are placed into `dist/assets/`
-- The **engine package** is copied into `dist/engine/`
-- Each game is built and copied into its own folder:
-  `dist/<game-name>/`
-
-This structure allows games to remain **independent**, while still being launched from a single unified application.
-
-## Development
-
-To work on the wrapper, run the dev script from the monorepo root:
-
-```sh
-bun run dev:wrapper
+```bash
+bun run assemble      # assembles application into root/build
 ```
 
-Any changes to the engine will be picked up automatically.
+## Details
 
-## Additional Information
+The wrapper is the application entry point. It renders a game picker with cards for each game (icon, title, version, description) and navigates to individual games via the engine's event system.
 
-- Wrapper code should remain game-agnostic
-- Game logic and content should never be added to this package
-- More bundling information check in [**shared** readme][shared-readme-wrapper]
-
---- 
-
-For more information, see the [**monorepo root README**][root-readme].
-
-[root-readme]: ../../README.md
-[normalize-url]: https://github.com/necolas/normalize.css/
-[assetpack-readme]: ../shared/README.md#assetpack
-[shared-readme-wrapper]: ../../packages/shared/README.md#wrapper
+During build, everything is assembled into `/build`: wrapper bundle, engine output, per-game bundles with assets, and a generated `@gamesMeta` module that provides the wrapper with metadata about all available games at build time.

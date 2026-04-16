@@ -18,6 +18,7 @@ wrapper.innerHTML = Object.entries(gamesMeta)
     const iconExt = game.icon
       ? game.icon.substring(game.icon.lastIndexOf("."))
       : ".png";
+
     return `
       <div class="game-card">
         <div class="game-card-left">
