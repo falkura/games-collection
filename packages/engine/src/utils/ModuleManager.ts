@@ -35,9 +35,13 @@ export class ModuleManager<TBase> {
     return instance;
   }
 
-  public get<T extends ModuleConstructor<TBase>>(moduleId: string): TBase;
-  public get<T extends ModuleConstructor<TBase>>(Ctor: T): TBase;
-  public get<T extends ModuleConstructor<TBase>>(value: T | string): TBase {
+  public get<T extends ModuleConstructor<TBase>>(
+    moduleId: string,
+  ): InstanceType<T>;
+  public get<T extends ModuleConstructor<TBase>>(Ctor: T): InstanceType<T>;
+  public get<T extends ModuleConstructor<TBase>>(
+    value: T | string,
+  ): InstanceType<T> {
     let result;
 
     if (typeof value === "string") {
