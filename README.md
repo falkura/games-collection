@@ -9,6 +9,8 @@ A PixiJS game collection monorepo. A shared engine and wrapper let you create mu
 1. Install [Bun](https://bun.com/docs/installation)
 2. Run `bun install`
 
+> **Windows note:** Windows Defender / SmartScreen may block `moon.exe` after install. If `moon` fails to run, add it as an exception in your antivirus/Defender settings (or disable the Smart App Control) and retry.
+
 ## Usage
 
 ### New game

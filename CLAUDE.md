@@ -80,7 +80,8 @@ When creating a new game (via `moon generate game` or by user request):
 1. Scaffold with `moon generate game -- --name '<Human Name>'`, then `bun install`.
 2. Implement game logic in `games/<name>/src/core/MainSystem.ts` (or split across multiple files in `src/core/`).
 3. **Replace the placeholder description** in `games/<name>/README.md` (the `_Add a description..._` line) with 1–3 sentences about what the game does.
-4. Verify with `moon run <name>:build`.
+4. **Replace the placeholder `description` in `games/<name>/assets/game.json`** (defaults to `"template project"`) with a short, non-implementation-specific blurb — it's surfaced in the wrapper's game picker, so describe what the player does, not how the code works.
+5. Verify with `moon run <name>:build`.
 
 ## Structuring Game Logic Across Systems
 

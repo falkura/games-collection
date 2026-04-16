@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "assemble": "bun i && bunx --bun moon run '#game:build' -f && bunx --bun moon run games-wrapper:build",
-    "postinstall": "bun i -g @moonrepo/cli"
+    "postinstall": "bun add -g @moonrepo/cli"
   },
   "devDependencies": {
     "@assetpack/core": "^1.5.0",
