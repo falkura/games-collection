@@ -1,6 +1,6 @@
 import "@falkura-pet/shared/normalize/normalize.css";
 import { Engine } from "@falkura-pet/engine";
-import { UI } from "@falkura-pet/ui/UI";
+import { UI } from "@falkura-pet/ui-base/UI";
 import config from "../assets/game.json";
 import { BoidsSimulation } from "./BoidsSimulation";
 

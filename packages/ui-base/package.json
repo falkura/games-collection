@@ -1,5 +1,5 @@
 {
-  "name": "@falkura-pet/ui",
+  "name": "@falkura-pet/ui-base",
   "version": "0.0.0",
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",

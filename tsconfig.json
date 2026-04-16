@@ -18,7 +18,7 @@
       "path": "packages/game-base"
     },
     {
-      "path": "packages/ui"
+      "path": "packages/ui-base"
     },
     {
       "path": "packages/wrapper"

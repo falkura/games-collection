@@ -4,4 +4,4 @@ tags:
 dependsOn:
   - lib-engine
   - lib-game-base
-  - lib-ui
+  - lib-ui-base

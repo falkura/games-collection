@@ -6,7 +6,7 @@ to: README.md
 
 _Add a description of what this game does and how it works._
 
-> Part of the [Games Collection](../../README.md) monorepo — built on shared [engine](../../packages/engine/README.md), shared [game-base](../../packages/game-base/README.md), and shared [ui](../../packages/ui/README.md).
+> Part of the [Games Collection](../../README.md) monorepo — built on shared [engine](../../packages/engine/README.md), shared [game-base](../../packages/game-base/README.md), and shared [ui-base](../../packages/ui-base/README.md).
 
 ### Install dependencies
 

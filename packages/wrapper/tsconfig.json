@@ -7,7 +7,7 @@
       "path": "../engine"
     },
     {
-      "path": "../ui"
+      "path": "../ui-base"
     }
   ]
 }

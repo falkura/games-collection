@@ -1,6 +1,6 @@
 $schema: ../../.moon/cache/schemas/template.json
 description: |
-  Package with engine, base game and ui implementation, assets management
+  Package with engine, base game and base ui implementation, assets management
   and building / development pipelines.
 destination: "/games/[name | kebab_case]"
 title: Game Template

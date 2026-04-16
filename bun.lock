@@ -25,8 +25,10 @@
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
         "@falkura-pet/game-base": "workspace:*",
+        "@falkura-pet/ui-base": "workspace:*",
+      },
+      "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
-        "@falkura-pet/ui": "workspace:*",
       },
       "peerDependencies": {
         "@tweakpane/core": "^2.0.5",
@@ -67,8 +69,8 @@
       "name": "@falkura-pet/shared",
       "version": "0.0.0",
     },
-    "packages/ui": {
-      "name": "@falkura-pet/ui",
+    "packages/ui-base": {
+      "name": "@falkura-pet/ui-base",
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
@@ -88,7 +90,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
-        "@falkura-pet/ui": "workspace:*",
+        "@falkura-pet/ui-base": "workspace:*",
       },
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
@@ -137,7 +139,7 @@
 
     "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
 
-    "@falkura-pet/ui": ["@falkura-pet/ui@workspace:packages/ui"],
+    "@falkura-pet/ui-base": ["@falkura-pet/ui-base@workspace:packages/ui-base"],
 
     "@falkura-pet/wrapper": ["@falkura-pet/wrapper@workspace:packages/wrapper"],
 

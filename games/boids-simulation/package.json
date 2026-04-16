@@ -5,7 +5,7 @@
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",
     "@falkura-pet/game-base": "workspace:*",
-    "@falkura-pet/ui": "workspace:*"
+    "@falkura-pet/ui-base": "workspace:*"
   },
   "devDependencies": {
     "@falkura-pet/shared": "workspace:*"

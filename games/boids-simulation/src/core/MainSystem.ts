@@ -1,6 +1,6 @@
 import { System } from "@falkura-pet/game-base";
 import { Point, RectangleLike, Ticker } from "pixi.js";
-import { LayoutManager } from "@falkura-pet/ui/layout/LayoutManager";
+import { LayoutManager } from "@falkura-pet/ui-base/layout/LayoutManager";
 import { BoidsSimulation } from "../BoidsSimulation";
 import { BladeApi } from "tweakpane";
 import { Boid } from "./Boid";

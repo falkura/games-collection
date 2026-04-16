@@ -2,4 +2,4 @@ id: "games-wrapper"
 layer: tool
 dependsOn:
   - lib-engine
-  - lib-ui
+  - lib-ui-base

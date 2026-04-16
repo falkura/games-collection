@@ -32,7 +32,7 @@ shared/
 
 **Wrapper** — extends base config, runs `generateGamesMeta` and `copyGameIcons` scripts before bundling, resolves `@gamesMeta` alias to the generated `meta.json`, copies all game `dist/` folders and public assets into `build/`, serves on port 3001 in dev.
 
-**Libraries** (engine, game-base, ui) — Rslib config, ESM format, unbundled, emits `.d.ts` declarations, no minification (library consumer's responsibility).
+**Libraries** (engine, game-base, ui-base) — Rslib config, ESM format, unbundled, emits `.d.ts` declarations, no minification (library consumer's responsibility).
 
 ### Scripts
 
