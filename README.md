@@ -15,6 +15,8 @@ A PixiJS game collection monorepo. A shared engine and wrapper let you create mu
 
 To create new game run `moon generate game` then `bun install`. Game will be created in `/games` folder.
 
+Alternatively, you can ask [Claude Code](https://claude.com/claude-code) to scaffold and implement a game for you — just type `create <game name>` (e.g. `create tetris`) and Claude will generate the project and write the game logic.
+
 ### Develop game
 
 To develop new game run `moon run <game-name>:dev` and open in browser [http://localhost:3000](http://localhost:3000).
@@ -33,7 +35,7 @@ Run `bun run assemble` to assemble application. It will be assembled to `/build`
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`packages/engine/`](./packages/engine/README.md)                 | PixiJS game engine — rendering, animations, lifecycle, asset loading       |
 | [`packages/game-base/`](./packages/game-base/README.md)           | Abstract game classes                                                      |
-| [`packages/ui-base/`](./packages/ui-base/README.md)                         | Scenes, custom layout system, responsive containers                        |
+| [`packages/ui-base/`](./packages/ui-base/README.md)               | Scenes, custom layout system, responsive containers                        |
 | [`packages/shared/`](./packages/shared/README.md)                 | Rspack/Rslib configs, TypeScript configs, AssetPack configs, build scripts |
 | [`packages/wrapper/`](./packages/wrapper/README.md)               | Launcher app — game picker, final production assembler                     |
 | `games/<name>/`                                                   | Individual games, each with `src/`, `assets/`, and `game.json`             |
