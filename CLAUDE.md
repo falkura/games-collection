@@ -57,7 +57,6 @@ moon run games-wrapper:assemble
 ## Key Conventions
 
 - Engine types are imported from `@falkura-pet/engine/types/*` (e.g., `Game`, `UI`, `globals`)
-- Games use `strict: true` TypeScript (`packages/shared/tsconfig/game.tsconfig.json`); engine uses a looser config
 - `__DEV__` global is available for dev-only code paths
 - The default branch is `master`
 - No test framework or linter is currently configured
