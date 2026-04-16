@@ -34,15 +34,15 @@ moon run games-wrapper:assemble
 - **Moon** orchestrates the workspace; each package/game has a `moon.yml` defining its layer, tags, and dependencies.
 - **Bun** is the package manager.
 
-| Directory | Purpose | Build tool |
-|---|---|---|
-| `packages/engine/` | PixiJS game engine (UMD library, game-agnostic, no assets) | Rslib |
-| `packages/wrapper/` | Launcher, game picker, final production assembler | Rspack |
-| `packages/game-base/` | `GameBase` abstract class, `SystemController`, `ControlPanel` (Tweakpane) | — |
-| `packages/ui/` | Shared UI components | — |
-| `packages/shared/` | Shared Rspack configs (`rspack/`), TypeScript configs (`tsconfig/`), JSON schemas (`schemas/`), build scripts | — |
-| `games/<name>/` | Individual games, each with `src/`, `assets/`, and `game.json` config | Rspack |
-| `templates/` | Moon generator templates for new games | — |
+| Directory             | Purpose                                                                                                       | Build tool |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
+| `packages/engine/`    | PixiJS game engine (UMD library, game-agnostic, no assets)                                                    | Rslib      |
+| `packages/wrapper/`   | Launcher, game picker, final production assembler                                                             | Rspack     |
+| `packages/game-base/` | `GameBase` abstract class, `SystemController`, `ControlPanel` (Tweakpane)                                     | —          |
+| `packages/ui/`        | Shared UI components                                                                                          | —          |
+| `packages/shared/`    | Shared Rspack configs (`rspack/`), TypeScript configs (`tsconfig/`), JSON schemas (`schemas/`), build scripts | —          |
+| `games/<name>/`       | Individual games, each with `src/`, `assets/`, and `game.json` config                                         | Rspack     |
+| `templates/`          | Moon generator templates for new games                                                                        | —          |
 
 ## Architecture
 
@@ -60,3 +60,42 @@ moon run games-wrapper:assemble
 - `__DEV__` global is available for dev-only code paths
 - The default branch is `master`
 - No test framework or linter is currently configured
+- All workspace packages use the `@falkura-pet/` scope
+
+## Game Init Sequence (`src/index.ts`)
+
+```
+Engine.initEvents() → Engine.initGSAP() → Engine.initApplication() → Engine.loadAssets()
+→ Engine.initUI(UI) → Engine.initGame(MyGame, config) → Engine.ui.setScene("Game") → Engine.start()
+```
+
+## System Lifecycle (reserved method names)
+
+`System` (in `packages/game-base/src/system/System.ts`) defines lifecycle hooks called automatically by `SystemController`: `start`, `finish(isWin?)`, `reset`, `pause`, `resume`, `resize`, `tick(ticker)`. **Do not declare a method on a System subclass with one of these names unless you intend to override the lifecycle hook** — shadowing one (even as `private`) silently breaks the game lifecycle. For end-of-round / completion logic that should not run the global `finish` cascade, use a different name (`complete`, `win`, `gameOver`, etc.). Always use the `override` keyword when implementing a hook so TypeScript catches accidental shadowing.
+
+## Game Creation Workflow
+
+When creating a new game (via `moon generate game` or by user request):
+
+1. Scaffold with `moon generate game -- --name '<Human Name>'`, then `bun install`.
+2. Implement game logic in `games/<name>/src/core/MainSystem.ts` (or split across multiple files in `src/core/`).
+3. **Replace the placeholder description** in `games/<name>/README.md` (the `_Add a description..._` line) with 1–3 sentences about what the game does.
+4. Verify with `moon run <name>:build`.
+
+## Structuring Game Logic Across Systems
+
+For complex games, split functionality across multiple `System` subclasses (e.g. `BoardSystem`, `InputSystem`, `ScoreSystem`) for readability. Register each one in the game class's `init()` via `this.systems.add(MySystem)`. Cross-system coordination belongs in the game class itself — reach another system from anywhere using `this.systems.get(MainSystem)` (from the game) or `this.game.systems.get(OtherSystem)` (from within a system).
+
+**Prefer systems that talk to the game, and the game that talks to other systems**, rather than systems reaching into each other directly. This keeps systems loosely coupled and makes the game class the single place where cross-system flow is wired up.
+
+## Deployment
+
+Hosted on Cloudflare Pages: <http://games-collection-7ga.pages.dev/>
+
+- Build command: `bun run assemble`
+- Output directory: `/build`
+- Required env vars: `NODE_ENV=production`, `__DEV__=false`
+
+## Maintainer
+
+Vladyslav (GitHub: `@falkura-pet`). Primary dev environment: Windows 11 with bash shell.
