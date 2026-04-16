@@ -13,7 +13,7 @@ A PixiJS game collection monorepo. A shared engine and wrapper let you create mu
 
 ### New game
 
-To create new game run `moon generate game` then `bun install` in the project root. Game will be created in `/games` folder.
+To create new game run `moon generate game` then `bun install`. Game will be created in `/games` folder.
 
 ### Develop game
 
