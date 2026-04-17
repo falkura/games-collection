@@ -90,9 +90,9 @@ export class SystemController<
     });
   }
 
-  public finish(isWin?: boolean) {
+  public finish(data?: any) {
     this.list.forEach((system) => {
-      system.finish(isWin);
+      system.finish(data);
     });
   }
 
@@ -103,18 +103,6 @@ export class SystemController<
 
     this.list.forEach((system) => {
       system.reset();
-    });
-  }
-
-  public pause() {
-    this.list.forEach((system) => {
-      system.pause();
-    });
-  }
-
-  public resume() {
-    this.list.forEach((system) => {
-      system.resume();
     });
   }
 

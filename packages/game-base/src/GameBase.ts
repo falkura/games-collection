@@ -49,10 +49,10 @@ export abstract class GameBase implements GameInstance {
     this.timeline.play();
   }
 
-  public finish() {
+  public finish(data: any) {
     this.ticker.stop();
     this._resetTimelines();
-    this.systems.finish();
+    this.systems.finish(data);
   }
 
   public reset() {
@@ -62,18 +62,6 @@ export abstract class GameBase implements GameInstance {
 
     this._resetTimelines();
     this.systems.reset();
-  }
-
-  public pause() {
-    this.ticker.stop();
-    this.timeline.pause();
-    this.systems.pause();
-  }
-
-  public resume() {
-    this.ticker.start();
-    this.timeline.resume();
-    this.systems.resume();
   }
 
   public resize() {

@@ -1,8 +1,6 @@
 export interface GameInstance {
   start(): void;
-  finish(): void;
-  pause(): void;
-  resume(): void;
+  finish(data?: any): void;
   reset(): void;
   resize(): void;
 }

@@ -78,31 +78,6 @@ export class ControlPanel {
   }
 
   public static addGameControls(parent: FolderApi) {
-    const getPauseTitle = () => {
-      return Engine.state === GAME_STATE.Paused ? "▶ Resume" : "⏸ Pause";
-    };
-
-    const pauseBtn = parent.addButton({
-      title: getPauseTitle(),
-      disabled: true,
-    });
-
-    pauseBtn.on("click", () => {
-      Engine.changeGamePause();
-    });
-
-    Engine.events.on("engine:game-paused", () => {
-      pauseBtn.title = getPauseTitle();
-    });
-
-    Engine.events.on("engine:game-resumed", () => {
-      pauseBtn.title = getPauseTitle();
-    });
-
-    Engine.events.on("engine:game-started", () => {
-      pauseBtn.disabled = false;
-    });
-
     parent.addButton({ title: "Restart" }).on("click", () => {
       Engine.restartGame();
     });

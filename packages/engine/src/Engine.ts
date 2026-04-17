@@ -20,7 +20,6 @@ import { LoadScene } from "./scenes/LoadScene";
 export enum GAME_STATE {
   Init = "Init",
   Started = "Started",
-  Paused = "Paused",
   Finished = "Finished",
 }
 
@@ -50,7 +49,7 @@ class EngineClass {
 
   // #region lifecycle
 
-  public start() {
+  public startGame() {
     if (this.state === GAME_STATE.Init) {
       this.events.emit("engine:game-started");
       this.game.start();
@@ -60,41 +59,21 @@ class EngineClass {
 
   public restartGame() {
     this.resetGame();
-    this.start();
+    this.startGame();
+  }
+
+  public finishGame(data?: any) {
+    if (this.state !== GAME_STATE.Finished) {
+      this.state = GAME_STATE.Finished;
+      this.game.finish();
+      this.events.emit("engine:game-finished", data);
+    }
   }
 
   private resetGame() {
     this.game.reset();
     this.state = GAME_STATE.Init;
     this.events.emit("engine:game-reseted");
-  }
-
-  public changeGamePause() {
-    if (this.state === GAME_STATE.Started) {
-      this.pauseGame();
-    } else if (this.state === GAME_STATE.Paused) {
-      this.resumeGame();
-    }
-  }
-
-  private pauseGame() {
-    this.state = GAME_STATE.Paused;
-    this.game.pause();
-    this.events.emit("engine:game-paused");
-  }
-
-  private resumeGame() {
-    this.state = GAME_STATE.Started;
-    this.game.resume();
-    this.events.emit("engine:game-resumed");
-  }
-
-  private onGameFinished(data: any) {
-    if (this.state !== GAME_STATE.Finished) {
-      this.state = GAME_STATE.Finished;
-      this.game.finish();
-      this.events.emit("engine:game-finished", data);
-    }
   }
 
   // #endregion lifecycle

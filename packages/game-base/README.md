@@ -25,10 +25,10 @@ class MyGame extends GameBase {
 
 ## Details
 
-`GameBase` implements `GameInstance` and provides the full game lifecycle: `init`, `start`, `pause`, `resume`, `reset`, `finish`, and `resize`. Each game gets a PixiJS `Ticker`, a GSAP `Timeline`, a display `Container`, and a Tweakpane `ControlPanel`.
+`GameBase` implements `GameInstance` and provides the full game lifecycle: `init`, `start`, `reset`, `finish`, and `resize`. Each game gets a PixiJS `Ticker`, a GSAP `Timeline`, a display `Container`, and a Tweakpane `ControlPanel`.
 
-`System` is an abstract class with optional lifecycle hooks: `tick`, `start`, `finish`, `reset`, `pause`, `resume`, `resize`. Each system gets its own `view` (a PixiJS `Container` added to the game's display tree), a GSAP `timeline` (nested into the game timeline), and a typed reference to the parent game.
+`System` is an abstract class with optional lifecycle hooks: `tick`, `start`, `finish`, `reset`, `resize`. Each system gets its own `view` (a PixiJS `Container` added to the game's display tree), a GSAP `timeline` (nested into the game timeline), and a typed reference to the parent game.
 
 `SystemController` manages all systems. When a system is added, it is initialized with the game reference, its own view layer (z-ordered by registration order), and its timeline. Systems can be enabled and disabled at runtime — disabled systems are moved to an internal registry and removed from the display tree.
 
-`ControlPanel` is a debug UI (Tweakpane) initialized automatically for every game. It shows FPS, a game speed slider, pause/resume/restart buttons, a graphics quality toggle, and a toggleable button per registered system.
+`ControlPanel` is a debug UI (Tweakpane) initialized automatically for every game. It shows FPS, a game speed slider, restart buttons, a graphics quality toggle, and a toggleable button per registered system.

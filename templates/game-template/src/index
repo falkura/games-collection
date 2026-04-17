@@ -16,4 +16,4 @@ await Engine.initApplication();
 await Engine.loadAssets();
 
 Engine.initGame({{ component_name }}, config);
-Engine.start();
+Engine.startGame();

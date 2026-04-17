@@ -10,4 +10,4 @@ await Engine.initApplication();
 await Engine.loadAssets();
 
 Engine.initGame(BoidsSimulation, config);
-Engine.start();
+Engine.startGame();
