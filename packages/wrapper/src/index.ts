@@ -43,6 +43,5 @@ document.addEventListener("click", (e) => {
 
   const route = button.getAttribute("data-route")!;
 
-  Engine.events.ui.emit("wrapper:chose-game", route);
-  window.location.href = route;
+  Engine.chooseGame(route);
 });

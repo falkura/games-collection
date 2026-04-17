@@ -36,21 +36,20 @@ moon run games-wrapper:assemble
 
 | Directory             | Purpose                                                                                                       | Build tool |
 | --------------------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
-| `packages/engine/`    | PixiJS game engine (UMD library, game-agnostic, no assets)                                                    | Rslib      |
+| `packages/engine/`    | PixiJS engine: app, layout, load/game scenes, lifecycle, event system                                         | Rslib      |
 | `packages/wrapper/`   | Launcher, game picker, final production assembler                                                             | Rspack     |
 | `packages/game-base/` | `GameBase` abstract class, `SystemController`, `ControlPanel` (Tweakpane)                                     | —          |
-| `packages/ui/`        | Shared UI components                                                                                          | —          |
 | `packages/shared/`    | Shared Rspack configs (`rspack/`), TypeScript configs (`tsconfig/`), JSON schemas (`schemas/`), build scripts | —          |
 | `games/<name>/`       | Individual games, each with `src/`, `assets/`, and `game.json` config                                         | Rspack     |
 | `templates/`          | Moon generator templates for new games                                                                        | —          |
 
 ## Architecture
 
-**Engine** → UMD module loaded separately in the browser; handles rendering (PixiJS), layout (@pixi/layout + Yoga), animations (GSAP), asset loading, game lifecycle, input. Must stay game-agnostic with no assets (SVG icons only for UI).
+**Engine** → Singleton `Engine` in `packages/engine/src/Engine.ts` owns the PixiJS `Application`, `LayoutManager`, `loadScene`, `gameScene`, `EventSystem`, GSAP setup, asset loading, and game lifecycle state (`Init → Started → Paused → Finished`). It is game-agnostic. There is no separate UI package — scenes are minimal: `loadScene` is shown during `loadAssets()` and swapped out for `gameScene` when `initGame()` runs. Games add content to `Engine.gameScene` via `game.view` (wired in `GameBase`). No scene controller, no add/remove API.
 
 **Games** → Extend `GameBase` from `game-base`. Register systems in `init()`, use `SystemController` for ECS-like system management. Each game has a `game.json` config and an `assets/` directory processed by AssetPack.
 
-**Wrapper** → Container app that assembles all game builds into a single deployable bundle. Depends on engine + UI.
+**Wrapper** → Container app that assembles all game builds into a single deployable bundle. Depends on engine only.
 
 **Build pipeline**: Shared Rspack configs live in `packages/shared/rspack/` (`base.config.ts`, `engine.config.ts`, `game.config.ts`, `wrapper.config.ts`). SWC for TypeScript transpilation, LightningCSS for styles.
 
@@ -66,8 +65,10 @@ moon run games-wrapper:assemble
 
 ```
 Engine.initEvents() → Engine.initGSAP() → Engine.initApplication() → Engine.loadAssets()
-→ Engine.initUI(UI) → Engine.initGame(MyGame, config) → Engine.ui.setScene("Game") → Engine.start()
+→ Engine.initGame(MyGame, config) → Engine.start()
 ```
+
+During `initApplication()` the engine creates `loadScene` + `gameScene` and shows the load scene. `initGame()` swaps to `gameScene` automatically — games never manage scenes themselves.
 
 ## System Lifecycle (reserved method names)
 

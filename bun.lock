@@ -20,7 +20,23 @@
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
         "@falkura-pet/game-base": "workspace:*",
-        "@falkura-pet/ui-base": "workspace:*",
+      },
+      "devDependencies": {
+        "@falkura-pet/shared": "workspace:*",
+      },
+      "peerDependencies": {
+        "@tweakpane/core": "^2.0.5",
+        "gsap": "^3.13.0",
+        "pixi.js": "^8.17.1",
+        "tweakpane": "^4.0.5",
+      },
+    },
+    "games/memory-flip": {
+      "name": "@falkura-pet/memory-flip",
+      "version": "0.0.0",
+      "dependencies": {
+        "@falkura-pet/engine": "workspace:*",
+        "@falkura-pet/game-base": "workspace:*",
       },
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
@@ -64,28 +80,11 @@
       "name": "@falkura-pet/shared",
       "version": "0.0.0",
     },
-    "packages/ui-base": {
-      "name": "@falkura-pet/ui-base",
-      "version": "0.0.0",
-      "dependencies": {
-        "@falkura-pet/engine": "workspace:*",
-        "tweakpane": "^4.0.5",
-      },
-      "devDependencies": {
-        "@falkura-pet/shared": "workspace:*",
-        "@tweakpane/core": "^2.0.5",
-      },
-      "peerDependencies": {
-        "gsap": "^3.13.0",
-        "pixi.js": "^8.13.2",
-      },
-    },
     "packages/wrapper": {
       "name": "@falkura-pet/wrapper",
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
-        "@falkura-pet/ui-base": "workspace:*",
       },
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
@@ -132,9 +131,9 @@
 
     "@falkura-pet/game-base": ["@falkura-pet/game-base@workspace:packages/game-base"],
 
-    "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
+    "@falkura-pet/memory-flip": ["@falkura-pet/memory-flip@workspace:games/memory-flip"],
 
-    "@falkura-pet/ui-base": ["@falkura-pet/ui-base@workspace:packages/ui-base"],
+    "@falkura-pet/shared": ["@falkura-pet/shared@workspace:packages/shared"],
 
     "@falkura-pet/wrapper": ["@falkura-pet/wrapper@workspace:packages/wrapper"],
 

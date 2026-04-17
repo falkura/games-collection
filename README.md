@@ -37,7 +37,6 @@ Run `bun run assemble` to assemble application. It will be assembled to `/build`
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`packages/engine/`](./packages/engine/README.md)                 | PixiJS game engine — rendering, animations, lifecycle, asset loading       |
 | [`packages/game-base/`](./packages/game-base/README.md)           | Abstract game classes                                                      |
-| [`packages/ui-base/`](./packages/ui-base/README.md)               | Scenes, custom layout system, responsive containers                        |
 | [`packages/shared/`](./packages/shared/README.md)                 | Rspack/Rslib configs, TypeScript configs, AssetPack configs, build scripts |
 | [`packages/wrapper/`](./packages/wrapper/README.md)               | Launcher app — game picker, final production assembler                     |
 | `games/<name>/`                                                   | Individual games, each with `src/`, `assets/`, and `game.json`             |
@@ -45,9 +44,9 @@ Run `bun run assemble` to assemble application. It will be assembled to `/build`
 
 ## Architecture
 
-Library packages (engine, game-base, ui-base) are built unbundled with Rslib, games and the wrapper are bundled as applications with Rspack.
+Library packages (engine, game-base) are built unbundled with Rslib, games and the wrapper are bundled as applications with Rspack.
 
-The **engine** is game-agnostic and defines `GameInstance` and `UIInstance` interfaces. **game-base** and **ui-base** are the default implementations, consumed by every game. Games register their logic as systems via `SystemController`. The **wrapper** assembles all game builds, engine output, and a generated `@gamesMeta` module into a single deployable bundle.
+The **engine** is game-agnostic and defines `GameInstance` interface. **game-base** is the default implementations, consumed by every game. Games register their logic as systems via `SystemController`. The **wrapper** assembles all game builds, engine output, and a generated `@gamesMeta` module into a single deployable bundle.
 
 **Moon** orchestrates all tasks. **Bun** is the package manager.
 

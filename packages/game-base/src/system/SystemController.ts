@@ -2,7 +2,11 @@ import { Ticker } from "pixi.js";
 import { GameBase } from "../GameBase";
 import { System } from "./System";
 import gsap from "gsap";
-import { ModuleManager, type ModuleConstructor } from "@falkura-pet/engine";
+import {
+  ModuleManager,
+  type ModuleConstructor,
+  LayoutContainer,
+} from "@falkura-pet/engine";
 
 export class SystemController<
   TGame extends GameBase = GameBase,
@@ -31,7 +35,7 @@ export class SystemController<
     instance.timeline = gsap.timeline({ paused: false });
     this.game.timeline.add(instance.timeline, "<");
 
-    instance.view = this.game.ui.createGameView();
+    instance.view = new LayoutContainer({ width: "sw", height: "sh" });
     instance.view.zIndex = this.list.size;
     this.game.view.addChild(instance.view);
 

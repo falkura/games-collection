@@ -9,16 +9,25 @@
   },
   "references": [
     {
-      "path": "games/boids-simulation"
+      "path": "./games/boids-simulation"
+    },
+    {
+      "path": "./games/memory-flip"
+    },
+    {
+      "path": "./packages/engine"
+    },
+    {
+      "path": "./packages/game-base"
+    },
+    {
+      "path": "games/memory-flip"
     },
     {
       "path": "packages/engine"
     },
     {
       "path": "packages/game-base"
-    },
-    {
-      "path": "packages/ui-base"
     },
     {
       "path": "packages/wrapper"

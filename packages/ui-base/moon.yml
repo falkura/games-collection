@@ -1,4 +1,0 @@
-id: lib-ui-base
-layer: library
-dependsOn:
-  - lib-engine

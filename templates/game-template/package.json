@@ -4,8 +4,7 @@
   "templateVersion": "0.0.0",
   "dependencies": {
     "@falkura-pet/engine": "workspace:*",
-    "@falkura-pet/game-base": "workspace:*",
-    "@falkura-pet/ui-base": "workspace:*"
+    "@falkura-pet/game-base": "workspace:*"
   },
   "devDependencies": {
     "@falkura-pet/shared": "workspace:*"

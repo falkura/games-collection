@@ -1,6 +1,6 @@
 import { System } from "@falkura-pet/game-base";
 import { Point, RectangleLike, Ticker } from "pixi.js";
-import { LayoutManager } from "@falkura-pet/ui-base/layout/LayoutManager";
+import { Engine } from "@falkura-pet/engine";
 import { BoidsSimulation } from "../BoidsSimulation";
 import { BladeApi } from "tweakpane";
 import { Boid } from "./Boid";
@@ -35,7 +35,7 @@ export class MainSystem extends System<BoidsSimulation> {
   }
 
   override resize(): void {
-    const { width, height } = LayoutManager.instance.screen;
+    const { width, height } = Engine.layout.screen;
 
     this.bounds = {
       x: -this.outterBorderPadding,

@@ -15,4 +15,4 @@ The engine is responsible for everything except game-specific logic: PixiJS rend
 
 It is designed to stay **game-agnostic** — no game logic, no game assets. Games and the wrapper consume it as a dependency.
 
-The engine defines `GameInstance` and `UIInstance` interfaces. Any package that implements these interfaces can be plugged into the engine — `game-base` and `ui-base` are the default implementations, but they are not the only possible ones.
+The engine defines `GameInstance` interface. Any package that implements this interface can be plugged into the engine — `game-base` is the default implementations, but it is not the only possible one.

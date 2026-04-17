@@ -2,8 +2,8 @@ import "pixi.js/math-extras";
 import { Container, EventEmitter, Ticker } from "pixi.js";
 import gsap from "gsap";
 import { SystemController } from "./system/SystemController";
-import { GameEvents, GameInstance } from "@falkura-pet/engine/types/Game";
-import { UIInstance } from "@falkura-pet/engine/types/UI";
+import { GameInstance } from "@falkura-pet/engine/types/Game";
+import { Engine } from "@falkura-pet/engine";
 import { Pane } from "tweakpane";
 import { ControlPanel } from "./ControlPanel";
 
@@ -14,15 +14,10 @@ export abstract class GameBase implements GameInstance {
   public readonly view: Container;
   public readonly pane: Pane;
 
-  constructor(
-    public readonly events: EventEmitter<GameEvents>,
-    public readonly config: IGameConfig,
-    public readonly ui: UIInstance,
-  ) {
-    this.view = ui.view;
+  constructor(public readonly config: IGameConfig) {
+    this.view = Engine.view;
     this.pane = new Pane();
 
-    this.view.sortableChildren = true;
     this.systems = new SystemController(this);
     this.ticker = new Ticker();
     this.timeline = gsap.timeline({ paused: true });

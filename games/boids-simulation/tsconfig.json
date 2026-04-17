@@ -8,9 +8,6 @@
     },
     {
       "path": "../../packages/game-base"
-    },
-    {
-      "path": "../../packages/ui-base"
     }
   ]
 }

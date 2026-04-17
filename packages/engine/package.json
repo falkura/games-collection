@@ -10,10 +10,6 @@
     "@types/greensock": "^1.15.32"
   },
   "exports": {
-    "./types/UI": {
-      "import": "./dist/types/UI.js",
-      "types": "./dist/types/UI.d.ts"
-    },
     "./types/Game": {
       "import": "./dist/types/Game.js",
       "types": "./dist/types/Game.d.ts"

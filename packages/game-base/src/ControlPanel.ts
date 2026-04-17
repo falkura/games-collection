@@ -62,7 +62,7 @@ export class ControlPanel {
       title: getTitle(),
     });
 
-    Engine.events.internal.on("engine:game-reseted", () => {
+    Engine.events.on("engine:game-reseted", () => {
       button.title = getTitle();
     });
 
@@ -88,23 +88,23 @@ export class ControlPanel {
     });
 
     pauseBtn.on("click", () => {
-      Engine.events.ui.emit("ui:change-game-paused");
+      Engine.changeGamePause();
     });
 
-    Engine.events.internal.on("engine:game-paused", () => {
+    Engine.events.on("engine:game-paused", () => {
       pauseBtn.title = getPauseTitle();
     });
 
-    Engine.events.internal.on("engine:game-resumed", () => {
+    Engine.events.on("engine:game-resumed", () => {
       pauseBtn.title = getPauseTitle();
     });
 
-    Engine.events.internal.on("engine:game-started", () => {
+    Engine.events.on("engine:game-started", () => {
       pauseBtn.disabled = false;
     });
 
     parent.addButton({ title: "Restart" }).on("click", () => {
-      Engine.events.ui.emit("ui:restart-game");
+      Engine.restartGame();
     });
   }
 
@@ -125,10 +125,10 @@ export class ControlPanel {
     });
 
     graphicsBtn.on("click", () => {
-      Engine.events.ui.emit("ui:update-settings", { graphics: nextGraphics() });
+      Engine.changeSettings({ graphics: nextGraphics() });
     });
 
-    Engine.events.internal.on("engine:settings-updated", () => {
+    Engine.events.on("engine:settings-updated", () => {
       graphicsBtn.title = getGraphicsTitle();
     });
   }

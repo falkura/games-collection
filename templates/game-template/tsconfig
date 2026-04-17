@@ -14,9 +14,6 @@ to: tsconfig.json
     },
     {
       "path": "../../packages/game-base"
-    },
-    {
-      "path": "../../packages/ui-base"
     }
   ]
 }

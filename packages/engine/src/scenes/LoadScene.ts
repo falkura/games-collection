@@ -1,13 +1,14 @@
-import { LayoutContainer } from "../layout/LayoutContainer";
-import { AppScreen } from "./AppScreen";
 import { Graphics, Text, Ticker } from "pixi.js";
+import { LayoutContainer } from "../layout/LayoutContainer";
 
-export class LoadScene extends AppScreen {
-  background: LayoutContainer<Graphics>;
-  spinner: LayoutContainer<Graphics>;
-  loadingLabel: LayoutContainer<Text>;
+export class LoadScene extends LayoutContainer {
+  private background: LayoutContainer<Graphics>;
+  private spinner: LayoutContainer<Graphics>;
+  private loadingLabel: LayoutContainer<Text>;
 
-  public override onInit(): void {
+  constructor() {
+    super({ width: "sw", height: "sh" });
+
     this.background = new LayoutContainer({
       width: "sw",
       height: "sh",
@@ -39,9 +40,7 @@ export class LoadScene extends AppScreen {
     this.addChild(this.background, this.spinner, this.loadingLabel);
   }
 
-  public override onTick(ticker: Ticker) {
-    if (!this.spinner) return;
-
+  public tick(ticker: Ticker) {
     this.spinner.rotation += 0.15 * ticker.deltaTime;
   }
 }
