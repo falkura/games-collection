@@ -25,7 +25,7 @@ export function calculateLayoutString(
 
   value = value
     // Replace relative variables with their values
-    .replace(new RegExp(/\b(sw|sh|smax|gw|gx|gy|gh)\b/g), (match) => {
+    .replace(new RegExp(/\b(sw|sh|smax|smin|gw|gx|gy|gh)\b/g), (match) => {
       const res = vars[match];
 
       return Number.isFinite(res) ? res : match;

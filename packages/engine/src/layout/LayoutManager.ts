@@ -21,7 +21,6 @@ export class LayoutManager {
   public screen = {} as RectangleLike;
 
   private readonly root: Container;
-  private readonly options: ManagerOptions;
   private static _instance: LayoutManager;
 
   public handlers: Record<
@@ -29,9 +28,11 @@ export class LayoutManager {
     (opts: HandlerOptions<any>) => void
   > = {} as any;
 
-  constructor(root: Container, options: ManagerOptions) {
+  constructor(
+    root: Container,
+    public readonly options: ManagerOptions,
+  ) {
     this.root = root;
-    this.options = options;
 
     LayoutManager.instance = this;
 
@@ -117,6 +118,7 @@ export class LayoutManager {
       sh: this.screen.height,
 
       smax: Math.max(this.screen.width, this.screen.height),
+      smin: Math.min(this.screen.width, this.screen.height),
     };
   }
 

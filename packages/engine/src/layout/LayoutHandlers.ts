@@ -19,6 +19,8 @@ export interface LayoutVars {
   sh: number;
   /** Bigger screen side, width or height */
   smax: number;
+  /** Smaller screen side, width or height */
+  smin: number;
 }
 
 export interface ManagerOptions {
