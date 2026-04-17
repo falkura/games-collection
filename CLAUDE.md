@@ -200,6 +200,7 @@ Strings passed to `x/y/width/height` are evaluated as math expressions against `
 | `sw`   | Screen width (virtual)                              |
 | `sh`   | Screen height (virtual)                             |
 | `smax` | `Math.max(sw, sh)`                                  |
+| `smin` | `Math.min(sw, sh)`                                  |
 | `gx`   | Game rect X (offset of game area inside screen)     |
 | `gy`   | Game rect Y                                         |
 | `gw`   | Game rect width                                     |
@@ -224,6 +225,37 @@ this.view.addChild(header);
 
 - `LoadScene` (`packages/engine/src/scenes/LoadScene.ts`) — a `LayoutContainer` with background, spinner (rotated via `tick`), and loading label; shown during `loadAssets()` and removed when `initGame()` runs.
 - `Engine.view` — the single `LayoutContainer` (`{ width: "sw", height: "sh" }`) that hosts the game. `GameBase` stores this as `this.view`, and each system's `view` is added here.
+
+### Choosing a gameplay viewport
+
+Pick one of these patterns and stick to it — mixing strategies within one game will bite you on orientation flips.
+
+1. **Full-screen systems** — the default `this.view` is already `sw × sh`. Use this when gameplay doesn't care about aspect ratio: full-bleed HUDs, procedural space, anything that can stretch. Read `Engine.layout.screen.width/height` in `resize()` for bounds.
+
+2. **Square viewport in a `smin × smin` `LayoutContainer`** — use when gameplay is **square or orientation-agnostic** (grids, puzzles, arenas). One container, same shape in both orientations, no per-orientation branching:
+
+    ```ts
+    // Virtual reference size = 1080 (smin), centered, square.
+    const stage = new LayoutContainer({
+      x: "sw/2 - smin/2",
+      y: "sh/2 - smin/2",
+      width: "smin",
+      height: "smin",
+    });
+    this.view.addChild(stage);
+    // Work in 0..1080 local coords inside stage; it scales to fit smin automatically.
+    ```
+
+    With the game configured for 1920×1080 landscape (so `smin = 1080` in either orientation), building gameplay against a fixed `1080×1080` reference and dropping it into this container removes the orientation branch entirely. HUD and background live outside the square at `sw × sh`.
+
+3. **Fit to the virtual game rect (1920×1080)** — use when the layout is **authored** for a specific aspect ratio and breaks if stretched. Work in `Engine.layout.game` coords (0..gw, 0..gh); the layout scales it to fit and letterboxes. Good for cutscenes or fixed-camera 16:9 games; bad for puzzles where you want HUD to reach the screen edges.
+
+**Tips:**
+
+- Prefer `LayoutContainer` over manual `resize()` math whenever the thing you're positioning doesn't need per-frame logic — layout expressions are cheaper to read and maintain than imperative repositioning.
+- Use `onResize` on a `LayoutContainer` for one-offs (e.g. changing a `Text` fontSize by orientation) instead of pulling state into a `System.resize()`.
+- Never hardcode `1920`/`1080` in gameplay code — derive bounds from `Engine.layout.screen`, `Engine.layout.game`, or your local container's `width/height`. Hardcoded numbers break the moment someone changes the virtual size.
+- Background sprites/graphics that span the viewport should draw at `screen.width/height` (not `game.*`) so they reach the actual edges on over-fit axes.
 
 ## Event System
 
@@ -276,6 +308,40 @@ When creating a new game (via `moon generate game` or by user request):
 For complex games, split functionality across multiple `System` subclasses. Cross-system coordination belongs in the game class itself — reach another system using `this.systems.get(OtherSystem)` (from the game) or `this.game.systems.get(OtherSystem)` (from within a system).
 
 **Prefer systems that talk to the game, and the game that talks to other systems**, rather than systems reaching into each other directly. This keeps systems loosely coupled and makes the game class the single place where cross-system flow is wired up.
+
+### Decomposing a system once it grows
+
+A `System` file past ~200 lines or with more than one reason to change should be split. Systems orchestrate; real behavior belongs in plain classes the system owns. Signs it's time: entity types inlined as interfaces + scattered update lambdas, physics/generation/IO interleaved with the tick loop, long `reset()` with per-type cleanup, trajectory math that reaches for `this`.
+
+Pull those concerns into sibling folders next to `core/`:
+
+```
+games/<name>/src/
+  core/
+    MainSystem.ts        — orchestration only: arrays + tick order + game-over
+    InputSystem.ts
+    HUDSystem.ts
+  entities/               — one class per entity, owns view + body + update + destroy
+    Ship.ts
+    Enemy.ts
+    Projectile.ts
+  physics/                — engine wrapper + pure math
+    PhysicsWorld.ts
+    gravity.ts
+  level/                  — pure (opts) → LevelData generators
+    LevelGenerator.ts
+  progress.ts             — localStorage / persistence
+  types.ts                — shared types + constants
+```
+
+Rules that keep this clean:
+
+- **Entity classes own their view and body.** `new Ship(x, y, world, parent)` attaches to stage; `ship.destroy()` removes both. The system's `reset()` becomes a loop of `destroy()` calls.
+- **Pure functions for physics and generation.** `gravityAt(px, py, sources)` and `generateLevel(opts)` take plain data in, return plain data out. Trivial to reuse in trajectory previews, tests, tooling.
+- **Wrap third-party physics engines** (`matter-js`, `p2`, …) behind a `PhysicsWorld`-style class. Entities take it in the constructor and call a handful of methods; they don't import the engine directly unless they truly need to touch bodies.
+- **The system is the orchestrator.** It holds entity arrays, calls `entity.update(dt)` in the right order, checks game-over conditions, fires `Engine.finishGame()`. No draw code, no physics math, no per-entity branching.
+- **Data flows `level → entities → system`**, not back. Generators return specs (plain objects); the system spawns entities from specs. Never generate inside an entity constructor — it couples placement to spawning and kills level-data reuse.
+- **Shared constants live in `types.ts`**, shared math in `physics/` or `util/`. If two entities need the same number, it lives in one of those, not duplicated.
 
 ## Build Pipeline
 

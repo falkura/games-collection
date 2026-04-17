@@ -65,7 +65,7 @@ class EngineClass {
   public finishGame(data?: any) {
     if (this.state !== GAME_STATE.Finished) {
       this.state = GAME_STATE.Finished;
-      this.game.finish();
+      this.game.finish(data);
       this.events.emit("engine:game-finished", data);
     }
   }
@@ -106,6 +106,7 @@ class EngineClass {
       backgroundColor: "#1e1e1e",
       preference: "webgpu",
       resolution: window.devicePixelRatio,
+      antialias: true,
       resizeTo: window,
       canvas: canvas,
     });
