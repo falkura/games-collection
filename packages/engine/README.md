@@ -11,7 +11,7 @@ moon run <game-name>:dev    # engine changes are picked up automatically
 
 ## Details
 
-The engine is responsible for everything except game-specific logic: PixiJS rendering, GSAP animations, game loop and lifecycle management (start, pause, resume, finish, reset, resize), asset loading via AssetPack manifests, events handling.
+The engine is responsible for everything except game-specific logic: PixiJS rendering, GSAP animations, game loop and lifecycle management (start, finish, reset, resize), asset loading via AssetPack manifests, events handling.
 
 It is designed to stay **game-agnostic** — no game logic, no game assets. Games and the wrapper consume it as a dependency.
 
