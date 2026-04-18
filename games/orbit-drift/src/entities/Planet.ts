@@ -1,10 +1,11 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import Matter from "matter-js";
 import { PhysicsWorld } from "../physics/PhysicsWorld";
 import type { GravitySource } from "../physics/gravity";
+import { bakeTexture } from "./textures";
 
 export class Planet implements GravitySource {
-  readonly view: Graphics;
+  readonly view: Sprite;
   readonly body: Matter.Body;
 
   constructor(
@@ -16,9 +17,20 @@ export class Planet implements GravitySource {
     private world: PhysicsWorld,
     parent: Container,
   ) {
-    this.view = new Graphics();
+    const maxR = radius + Math.sqrt(mass) * 1.45;
+    const texture = bakeTexture(
+      `planet:${radius}:${mass}:${color}`,
+      () => {
+        const g = new Graphics();
+        Planet.drawGravityRings(g, radius, mass, color);
+        return g;
+      },
+      Math.ceil(maxR),
+    );
+
+    this.view = new Sprite(texture);
+    this.view.anchor.set(0.5);
     this.view.zIndex = 0;
-    Planet.drawGravityRings(this.view, radius, mass, color);
     this.view.x = x;
     this.view.y = y;
     parent.addChild(this.view);

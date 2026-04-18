@@ -43,7 +43,7 @@ export class IntroSystem extends System<ConnectDots> {
     const { width, height } = Engine.layout.screen;
     const mobile = Engine.layout.isMobile;
     const panelWidth = Math.min(width - 36, mobile ? 1020 : 980);
-    const panelHeight = Math.min(height - 48, mobile ? 860 : 720);
+    const panelHeight = Math.min(height - 48, mobile ? 1060 : 720);
     const panelX = (width - panelWidth) / 2;
     const panelY = (height - panelHeight) / 2;
 
@@ -70,10 +70,10 @@ export class IntroSystem extends System<ConnectDots> {
     this.title.y = panelY + (mobile ? 150 : 124);
 
     this.body.x = width / 2;
-    this.body.y = panelY + panelHeight / 2 + (mobile ? 70 : 52);
+    this.body.y = panelY + panelHeight / 2 + (mobile ? 0 : 52);
 
     this.hint.x = width / 2;
-    this.hint.y = panelY + panelHeight - (mobile ? 86 : 72);
+    this.hint.y = panelY + panelHeight - (mobile ? 120 : 72);
   }
 
   private build() {

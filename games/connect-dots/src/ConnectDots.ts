@@ -2,7 +2,8 @@ import { GameBase } from "@falkura-pet/game-base";
 import { IntroSystem } from "./core/IntroSystem";
 import { MainSystem } from "./core/MainSystem";
 import { HUDSystem } from "./core/HUDSystem";
-import { LEVELS } from "./levels";
+import { getLevels } from "./levels";
+import { saveLevelIndex } from "./progress";
 
 export class ConnectDots extends GameBase {
   protected override init(): void {
@@ -52,9 +53,14 @@ export class ConnectDots extends GameBase {
       this.systems.get(MainSystem).resetLevel();
     });
 
+    folder.addButton({ title: "Reset Progress" }).on("click", () => {
+      saveLevelIndex(0);
+      this.systems.get(MainSystem).goToLevel(1);
+    });
+
     const state = { level: 1 };
     const options = Object.fromEntries(
-      LEVELS.map((level, index) => [
+      getLevels().map((level, index) => [
         `${index + 1}. ${level.title} (${level.width}x${level.height})`,
         index + 1,
       ]),

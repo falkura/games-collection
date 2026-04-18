@@ -177,6 +177,8 @@ Singleton created in `Engine.initApplication()`. On resize it:
 
 For responsive math in systems (e.g. grid sizing), read from `Engine.layout.screen` / `Engine.layout.game` inside `resize()` and reposition accordingly.
 
+`Engine.layout.isMobile` — getter forwarded from pixi's `isMobile.any` util. True on any phone/tablet regardless of orientation. Use for touch-vs-desktop behavior (larger text, bigger hit targets, gesture changes) independent of `isPortrait`.
+
 ### LayoutContainer
 
 A `Container` subclass that accepts a layout config and re-evaluates it on resize and on being added to the stage. Config keys:

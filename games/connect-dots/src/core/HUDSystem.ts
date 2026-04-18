@@ -29,7 +29,6 @@ export class HUDSystem extends System<ConnectDots> {
   private overlayTitle!: Text;
   private overlaySub!: Text;
   private buttonRow!: Container;
-  private prevButton!: Container;
   private restartButton!: Container;
   private nextButton!: Container;
 
@@ -79,6 +78,11 @@ export class HUDSystem extends System<ConnectDots> {
 
   private get main() {
     return this.game.systems.get(MainSystem);
+  }
+
+  private hideOverlay() {
+    this.overlay.visible = false;
+    this.overlayShownForLevel = -1;
   }
 
   private get textScale() {
@@ -152,10 +156,12 @@ export class HUDSystem extends System<ConnectDots> {
     this.overlay.addChild(this.overlaySub);
 
     this.buttonRow = new Container();
-    this.prevButton = this.makeButton("PREV", () => this.main.prevLevel());
-    this.restartButton = this.makeButton("RESTART", () => this.main.resetLevel());
+    this.restartButton = this.makeButton("RESTART", () => {
+      this.main.resetLevel();
+      this.hideOverlay();
+    });
     this.nextButton = this.makeButton("NEXT", () => this.main.nextLevel());
-    this.buttonRow.addChild(this.prevButton, this.restartButton, this.nextButton);
+    this.buttonRow.addChild(this.restartButton, this.nextButton);
     this.overlay.addChild(this.buttonRow);
 
     this.view.addChild(this.overlay);
@@ -199,7 +205,7 @@ export class HUDSystem extends System<ConnectDots> {
   private syncTexts() {
     const main = this.main;
     this.levelText.text = `LEVEL ${main.levelNumber} / ${main.levelCount}`;
-    this.detailText.text = `${main.levelTitle.toUpperCase()}    ${main.levelMeta}`;
+    this.detailText.text = main.levelTitle.toUpperCase();
     this.sourceText.text = main.levelSource;
     this.shownLevel = main.levelNumber;
     this.layoutAll();
@@ -261,9 +267,12 @@ export class HUDSystem extends System<ConnectDots> {
     const visibleChildren = this.buttonRow.children.filter((c) => c.visible);
 
     if (isPortrait) {
-      let y = 0;
+      const totalHeight =
+        visibleChildren.length * this.buttonHeight +
+        Math.max(0, visibleChildren.length - 1) * gap;
+      let y = -totalHeight / 2;
       for (const c of visibleChildren) {
-        c.x = 0;
+        c.x = -this.buttonWidth / 2;
         c.y = y;
         y += this.buttonHeight + gap;
       }

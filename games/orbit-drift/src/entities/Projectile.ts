@@ -1,13 +1,14 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import Matter from "matter-js";
 import { PhysicsWorld } from "../physics/PhysicsWorld";
 import { gravityAt, type GravitySource } from "../physics/gravity";
 import { PROJECTILE } from "../config";
+import { bakeTexture } from "./textures";
 
 export class Projectile {
   static RADIUS = PROJECTILE.RADIUS;
 
-  readonly view: Graphics;
+  readonly view: Sprite;
   private body?: Matter.Body;
   private _x: number;
   private _y: number;
@@ -32,15 +33,23 @@ export class Projectile {
     this.life = lifeFrames;
 
     const color = gravity ? "#ffa94d" : "#ff4d4d";
-    this.view = new Graphics()
-      .circle(0, 0, Projectile.RADIUS + 5)
-      .fill({ color, alpha: 0.1 })
-      .circle(0, 0, Projectile.RADIUS + 2)
-      .stroke({ color, width: 1.5, alpha: 0.5 })
-      .circle(0, 0, Projectile.RADIUS)
-      .fill({ color })
-      .circle(0, 0, Math.max(1.5, Projectile.RADIUS - 2))
-      .fill({ color: "#ffffff", alpha: 0.35 });
+    const texture = bakeTexture(
+      `projectile:${Projectile.RADIUS}:${gravity ? "g" : "s"}`,
+      () =>
+        new Graphics()
+          .circle(0, 0, Projectile.RADIUS + 5)
+          .fill({ color, alpha: 0.1 })
+          .circle(0, 0, Projectile.RADIUS + 2)
+          .stroke({ color, width: 1.5, alpha: 0.5 })
+          .circle(0, 0, Projectile.RADIUS)
+          .fill({ color })
+          .circle(0, 0, Math.max(1.5, Projectile.RADIUS - 2))
+          .fill({ color: "#ffffff", alpha: 0.35 }),
+      Projectile.RADIUS + 5,
+    );
+
+    this.view = new Sprite(texture);
+    this.view.anchor.set(0.5);
     this.view.x = x;
     this.view.y = y;
     this.view.zIndex = 2;

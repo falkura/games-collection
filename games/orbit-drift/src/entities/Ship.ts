@@ -1,44 +1,45 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import Matter from "matter-js";
 import { PhysicsWorld } from "../physics/PhysicsWorld";
 import { PHYSICS } from "../config";
+import { bakeTexture } from "./textures";
 
 export class Ship {
   static RADIUS = PHYSICS.SHIP_RADIUS;
   private static readonly ROTATION_EPSILON = 0.05;
 
-  readonly view: Graphics;
+  readonly view: Sprite;
   readonly body: Matter.Body;
 
   constructor(x: number, y: number, private world: PhysicsWorld, parent: Container) {
-    this.view = new Graphics();
-    this.view
-      .circle(0, 0, Ship.RADIUS + 10)
-      .fill({ color: "#9fd8ff", alpha: 0.08 })
-      .circle(0, 0, Ship.RADIUS + 5)
-      .stroke({ color: "#b8ecff", width: 1.5, alpha: 0.45 })
-      .poly([
-        -Ship.RADIUS - 1,
-        Ship.RADIUS - 1,
-        0,
-        -Ship.RADIUS - 7,
-        Ship.RADIUS + 1,
-        Ship.RADIUS - 1,
-      ])
-      .fill({ color: "#dff6ff", alpha: 0.95 })
-      .circle(0, 1, Ship.RADIUS - 4)
-      .fill({ color: "#ffffff" })
-      .circle(0, -1, Ship.RADIUS - 8)
-      .fill({ color: "#7fdcff" })
-      .poly([
-        -5,
-        Ship.RADIUS - 1,
-        0,
-        Ship.RADIUS + 7,
-        5,
-        Ship.RADIUS - 1,
-      ])
-      .fill({ color: "#4dc4ff", alpha: 0.8 });
+    const texture = bakeTexture(
+      `ship:${Ship.RADIUS}`,
+      () =>
+        new Graphics()
+          .circle(0, 0, Ship.RADIUS + 10)
+          .fill({ color: "#9fd8ff", alpha: 0.08 })
+          .circle(0, 0, Ship.RADIUS + 5)
+          .stroke({ color: "#b8ecff", width: 1.5, alpha: 0.45 })
+          .poly([
+            -Ship.RADIUS - 1,
+            Ship.RADIUS - 1,
+            0,
+            -Ship.RADIUS - 7,
+            Ship.RADIUS + 1,
+            Ship.RADIUS - 1,
+          ])
+          .fill({ color: "#dff6ff", alpha: 0.95 })
+          .circle(0, 1, Ship.RADIUS - 4)
+          .fill({ color: "#ffffff" })
+          .circle(0, -1, Ship.RADIUS - 8)
+          .fill({ color: "#7fdcff" })
+          .poly([-5, Ship.RADIUS - 1, 0, Ship.RADIUS + 7, 5, Ship.RADIUS - 1])
+          .fill({ color: "#4dc4ff", alpha: 0.8 }),
+      Ship.RADIUS + 10,
+    );
+
+    this.view = new Sprite(texture);
+    this.view.anchor.set(0.5);
     this.view.zIndex = 4;
     this.view.x = x;
     this.view.y = y;
@@ -93,8 +94,6 @@ export class Ship {
 
     const { x: vx, y: vy } = this.body.velocity;
     if (Math.hypot(vx, vy) > Ship.ROTATION_EPSILON) {
-      // The ship art is authored facing up, so rotate 90deg from the
-      // velocity vector to align the nose with the travel direction.
       this.view.rotation = Math.atan2(vy, vx) + Math.PI / 2;
     }
   }

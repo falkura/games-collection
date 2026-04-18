@@ -9,7 +9,8 @@ import {
   Text,
 } from "pixi.js";
 import { ConnectDots } from "../ConnectDots";
-import { LEVELS } from "../levels";
+import { getLevels } from "../levels";
+import { loadLevelIndex, saveLevelIndex } from "../progress";
 import type { Cell, Level } from "../types";
 
 type PathMap = Map<string, Cell[]>;
@@ -31,7 +32,7 @@ const BG = {
 export class MainSystem extends System<ConnectDots> {
   static MODULE_ID = "main";
 
-  private readonly levels = LEVELS;
+  private readonly levels = getLevels();
 
   private levelIndex = 0;
   private currentLevel!: Level;
@@ -43,6 +44,7 @@ export class MainSystem extends System<ConnectDots> {
 
   private boardRoot!: Container;
   private boardChrome!: Graphics;
+  private cellsView!: Graphics;
   private pathsView!: Graphics;
   private endpointsView!: Container;
 
@@ -78,11 +80,12 @@ export class MainSystem extends System<ConnectDots> {
   override start(): void {
     if (!this.boardRoot) this.build();
     if (!this.currentLevel) {
-      this.loadLevel(0);
+      this.loadLevel(loadLevelIndex(this.levels.length));
       return;
     }
 
     this.resetLevel();
+    this.drawStatic();
     this.resize();
   }
 
@@ -120,7 +123,8 @@ export class MainSystem extends System<ConnectDots> {
     this.boardRoot.position.set(this.boardX, this.boardY);
     this.boardRoot.hitArea = new Rectangle(0, 0, this.boardPixelWidth, this.boardPixelHeight);
 
-    this.drawBoard();
+    this.drawStatic();
+    this.drawDynamic();
   }
 
   private build() {
@@ -133,20 +137,22 @@ export class MainSystem extends System<ConnectDots> {
     this.boardRoot.eventMode = "static";
     this.boardRoot.cursor = "crosshair";
     this.boardRoot.on("pointerdown", this.onPointerDown);
-    this.boardRoot.on("pointermove", this.onPointerMove);
+    this.boardRoot.on("globalpointermove", this.onPointerMove);
     this.boardRoot.on("pointerup", this.onPointerUp);
     this.boardRoot.on("pointerupoutside", this.onPointerUp);
     this.boardRoot.on("pointercancel", this.onPointerUp);
     this.view.addChild(this.boardRoot);
 
+    this.cellsView = new Graphics();
     this.pathsView = new Graphics();
     this.endpointsView = new Container();
-    this.boardRoot.addChild(this.pathsView, this.endpointsView);
+    this.boardRoot.addChild(this.cellsView, this.pathsView, this.endpointsView);
   }
 
   private loadLevel(index: number) {
     this.levelIndex = index;
     this.currentLevel = this.levels[index];
+    saveLevelIndex(index);
     this.endpointOwner = new Map();
 
     for (const label of this.currentLevel.labels) {
@@ -164,10 +170,10 @@ export class MainSystem extends System<ConnectDots> {
     this.paths = new Map();
     this.occupancy = new Map();
     this.completed = false;
-    this.drawBoard();
+    if (this.pathsView) this.drawDynamic();
   }
 
-  private drawBoard() {
+  private drawStatic() {
     if (!this.currentLevel) return;
 
     const { width, height } = Engine.layout.screen;
@@ -185,23 +191,20 @@ export class MainSystem extends System<ConnectDots> {
       .fill({ color: BG.panel, alpha: 0.92 })
       .stroke({ color: BG.panelStroke, width: 2, alpha: 0.9 });
 
-    this.pathsView.clear();
-    this.endpointsView.removeChildren().forEach((child) => child.destroy());
-
     this.drawCells();
-    this.drawPaths();
     this.drawEndpoints();
   }
 
   private drawCells() {
-    this.pathsView
+    this.cellsView.clear();
+    this.cellsView
       .rect(0, 0, this.boardPixelWidth, this.boardPixelHeight)
       .fill(BG.boardInset)
       .stroke({ color: BG.panelStroke, width: 2, alpha: 0.7 });
 
     for (let y = 0; y < this.currentLevel.height; y++) {
       for (let x = 0; x < this.currentLevel.width; x++) {
-        this.pathsView
+        this.cellsView
           .rect(
             x * this.cellSize + 1,
             y * this.cellSize + 1,
@@ -213,41 +216,42 @@ export class MainSystem extends System<ConnectDots> {
     }
 
     for (let x = 0; x <= this.currentLevel.width; x++) {
-      this.pathsView.moveTo(x * this.cellSize, 0).lineTo(x * this.cellSize, this.boardPixelHeight);
+      this.cellsView.moveTo(x * this.cellSize, 0).lineTo(x * this.cellSize, this.boardPixelHeight);
     }
     for (let y = 0; y <= this.currentLevel.height; y++) {
-      this.pathsView.moveTo(0, y * this.cellSize).lineTo(this.boardPixelWidth, y * this.cellSize);
+      this.cellsView.moveTo(0, y * this.cellSize).lineTo(this.boardPixelWidth, y * this.cellSize);
     }
-    this.pathsView.stroke({ color: BG.grid, width: 1, alpha: 0.55, pixelLine: true });
+    this.cellsView.stroke({ color: BG.grid, width: 1, alpha: 0.55, pixelLine: true });
   }
 
-  private drawPaths() {
-    const strokeWidth = this.cellSize * 0.58;
+  private drawDynamic() {
+    this.pathsView.clear();
+    const strokeWidth = this.cellSize * 0.38;
 
     for (const label of this.currentLevel.labels) {
       const path = this.paths.get(label);
-      if (!path || path.length === 0) continue;
+      if (!path || path.length < 2) continue;
       const color = this.colorForLabel(label);
 
-      if (path.length >= 2) {
-        const first = this.cellCenter(path[0]);
-        this.pathsView.moveTo(first.x, first.y);
-        for (let i = 1; i < path.length; i++) {
-          const point = this.cellCenter(path[i]);
-          this.pathsView.lineTo(point.x, point.y);
-        }
-        this.pathsView.stroke({
-          color,
-          width: strokeWidth,
-          alpha: 0.9,
-          cap: "round",
-          join: "round",
-        });
+      const first = this.cellCenter(path[0]);
+      this.pathsView.moveTo(first.x, first.y);
+      for (let i = 1; i < path.length; i++) {
+        const point = this.cellCenter(path[i]);
+        this.pathsView.lineTo(point.x, point.y);
       }
+      this.pathsView.stroke({
+        color,
+        width: strokeWidth,
+        alpha: 0.9,
+        cap: "round",
+        join: "round",
+      });
     }
   }
 
   private drawEndpoints() {
+    for (const child of this.endpointsView.removeChildren()) child.destroy();
+
     const fontSize = Math.max(10, Math.floor(this.cellSize * 0.36));
 
     for (const label of this.currentLevel.labels) {
@@ -280,13 +284,24 @@ export class MainSystem extends System<ConnectDots> {
   private onPointerDown = (event: FederatedPointerEvent) => {
     const cell = this.eventToCell(event);
     if (!cell) return;
+
+    // Resume an in-progress path when its last-drawn cell is tapped —
+    // lets the player pick the pen back up without retracing from the endpoint.
+    for (const [label, path] of this.paths) {
+      if (path.length === 0) continue;
+      if (!this.sameCell(cell, path[path.length - 1])) continue;
+      if (this.isClosedPath(label, path)) continue;
+      this.draggingColor = label;
+      return;
+    }
+
     const label = this.endpointOwner.get(this.cellKey(cell));
     if (!label) return;
 
     this.draggingColor = label;
     this.paths.set(label, [cell]);
     this.rebuildOccupancy();
-    this.drawBoard();
+    this.drawDynamic();
   };
 
   private onPointerMove = (event: FederatedPointerEvent) => {
@@ -308,7 +323,7 @@ export class MainSystem extends System<ConnectDots> {
     ) {
       path.pop();
       this.rebuildOccupancy();
-      this.drawBoard();
+      this.drawDynamic();
       return;
     }
 
@@ -334,7 +349,7 @@ export class MainSystem extends System<ConnectDots> {
     }
 
     this.rebuildOccupancy();
-    this.drawBoard();
+    this.drawDynamic();
   };
 
   private onPointerUp = () => {

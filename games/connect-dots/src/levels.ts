@@ -1,83 +1,5 @@
+import { Assets } from "pixi.js";
 import type { Cell, Level, RawLevel } from "./types";
-
-const RAW_LEVELS: RawLevel[] = [
-  {
-    id: "parser-warmup",
-    title: "Warmup 5x4",
-    source:
-      "Adapted from the 5x4 parser example in thomasahle/numberlink README",
-    rows: [
-      "C...B",
-      "A.BA.",
-      "...C.",
-      ".....",
-    ],
-  },
-  {
-    id: "generator-10",
-    title: "Generator 10x10",
-    source:
-      "Adapted from the 10x10 -tubes example in thomasahle/numberlink README",
-    rows: [
-      "0......120",
-      "3......12.",
-      "...45.....",
-      ".........3",
-      "45.......6",
-      ".........8",
-      ".7..9....a",
-      "...6....8.",
-      "........a.",
-      "97........",
-    ],
-  },
-  {
-    id: "wide-40x10",
-    title: "Wide 40x10",
-    source:
-      "Adapted from the generated 40x10 puzzle example in thomasahle/numberlink README",
-    rows: [
-      "1.......................................",
-      "......................6.................",
-      "....24.4................8...............",
-      ".......5....................5..93.......",
-      "..............................7....9....",
-      "....3...................................",
-      "....................................8...",
-      "...................627..................",
-      "........................................",
-      "......................1.................",
-    ],
-  },
-  {
-    id: "generator-20",
-    title: "Generator 20x20",
-    source:
-      "Adapted from the 20x20 -tubes example in thomasahle/numberlink README",
-    rows: [
-      "0........223..4.....",
-      "6.....17....48..9ab.",
-      "c..c......de.....a..",
-      "...f..71.3de8...5b..",
-      ".g..6.........9.....",
-      ".......gh..ij.......",
-      "kk.f..............5i",
-      "...l.nlho....j......",
-      ".q..r.....s.......t.",
-      "m...uu.o......v...p.",
-      ".....r.....ww.v....t",
-      ".x..n.y.zA........",
-      "qxm.B..........CD...",
-      ".................C.p",
-      ".0...B.E...........D",
-      "...y...s..E.z..G.HH",
-      "......I.JJ...A..G..F",
-      ".K..K...LL.M........",
-      ".............O.P.NF.",
-      "I......O....M..P...N",
-    ],
-  },
-];
 
 function normalizeRowWidth(rows: string[]): string[] {
   const width = Math.max(...rows.map((row) => row.length));
@@ -155,4 +77,14 @@ function parseLevel(level: RawLevel): Level {
   };
 }
 
-export const LEVELS = RAW_LEVELS.map(parseLevel);
+let cachedLevels: Level[] | null = null;
+
+export function getLevels(): Level[] {
+  if (cachedLevels) return cachedLevels;
+  const raw = Assets.get<RawLevel[]>("levels");
+  if (!raw) {
+    throw new Error("Levels asset 'levels' is not loaded. Call Engine.loadAssets() first.");
+  }
+  cachedLevels = raw.map(parseLevel);
+  return cachedLevels;
+}

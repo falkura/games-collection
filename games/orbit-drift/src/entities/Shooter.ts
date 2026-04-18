@@ -1,7 +1,8 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
+import { bakeTexture } from "./textures";
 
 export class Shooter {
-  readonly view: Graphics;
+  readonly view: Sprite;
   readonly radius: number;
   private timer: number;
 
@@ -16,33 +17,43 @@ export class Shooter {
     this.radius = gravity ? 18 : 16;
     this.timer = cooldown * 0.5;
 
+    const r = this.radius;
     const color = gravity ? "#ffa94d" : "#b388ff";
     const inner = gravity ? "#fff4b0" : "#f7f0ff";
-    this.view = new Graphics()
-      .circle(0, 0, this.radius + 8)
-      .fill({ color, alpha: 0.08 })
-      .circle(0, 0, this.radius + 3)
-      .stroke({ color, width: 2, alpha: 0.4 })
-      .circle(0, 0, this.radius)
-      .fill({ color })
-      .circle(0, 0, this.radius - 5)
-      .fill({ color: inner })
-      .circle(0, 0, this.radius - 10)
-      .fill({ color, alpha: 0.85 });
-    if (gravity) {
-      this.view
-        .circle(0, 0, this.radius + 4)
-        .stroke({ color, width: 2, alpha: 0.5 })
-        .circle(0, 0, this.radius + 10)
-        .stroke({ color, width: 1, alpha: 0.3 });
-    } else {
-      this.view
-        .moveTo(-this.radius - 3, 0)
-        .lineTo(this.radius + 3, 0)
-        .moveTo(0, -this.radius - 3)
-        .lineTo(0, this.radius + 3)
-        .stroke({ color: "#e7d9ff", width: 1, alpha: 0.35 });
-    }
+    const halfExtent = r + (gravity ? 10 : 8);
+    const texture = bakeTexture(
+      `shooter:${r}:${gravity ? "g" : "p"}`,
+      () => {
+        const g = new Graphics()
+          .circle(0, 0, r + 8)
+          .fill({ color, alpha: 0.08 })
+          .circle(0, 0, r + 3)
+          .stroke({ color, width: 2, alpha: 0.4 })
+          .circle(0, 0, r)
+          .fill({ color })
+          .circle(0, 0, r - 5)
+          .fill({ color: inner })
+          .circle(0, 0, r - 10)
+          .fill({ color, alpha: 0.85 });
+        if (gravity) {
+          g.circle(0, 0, r + 4)
+            .stroke({ color, width: 2, alpha: 0.5 })
+            .circle(0, 0, r + 10)
+            .stroke({ color, width: 1, alpha: 0.3 });
+        } else {
+          g.moveTo(-r - 3, 0)
+            .lineTo(r + 3, 0)
+            .moveTo(0, -r - 3)
+            .lineTo(0, r + 3)
+            .stroke({ color: "#e7d9ff", width: 1, alpha: 0.35 });
+        }
+        return g;
+      },
+      halfExtent,
+    );
+
+    this.view = new Sprite(texture);
+    this.view.anchor.set(0.5);
     this.view.x = x;
     this.view.y = y;
     this.view.zIndex = 2;
