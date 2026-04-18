@@ -13,9 +13,9 @@ export class Chaser {
     this.y = y;
     this.view = new Graphics()
       .circle(0, 0, Chaser.RADIUS + 8)
-      .fill({ color: 0xff4d4d, alpha: 0.08 })
+      .fill({ color: "#ff4d4d", alpha: 0.08 })
       .circle(0, 0, Chaser.RADIUS + 4)
-      .stroke({ color: 0xff8080, width: 1.5, alpha: 0.35 })
+      .stroke({ color: "#ff8080", width: 1.5, alpha: 0.35 })
       .poly([
         0,
         -Chaser.RADIUS - 2,
@@ -26,13 +26,13 @@ export class Chaser {
         -Chaser.RADIUS - 1,
         -1,
       ])
-      .fill({ color: 0xff5d5d })
+      .fill({ color: "#ff5d5d" })
       .circle(0, 0, Chaser.RADIUS - 5)
-      .fill({ color: 0x5c0d0d, alpha: 0.45 })
+      .fill({ color: "#5c0d0d", alpha: 0.45 })
       .circle(-3, -2, 2.2)
-      .fill({ color: 0xffffff, alpha: 0.9 })
+      .fill({ color: "#ffffff", alpha: 0.9 })
       .circle(3, -2, 2.2)
-      .fill({ color: 0xffffff, alpha: 0.9 });
+      .fill({ color: "#ffffff", alpha: 0.9 });
     this.view.x = x;
     this.view.y = y;
     this.view.zIndex = 2;

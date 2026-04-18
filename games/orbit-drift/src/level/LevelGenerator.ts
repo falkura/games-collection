@@ -6,7 +6,7 @@ export interface PlanetSpec {
   y: number;
   mass: number;
   radius: number;
-  color: number;
+  color: string;
 }
 export interface WallSpec {
   x1: number;

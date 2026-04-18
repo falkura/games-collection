@@ -16,8 +16,8 @@ export class Shooter {
     this.radius = gravity ? 18 : 16;
     this.timer = cooldown * 0.5;
 
-    const color = gravity ? 0xffa94d : 0xb388ff;
-    const inner = gravity ? 0xfff4b0 : 0xf7f0ff;
+    const color = gravity ? "#ffa94d" : "#b388ff";
+    const inner = gravity ? "#fff4b0" : "#f7f0ff";
     this.view = new Graphics()
       .circle(0, 0, this.radius + 8)
       .fill({ color, alpha: 0.08 })
@@ -41,7 +41,7 @@ export class Shooter {
         .lineTo(this.radius + 3, 0)
         .moveTo(0, -this.radius - 3)
         .lineTo(0, this.radius + 3)
-        .stroke({ color: 0xe7d9ff, width: 1, alpha: 0.35 });
+        .stroke({ color: "#e7d9ff", width: 1, alpha: 0.35 });
     }
     this.view.x = x;
     this.view.y = y;

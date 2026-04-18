@@ -52,7 +52,7 @@ export const LEVEL = {
 };
 
 export const PLANET_COLORS = [
-  0xff6b6b, 0x4dabf7, 0xffd43b, 0xa29bfe, 0x55efc4, 0xfd79a8, 0xffa94d,
+  "#ff6b6b", "#4dabf7", "#ffd43b", "#a29bfe", "#55efc4", "#fd79a8", "#ffa94d",
 ];
 
 /** Counts per level + per-entity scaling. Used by the level generator. */
@@ -124,13 +124,13 @@ export const SHIP_BOUNDS_MARGIN = 500;
 export const TRAJECTORY_PREVIEW = {
   STEPS: 220,
   DASH_EVERY: 3,
-  COLOR: 0xffd43b,
+  COLOR: "#ffd43b",
   ALPHA: 0.75,
   WIDTH: 2,
 };
 
 export const STARFIELD = {
-  BACKGROUND_COLOR: 0x050816,
+  BACKGROUND_COLOR: "#050816",
   BASE_DENSITY: 0.000055,
   MIN_STARS: 90,
   MAX_STARS: 220,

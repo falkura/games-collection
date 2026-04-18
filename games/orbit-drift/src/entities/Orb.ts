@@ -10,18 +10,18 @@ export class Orb {
   constructor(readonly x: number, readonly y: number, parent: Container) {
     this.view = new Graphics()
       .circle(0, 0, Orb.RADIUS + 10)
-      .fill({ color: 0x00ffaa, alpha: 0.08 })
+      .fill({ color: "#00ffaa", alpha: 0.08 })
       .circle(0, 0, Orb.RADIUS + 4)
-      .stroke({ color: 0x7fffd8, width: 2, alpha: 0.45 })
+      .stroke({ color: "#7fffd8", width: 2, alpha: 0.45 })
       .moveTo(-Orb.RADIUS - 6, 0)
       .lineTo(Orb.RADIUS + 6, 0)
       .moveTo(0, -Orb.RADIUS - 6)
       .lineTo(0, Orb.RADIUS + 6)
-      .stroke({ color: 0xb4ffe9, width: 1, alpha: 0.38 })
+      .stroke({ color: "#b4ffe9", width: 1, alpha: 0.38 })
       .circle(0, 0, Orb.RADIUS)
-      .fill({ color: 0x00ffaa })
+      .fill({ color: "#00ffaa" })
       .circle(-3, -4, Orb.RADIUS * 0.4)
-      .fill({ color: 0xeafff9, alpha: 0.9 });
+      .fill({ color: "#eafff9", alpha: 0.9 });
     this.view.x = x;
     this.view.y = y;
     this.view.zIndex = 1;

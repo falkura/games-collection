@@ -1,5 +1,6 @@
 import { GameBase } from "@falkura-pet/game-base";
 import { Engine } from "@falkura-pet/engine";
+import { IntroSystem } from "./core/IntroSystem";
 import { SpaceSystem } from "./core/SpaceSystem";
 import { InputSystem } from "./core/InputSystem";
 import { HUDSystem } from "./core/HUDSystem";
@@ -8,11 +9,37 @@ import { saveProgress } from "./progress";
 
 export class OrbitDrift extends GameBase {
   protected override init(): void {
+    this.systems.add(IntroSystem);
     this.systems.add(SpaceSystem);
     this.systems.add(InputSystem);
     this.systems.add(HUDSystem);
 
+    this.systems.disable(SpaceSystem);
+    this.systems.disable(InputSystem);
+    this.systems.disable(HUDSystem);
+
     this.addGameControls();
+  }
+
+
+  showGameplay(): void {
+    this.systems.disable(IntroSystem);
+
+    this.systems.enable(SpaceSystem);
+    this.systems.enable(InputSystem);
+    this.systems.enable(HUDSystem);
+
+    const space = this.systems.get(SpaceSystem);
+    const input = this.systems.get(InputSystem);
+    const hud = this.systems.get(HUDSystem);
+
+    space.start();
+    input.start();
+    hud.start();
+
+    space.resize();
+    input.resize();
+    hud.resize();
   }
 
   private addGameControls(): void {

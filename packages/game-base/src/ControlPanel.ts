@@ -13,7 +13,7 @@ export class ControlPanel {
     gameSpeed: 1,
   };
   static options = {
-    startFolded: false,
+    startFolded: true,
     foldedTitle: "⚙️",
   };
 

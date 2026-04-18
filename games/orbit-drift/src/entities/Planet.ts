@@ -12,7 +12,7 @@ export class Planet implements GravitySource {
     readonly y: number,
     readonly mass: number,
     readonly radius: number,
-    readonly color: number,
+    readonly color: string,
     private world: PhysicsWorld,
     parent: Container,
   ) {
@@ -45,7 +45,7 @@ export class Planet implements GravitySource {
     g: Graphics,
     radius: number,
     mass: number,
-    color: number,
+    color: string,
   ) {
     const rings = 6;
     const maxR = radius + Math.sqrt(mass) * 1.45;
@@ -58,13 +58,13 @@ export class Planet implements GravitySource {
     g.circle(0, 0, radius + 6).fill({ color, alpha: 0.12 });
     g.circle(0, 0, radius).fill({ color });
     g.circle(-radius * 0.22, -radius * 0.28, radius * 0.62).fill({
-      color: 0xffffff,
+      color: "#ffffff",
       alpha: 0.13,
     });
     g.circle(radius * 0.18, radius * 0.2, radius * 0.4).fill({
-      color: 0x000000,
+      color: "#000000",
       alpha: 0.08,
     });
-    g.circle(0, 0, radius).stroke({ color: 0xffffff, width: 1.5, alpha: 0.45 });
+    g.circle(0, 0, radius).stroke({ color: "#ffffff", width: 1.5, alpha: 0.45 });
   }
 }

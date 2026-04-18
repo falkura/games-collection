@@ -30,7 +30,6 @@ export class HUDSystem extends System<OrbitDrift> {
   private levelText!: Text;
   private scoreText!: Text;
   private statsText!: Text;
-  private infoText!: Text;
 
   private overlay!: Container;
   private overlayBg!: Graphics;
@@ -90,8 +89,7 @@ export class HUDSystem extends System<OrbitDrift> {
     this.levelText = new Text({
       text: "",
       style: {
-        fill: 0xffd43b,
-        fontSize: 16,
+        fill: "#ffd43b",
         fontFamily: "monospace",
         fontWeight: "bold",
       },
@@ -103,7 +101,7 @@ export class HUDSystem extends System<OrbitDrift> {
     this.scoreText = new Text({
       text: "",
       style: {
-        fill: 0xffffff,
+        fill: "#ffffff",
         fontSize: 28,
         fontFamily: "monospace",
         fontWeight: "bold",
@@ -115,30 +113,13 @@ export class HUDSystem extends System<OrbitDrift> {
     this.statsText = new Text({
       text: "",
       style: {
-        fill: 0xaaccff,
-        fontSize: 16,
+        fill: "#aaccff",
         fontFamily: "monospace",
         fontWeight: "bold",
       },
     });
     this.statsText.x = 30;
     this.view.addChild(this.statsText);
-
-    this.infoText = new Text({
-      text:
-        "Drag anywhere to slingshot. Use gravity to enter orbits and collect every energy orb. Avoid planets, walls, chasers, and incoming fire.",
-      style: {
-        fill: 0xaaaaaa,
-        fontSize: 16,
-        fontFamily: "monospace",
-        wordWrap: true,
-        wordWrapWidth: 800,
-        align: "left",
-      },
-    });
-    this.infoText.anchor.set(0, 1);
-    this.infoText.x = 30;
-    this.view.addChild(this.infoText);
 
     this.overlay = new Container();
     this.overlay.visible = false;
@@ -150,8 +131,7 @@ export class HUDSystem extends System<OrbitDrift> {
     this.overlayTitle = new Text({
       text: "",
       style: {
-        fill: 0xffffff,
-        fontSize: 72,
+        fill: "#ffffff",
         fontFamily: "monospace",
         fontWeight: "bold",
         align: "center",
@@ -165,7 +145,7 @@ export class HUDSystem extends System<OrbitDrift> {
     this.overlaySub = new Text({
       text: "",
       style: {
-        fill: 0xcccccc,
+        fill: "#cccccc",
         fontSize: 22,
         fontFamily: "monospace",
         align: "center",
@@ -179,8 +159,7 @@ export class HUDSystem extends System<OrbitDrift> {
     this.overlayStats = new Text({
       text: "",
       style: {
-        fill: 0xffd43b,
-        fontSize: 26,
+        fill: "#ffd43b",
         fontFamily: "monospace",
         fontWeight: "bold",
         align: "center",
@@ -190,10 +169,10 @@ export class HUDSystem extends System<OrbitDrift> {
     this.overlay.addChild(this.overlayStats);
 
     this.buttonRow = new Container();
-    this.retryButton = this.makeButton("RETRY", 0xff6b6b, () => {
+    this.retryButton = this.makeButton("RETRY", "#ff6b6b", () => {
       this.game.systems.get(SpaceSystem).retry();
     });
-    this.nextButton = this.makeButton("NEXT LEVEL", 0x55efc4, () => {
+    this.nextButton = this.makeButton("NEXT LEVEL", "#55efc4", () => {
       this.game.systems.get(SpaceSystem).nextLevel();
     });
     this.buttonRow.addChild(this.retryButton, this.nextButton);
@@ -206,7 +185,11 @@ export class HUDSystem extends System<OrbitDrift> {
     this.layoutAll();
   }
 
-  private makeButton(label: string, color: number, onClick: () => void): Container {
+  private makeButton(
+    label: string,
+    color: string,
+    onClick: () => void,
+  ): Container {
     const c = new Container();
     c.eventMode = "static";
     c.cursor = "pointer";
@@ -218,7 +201,7 @@ export class HUDSystem extends System<OrbitDrift> {
     const text = new Text({
       text: label,
       style: {
-        fill: 0xffffff,
+        fill: "#ffffff",
         fontSize: OVERLAY_BUTTON.FONT_SIZE,
         fontFamily: "monospace",
         fontWeight: "bold",
@@ -247,38 +230,35 @@ export class HUDSystem extends System<OrbitDrift> {
     const isPortrait = Engine.layout.isPortrait;
     const s = this.textScale;
 
-    this.levelText.style.fontSize = 16 * s;
+    this.levelText.style.fontSize = 20 * s;
     this.scoreText.style.fontSize = 28 * s;
-    this.statsText.style.fontSize = 16 * s;
-    this.scoreText.y = this.levelText.y + 24 * s;
+    this.statsText.style.fontSize = 20 * s;
+    this.scoreText.y = this.levelText.y + 28 * s;
     this.statsText.y = this.scoreText.y + 40 * s;
-
-    this.infoText.style.fontSize = (isPortrait ? 24 : 16) * s;
-    this.infoText.style.wordWrapWidth = Math.max(200, width - 60);
-    this.infoText.x = 30;
-    this.infoText.y = height - 20;
 
     this.overlayBg
       .clear()
       .rect(0, 0, width, height)
-      .fill({ color: 0x000000, alpha: 0.78 });
+      .fill({ color: "#000000", alpha: 0.78 });
 
-    this.overlayTitle.style.fontSize = (isPortrait ? 56 : 72) * s;
+    this.overlayTitle.style.fontSize = 72 * s;
     this.overlayTitle.style.wordWrapWidth = Math.max(200, width - 80);
     this.overlayTitle.x = width / 2;
     this.overlayTitle.y = height / 2 - 160;
 
-    this.overlaySub.style.fontSize = 22 * s;
+    this.overlaySub.style.fontSize = 40 * s;
     this.overlaySub.style.wordWrapWidth = Math.max(200, width - 100);
     this.overlaySub.x = width / 2;
-    this.overlaySub.y = height / 2 - 60;
+    this.overlaySub.y = height / 2 - 80;
 
-    this.overlayStats.style.fontSize = (isPortrait ? 22 : 26) * s;
+    this.overlayStats.style.fontSize = 26 * s;
     this.overlayStats.x = width / 2;
     this.overlayStats.y = height / 2 - 10;
 
     for (const btn of this.buttonRow.children) {
-      const t = btn.children?.find((c) => c instanceof Text) as Text | undefined;
+      const t = btn.children?.find((c) => c instanceof Text) as
+        | Text
+        | undefined;
       if (t) t.style.fontSize = OVERLAY_BUTTON.FONT_SIZE * s;
     }
 
@@ -316,7 +296,7 @@ export class HUDSystem extends System<OrbitDrift> {
 
     this.overlay.visible = true;
     this.overlayTitle.text = REASON_LABEL[data.reason ?? "out-of-bounds"];
-    this.overlayTitle.style.fill = data.won ? 0x55efc4 : 0xff6b6b;
+    this.overlayTitle.style.fill = data.won ? "#55efc4" : "#ff6b6b";
 
     this.overlayStats.text = `TIME ${formatTime(data.time)}    SHOTS ${data.shots}    ORBS ${data.collected} / ${data.total}`;
 

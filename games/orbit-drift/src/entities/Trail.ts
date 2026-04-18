@@ -23,7 +23,7 @@ export class Trail {
     for (let i = 1; i < this.points.length; i++) {
       this.view.lineTo(this.points[i].x, this.points[i].y);
     }
-    this.view.stroke({ color: 0xffffff, width: 1, alpha: 0.3 });
+    this.view.stroke({ color: "#ffffff", width: 1, alpha: 0.3 });
   }
 
   destroy() {

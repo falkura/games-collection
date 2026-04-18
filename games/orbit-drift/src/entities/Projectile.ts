@@ -31,7 +31,7 @@ export class Projectile {
     this.vy = vy;
     this.life = lifeFrames;
 
-    const color = gravity ? 0xffa94d : 0xff4d4d;
+    const color = gravity ? "#ffa94d" : "#ff4d4d";
     this.view = new Graphics()
       .circle(0, 0, Projectile.RADIUS + 5)
       .fill({ color, alpha: 0.1 })
@@ -40,7 +40,7 @@ export class Projectile {
       .circle(0, 0, Projectile.RADIUS)
       .fill({ color })
       .circle(0, 0, Math.max(1.5, Projectile.RADIUS - 2))
-      .fill({ color: 0xffffff, alpha: 0.35 });
+      .fill({ color: "#ffffff", alpha: 0.35 });
     this.view.x = x;
     this.view.y = y;
     this.view.zIndex = 2;

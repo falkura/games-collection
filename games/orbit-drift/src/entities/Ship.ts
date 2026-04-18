@@ -14,9 +14,9 @@ export class Ship {
     this.view = new Graphics();
     this.view
       .circle(0, 0, Ship.RADIUS + 10)
-      .fill({ color: 0x9fd8ff, alpha: 0.08 })
+      .fill({ color: "#9fd8ff", alpha: 0.08 })
       .circle(0, 0, Ship.RADIUS + 5)
-      .stroke({ color: 0xb8ecff, width: 1.5, alpha: 0.45 })
+      .stroke({ color: "#b8ecff", width: 1.5, alpha: 0.45 })
       .poly([
         -Ship.RADIUS - 1,
         Ship.RADIUS - 1,
@@ -25,11 +25,11 @@ export class Ship {
         Ship.RADIUS + 1,
         Ship.RADIUS - 1,
       ])
-      .fill({ color: 0xdff6ff, alpha: 0.95 })
+      .fill({ color: "#dff6ff", alpha: 0.95 })
       .circle(0, 1, Ship.RADIUS - 4)
-      .fill({ color: 0xffffff })
+      .fill({ color: "#ffffff" })
       .circle(0, -1, Ship.RADIUS - 8)
-      .fill({ color: 0x7fdcff })
+      .fill({ color: "#7fdcff" })
       .poly([
         -5,
         Ship.RADIUS - 1,
@@ -38,7 +38,7 @@ export class Ship {
         5,
         Ship.RADIUS - 1,
       ])
-      .fill({ color: 0x4dc4ff, alpha: 0.8 });
+      .fill({ color: "#4dc4ff", alpha: 0.8 });
     this.view.zIndex = 4;
     this.view.x = x;
     this.view.y = y;

@@ -259,7 +259,7 @@ export class SpaceSystem extends System<OrbitDrift> {
     for (const w of this.walls) {
       this.wallsView.moveTo(w.x1, w.y1).lineTo(w.x2, w.y2);
     }
-    this.wallsView.stroke({ color: 0xff6b6b, width: 5, cap: "round" });
+    this.wallsView.stroke({ color: "#ff6b6b", width: 5, cap: "round" });
   }
 
   private drawStarfield(width: number, height: number) {
@@ -284,29 +284,29 @@ export class SpaceSystem extends System<OrbitDrift> {
       if (tier < STARFIELD.GIANT_STAR_RATIO) {
         const r = 2.4 + random() * 1.6;
         const glow = 12 + random() * 12;
-        this.starfieldView.circle(x, y, glow).fill({ color: 0x9fc4ff, alpha: 0.05 });
-        this.starfieldView.circle(x, y, r).fill({ color: 0xffffff, alpha });
+        this.starfieldView.circle(x, y, glow).fill({ color: "#9fc4ff", alpha: 0.05 });
+        this.starfieldView.circle(x, y, r).fill({ color: "#ffffff", alpha });
         this.starfieldView
           .moveTo(x - 8, y)
           .lineTo(x + 8, y)
           .moveTo(x, y - 8)
           .lineTo(x, y + 8)
-          .stroke({ color: 0xcfe0ff, width: 1, alpha: STARFIELD.PARALLAX_ALPHA });
+          .stroke({ color: "#cfe0ff", width: 1, alpha: STARFIELD.PARALLAX_ALPHA });
         continue;
       }
 
       if (tier < STARFIELD.GIANT_STAR_RATIO + STARFIELD.BIG_STAR_RATIO) {
         const r = 1.2 + random() * 0.8;
         this.starfieldView.circle(x, y, 6 + random() * 6).fill({
-          color: 0x8fb8ff,
+          color: "#8fb8ff",
           alpha: 0.035,
         });
-        this.starfieldView.circle(x, y, r).fill({ color: 0xf8fbff, alpha });
+        this.starfieldView.circle(x, y, r).fill({ color: "#f8fbff", alpha });
         continue;
       }
 
       this.starfieldView.circle(x, y, 0.6 + random() * 0.9).fill({
-        color: 0xffffff,
+        color: "#ffffff",
         alpha,
       });
     }
