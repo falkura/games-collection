@@ -12,7 +12,7 @@
       "path": "./games/boids-simulation"
     },
     {
-      "path": "./games/memory-flip"
+      "path": "./games/connect-dots"
     },
     {
       "path": "./games/orbit-drift"
@@ -22,9 +22,6 @@
     },
     {
       "path": "./packages/game-base"
-    },
-    {
-      "path": "games/memory-flip"
     },
     {
       "path": "packages/engine"
