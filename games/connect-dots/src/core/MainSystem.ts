@@ -45,16 +45,6 @@ export class MainSystem extends System<ConnectDots> {
   private boardChrome!: Graphics;
   private pathsView!: Graphics;
   private endpointsView!: Container;
-  private headerText!: Text;
-  private detailText!: Text;
-  private sourceText!: Text;
-  private overlay!: Container;
-  private overlayBg!: Graphics;
-  private overlayTitle!: Text;
-  private overlaySub!: Text;
-  private prevButton!: Container;
-  private restartButton!: Container;
-  private nextButton!: Container;
 
   private boardX = 0;
   private boardY = 0;
@@ -62,8 +52,28 @@ export class MainSystem extends System<ConnectDots> {
   private boardPixelWidth = 0;
   private boardPixelHeight = 0;
   private boardPadding = 18;
-  private buttonWidth = 220;
-  private buttonHeight = 66;
+  completed = false;
+
+  get levelCount(): number {
+    return this.levels.length;
+  }
+
+  get levelNumber(): number {
+    return this.levelIndex + 1;
+  }
+
+  get levelTitle(): string {
+    return this.currentLevel?.title ?? "";
+  }
+
+  get levelMeta(): string {
+    if (!this.currentLevel) return "";
+    return `${this.currentLevel.width}x${this.currentLevel.height}`;
+  }
+
+  get levelSource(): string {
+    return this.currentLevel?.source ?? "";
+  }
 
   override start(): void {
     if (!this.boardRoot) this.build();
@@ -81,7 +91,7 @@ export class MainSystem extends System<ConnectDots> {
     this.paths.clear();
     this.occupancy.clear();
     this.endpointOwner.clear();
-    if (this.overlay) this.overlay.visible = false;
+    this.completed = false;
   }
 
   override resize(): void {
@@ -91,24 +101,8 @@ export class MainSystem extends System<ConnectDots> {
     const mobile = Engine.layout.isMobile;
 
     this.view.hitArea = new Rectangle(0, 0, width, height);
-
-    this.headerText.style.fontSize = mobile ? 40 : 28;
-    this.detailText.style.fontSize = mobile ? 24 : 18;
-    this.sourceText.style.fontSize = mobile ? 20 : 14;
-
-    this.headerText.x = 32;
-    this.headerText.y = 24;
-
-    this.detailText.x = 32;
-    this.detailText.y = this.headerText.y + this.headerText.height + 10;
-
-    this.sourceText.x = 32;
-    this.sourceText.y = this.detailText.y + this.detailText.height + 8;
-    this.sourceText.style.wordWrap = true;
-    this.sourceText.style.wordWrapWidth = Math.max(300, width - 64);
-
-    const topReserved = this.sourceText.y + this.sourceText.height + 28;
-    const bottomReserved = mobile ? 128 : 106;
+    const topReserved = mobile ? 210 : 148;
+    const bottomReserved = mobile ? 150 : 118;
     const availableWidth = width - 64;
     const availableHeight = height - topReserved - bottomReserved;
     const boardScale = Math.min(
@@ -126,8 +120,6 @@ export class MainSystem extends System<ConnectDots> {
     this.boardRoot.position.set(this.boardX, this.boardY);
     this.boardRoot.hitArea = new Rectangle(0, 0, this.boardPixelWidth, this.boardPixelHeight);
 
-    this.layoutButtons(width, height);
-    this.layoutOverlay(width, height);
     this.drawBoard();
   }
 
@@ -150,73 +142,6 @@ export class MainSystem extends System<ConnectDots> {
     this.pathsView = new Graphics();
     this.endpointsView = new Container();
     this.boardRoot.addChild(this.pathsView, this.endpointsView);
-
-    this.headerText = new Text({
-      text: "",
-      style: {
-        fill: BG.text,
-        fontFamily: "monospace",
-        fontWeight: "bold",
-        fontSize: 28,
-      },
-    });
-    this.view.addChild(this.headerText);
-
-    this.detailText = new Text({
-      text: "",
-      style: {
-        fill: BG.accent,
-        fontFamily: "monospace",
-        fontSize: 18,
-      },
-    });
-    this.view.addChild(this.detailText);
-
-    this.sourceText = new Text({
-      text: "",
-      style: {
-        fill: BG.muted,
-        fontFamily: "monospace",
-        fontSize: 14,
-      },
-    });
-    this.view.addChild(this.sourceText);
-
-    this.prevButton = this.makeButton("PREV", () =>
-      this.loadLevel((this.levelIndex - 1 + this.levels.length) % this.levels.length),
-    );
-    this.restartButton = this.makeButton("RESTART", () => this.resetLevel());
-    this.nextButton = this.makeButton("NEXT", () =>
-      this.loadLevel((this.levelIndex + 1) % this.levels.length),
-    );
-    this.view.addChild(this.prevButton, this.restartButton, this.nextButton);
-
-    this.overlay = new Container();
-    this.overlay.visible = false;
-    this.overlayBg = new Graphics();
-    this.overlayTitle = new Text({
-      text: "CONNECTED",
-      style: {
-        fill: BG.text,
-        fontFamily: "monospace",
-        fontWeight: "bold",
-        fontSize: 56,
-        align: "center",
-      },
-    });
-    this.overlayTitle.anchor.set(0.5);
-    this.overlaySub = new Text({
-      text: "",
-      style: {
-        fill: BG.muted,
-        fontFamily: "monospace",
-        fontSize: 18,
-        align: "center",
-      },
-    });
-    this.overlaySub.anchor.set(0.5);
-    this.overlay.addChild(this.overlayBg, this.overlayTitle, this.overlaySub);
-    this.view.addChild(this.overlay);
   }
 
   private loadLevel(index: number) {
@@ -231,81 +156,15 @@ export class MainSystem extends System<ConnectDots> {
     }
 
     this.resetLevel();
-    this.headerText.text = `CONNECT DOTS  ${index + 1} / ${this.levels.length}`;
-    this.detailText.text = `${this.currentLevel.title}  ${this.currentLevel.width}x${this.currentLevel.height}`;
-    this.sourceText.text = this.currentLevel.source;
     this.resize();
   }
 
-  private resetLevel() {
+  resetLevel() {
     this.draggingColor = null;
     this.paths = new Map();
     this.occupancy = new Map();
-    this.overlay.visible = false;
+    this.completed = false;
     this.drawBoard();
-  }
-
-  private layoutButtons(width: number, height: number) {
-    const mobile = Engine.layout.isMobile;
-    const buttons = [this.prevButton, this.restartButton, this.nextButton];
-    const gap = mobile ? 20 : 24;
-    this.buttonWidth = mobile ? 280 : 240;
-    this.buttonHeight = mobile ? 88 : 72;
-    const totalWidth =
-      this.buttonWidth * buttons.length + gap * (buttons.length - 1);
-    const startX = width / 2 - totalWidth / 2;
-    const y = height - (mobile ? 120 : 94);
-
-    buttons.forEach((button, index) => {
-      button.position.set(startX + index * (this.buttonWidth + gap), y);
-    });
-  }
-
-  private layoutOverlay(width: number, height: number) {
-    this.overlayBg
-      .clear()
-      .roundRect(width / 2 - 300, height / 2 - 120, 600, 220, 28)
-      .fill({ color: BG.panel, alpha: 0.96 })
-      .stroke({ color: BG.success, width: 3, alpha: 0.75 });
-
-    this.overlayTitle.x = width / 2;
-    this.overlayTitle.y = height / 2 - 30;
-    this.overlaySub.x = width / 2;
-    this.overlaySub.y = height / 2 + 36;
-  }
-
-  private makeButton(label: string, onTap: () => void): Container {
-    const button = new Container();
-    button.eventMode = "static";
-    button.cursor = "pointer";
-
-    const bg = new Graphics();
-    const text = new Text({
-      text: label,
-      style: {
-        fill: BG.text,
-        fontFamily: "monospace",
-        fontWeight: "bold",
-        fontSize: 26,
-      },
-    });
-    text.anchor.set(0.5);
-
-    const redraw = (hovered: boolean) => {
-      bg.clear()
-        .roundRect(0, 0, this.buttonWidth, this.buttonHeight, 18)
-        .fill({ color: hovered ? "#1d3557" : BG.panel, alpha: 0.95 })
-        .stroke({ color: BG.panelStroke, width: 2 });
-      text.x = this.buttonWidth / 2;
-      text.y = this.buttonHeight / 2;
-    };
-
-    redraw(false);
-    button.on("pointerover", () => redraw(true));
-    button.on("pointerout", () => redraw(false));
-    button.on("pointertap", onTap);
-    button.addChild(bg, text);
-    return button;
   }
 
   private drawBoard() {
@@ -419,8 +278,6 @@ export class MainSystem extends System<ConnectDots> {
   }
 
   private onPointerDown = (event: FederatedPointerEvent) => {
-    if (this.overlay.visible) this.overlay.visible = false;
-
     const cell = this.eventToCell(event);
     if (!cell) return;
     const label = this.endpointOwner.get(this.cellKey(cell));
@@ -483,9 +340,7 @@ export class MainSystem extends System<ConnectDots> {
   private onPointerUp = () => {
     this.draggingColor = null;
     if (this.isSolved()) {
-      this.overlay.visible = true;
-      this.overlayTitle.text = "CONNECTED";
-      this.overlaySub.text = `${this.currentLevel.title} cleared. Tap NEXT to keep going.`;
+      this.completed = true;
     }
   };
 
@@ -595,6 +450,19 @@ export class MainSystem extends System<ConnectDots> {
 
   private cellKey(cell: Cell): string {
     return `${cell.x},${cell.y}`;
+  }
+
+  prevLevel() {
+    this.loadLevel((this.levelIndex - 1 + this.levels.length) % this.levels.length);
+  }
+
+  nextLevel() {
+    this.loadLevel((this.levelIndex + 1) % this.levels.length);
+  }
+
+  goToLevel(levelNumber: number) {
+    const index = Math.max(0, Math.min(this.levels.length - 1, Math.floor(levelNumber) - 1));
+    this.loadLevel(index);
   }
 
   private sameCell(a: Cell, b: Cell): boolean {

@@ -1,12 +1,17 @@
 import { GameBase } from "@falkura-pet/game-base";
 import { IntroSystem } from "./core/IntroSystem";
 import { MainSystem } from "./core/MainSystem";
+import { HUDSystem } from "./core/HUDSystem";
+import { LEVELS } from "./levels";
 
 export class ConnectDots extends GameBase {
   protected override init(): void {
     this.systems.add(IntroSystem);
     this.systems.add(MainSystem);
+    this.systems.add(HUDSystem);
     this.disableGameplaySystems();
+
+    this.addGameControls();
   }
 
   override reset(): void {
@@ -38,5 +43,27 @@ export class ConnectDots extends GameBase {
       if (moduleId === IntroSystem.MODULE_ID) continue;
       this.systems.enable(moduleId);
     }
+  }
+
+  private addGameControls(): void {
+    const folder = this.pane.addFolder({ title: "Levels", expanded: false });
+
+    folder.addButton({ title: "Reset Current Level" }).on("click", () => {
+      this.systems.get(MainSystem).resetLevel();
+    });
+
+    const state = { level: 1 };
+    const options = Object.fromEntries(
+      LEVELS.map((level, index) => [
+        `${index + 1}. ${level.title} (${level.width}x${level.height})`,
+        index + 1,
+      ]),
+    );
+
+    folder
+      .addBinding(state, "level", { label: "Pick Level", options })
+      .on("change", ({ value }) => {
+        this.systems.get(MainSystem).goToLevel(value);
+      });
   }
 }
