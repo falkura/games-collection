@@ -14,32 +14,34 @@ export class OrbitDrift extends GameBase {
     this.systems.add(InputSystem);
     this.systems.add(HUDSystem);
 
-    this.systems.disable(SpaceSystem);
-    this.systems.disable(InputSystem);
-    this.systems.disable(HUDSystem);
+    this.disableGameplaySystems();
 
     this.addGameControls();
   }
 
-
-  showGameplay(): void {
+  play(): void {
     this.systems.disable(IntroSystem);
+    this.enableGameplaySystems();
 
-    this.systems.enable(SpaceSystem);
-    this.systems.enable(InputSystem);
-    this.systems.enable(HUDSystem);
+    for (const moduleId of this.systems.getEnabled()) {
+      const system = this.systems.get(moduleId);
+      system.start();
+      system.resize();
+    }
+  }
 
-    const space = this.systems.get(SpaceSystem);
-    const input = this.systems.get(InputSystem);
-    const hud = this.systems.get(HUDSystem);
+  private disableGameplaySystems(): void {
+    for (const moduleId of this.systems.getEnabled()) {
+      if (moduleId === IntroSystem.MODULE_ID) continue;
+      this.systems.disable(moduleId);
+    }
+  }
 
-    space.start();
-    input.start();
-    hud.start();
-
-    space.resize();
-    input.resize();
-    hud.resize();
+  private enableGameplaySystems(): void {
+    for (const moduleId of this.systems.getDisabled()) {
+      if (moduleId === IntroSystem.MODULE_ID) continue;
+      this.systems.enable(moduleId);
+    }
   }
 
   private addGameControls(): void {

@@ -292,6 +292,7 @@ Each game has `assets/` processed by AssetPack (shared config in `packages/share
 - Default branch: `master`.
 - No test framework or linter is currently configured.
 - Four TypeScript configs in `packages/shared/tsconfig/`: `game` (strict), `engine` (relaxed — no strict nulls / no-implicit-any), `wrapper`, `package` (libraries).
+- In game source files, specify colors using hex strings only (for example `"#ffffff"`), not numeric literals like `0xffffff`.
 
 ## Game Creation Workflow
 

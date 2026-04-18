@@ -79,7 +79,7 @@ export class IntroSystem extends System<OrbitDrift> {
   private build() {
     this.view.eventMode = "static";
     this.view.cursor = "pointer";
-    this.view.on("pointertap", this.onDismiss);
+    this.view.on("pointertap", this.onPlay);
 
     this.overlay = new Graphics();
     this.panel = new Graphics();
@@ -123,7 +123,7 @@ export class IntroSystem extends System<OrbitDrift> {
     this.view.addChild(this.overlay, this.panel, this.title, this.body, this.hint);
   }
 
-  private onDismiss = () => {
-    this.game.showGameplay();
+  private onPlay = () => {
+    this.game.play();
   };
 }

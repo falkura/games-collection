@@ -84,6 +84,14 @@ export class SystemController<
     return true;
   }
 
+  public getEnabled(): string[] {
+    return Array.from(this.list.keys());
+  }
+
+  public getDisabled(): string[] {
+    return Array.from(this.disabledRegistry.keys());
+  }
+
   public start() {
     this.list.forEach((system) => {
       system.start();

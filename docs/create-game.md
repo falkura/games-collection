@@ -38,6 +38,17 @@ export class MyGame extends GameBase {
 
 See [game-base.md](./game-base.md) for the `System` contract and [engine.md](./engine.md) for the lifecycle.
 
+### Color convention
+
+When specifying colors in game code, use **hex string representation only**:
+
+```ts
+fill: "#ffffff"
+stroke({ color: "#7dd3fc" })
+```
+
+Do not use numeric color literals like `0xffffff` in game source files.
+
 ## 4. Add assets
 
 Drop images, audio, JSON, etc. into `games/<name>/assets/`. AssetPack builds a manifest and `Assets.get("path/relative/to/assets")` returns them at runtime — details in [assets.md](./assets.md).
