@@ -12,6 +12,7 @@ import {
   AIM_TIME,
   PROJECTILE as PROJECTILE_CFG,
   SHIP_BOUNDS_MARGIN,
+  STARFIELD,
   TRAJECTORY_PREVIEW,
 } from "../config";
 import { loadProgress, saveProgress } from "../progress";
@@ -48,6 +49,7 @@ export class SpaceSystem extends System<OrbitDrift> {
   shooters: Shooter[] = [];
   projectiles: Projectile[] = [];
   private trail!: Trail;
+  private starfieldView!: Graphics;
   private wallsView!: Graphics;
 
   active = false;
@@ -90,6 +92,7 @@ export class SpaceSystem extends System<OrbitDrift> {
     for (const s of this.shooters) s.destroy();
     for (const pr of this.projectiles) pr.destroy();
     this.trail?.destroy();
+    this.starfieldView?.destroy();
     this.wallsView?.destroy();
 
     this.world?.destroy();
@@ -200,6 +203,11 @@ export class SpaceSystem extends System<OrbitDrift> {
       shipRadius: Ship.RADIUS,
     });
 
+    this.starfieldView = new Graphics();
+    this.starfieldView.zIndex = -2;
+    this.view.addChild(this.starfieldView);
+    this.drawStarfield(width, height);
+
     this.wallsView = new Graphics();
     this.wallsView.zIndex = 0;
     this.view.addChild(this.wallsView);
@@ -239,12 +247,77 @@ export class SpaceSystem extends System<OrbitDrift> {
     }
   }
 
+  override resize(): void {
+    if (!this.starfieldView || !this.active) return;
+    const { width, height } = Engine.layout.screen;
+    this.drawStarfield(width, height);
+    this.drawWalls();
+  }
+
   private drawWalls() {
     this.wallsView.clear();
     for (const w of this.walls) {
       this.wallsView.moveTo(w.x1, w.y1).lineTo(w.x2, w.y2);
     }
     this.wallsView.stroke({ color: 0xff6b6b, width: 5, cap: "round" });
+  }
+
+  private drawStarfield(width: number, height: number) {
+    const area = width * height;
+    const starCount = Math.max(
+      STARFIELD.MIN_STARS,
+      Math.min(STARFIELD.MAX_STARS, Math.round(area * STARFIELD.BASE_DENSITY)),
+    );
+    const random = this.seededRandom(
+      this.currentLevel * 9973 + Math.round(width) * 37 + Math.round(height) * 101,
+    );
+
+    this.starfieldView.clear();
+    this.starfieldView.rect(0, 0, width, height).fill(STARFIELD.BACKGROUND_COLOR);
+
+    for (let i = 0; i < starCount; i++) {
+      const x = random() * width;
+      const y = random() * height;
+      const tier = random();
+      const alpha = 0.35 + random() * 0.55;
+
+      if (tier < STARFIELD.GIANT_STAR_RATIO) {
+        const r = 2.4 + random() * 1.6;
+        const glow = 12 + random() * 12;
+        this.starfieldView.circle(x, y, glow).fill({ color: 0x9fc4ff, alpha: 0.05 });
+        this.starfieldView.circle(x, y, r).fill({ color: 0xffffff, alpha });
+        this.starfieldView
+          .moveTo(x - 8, y)
+          .lineTo(x + 8, y)
+          .moveTo(x, y - 8)
+          .lineTo(x, y + 8)
+          .stroke({ color: 0xcfe0ff, width: 1, alpha: STARFIELD.PARALLAX_ALPHA });
+        continue;
+      }
+
+      if (tier < STARFIELD.GIANT_STAR_RATIO + STARFIELD.BIG_STAR_RATIO) {
+        const r = 1.2 + random() * 0.8;
+        this.starfieldView.circle(x, y, 6 + random() * 6).fill({
+          color: 0x8fb8ff,
+          alpha: 0.035,
+        });
+        this.starfieldView.circle(x, y, r).fill({ color: 0xf8fbff, alpha });
+        continue;
+      }
+
+      this.starfieldView.circle(x, y, 0.6 + random() * 0.9).fill({
+        color: 0xffffff,
+        alpha,
+      });
+    }
+  }
+
+  private seededRandom(seed: number) {
+    let state = seed >>> 0;
+    return () => {
+      state = (state * 1664525 + 1013904223) >>> 0;
+      return state / 0x100000000;
+    };
   }
 
   override tick(ticker: Ticker): void {

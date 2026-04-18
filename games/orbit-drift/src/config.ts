@@ -129,6 +129,16 @@ export const TRAJECTORY_PREVIEW = {
   WIDTH: 2,
 };
 
+export const STARFIELD = {
+  BACKGROUND_COLOR: 0x050816,
+  BASE_DENSITY: 0.000055,
+  MIN_STARS: 90,
+  MAX_STARS: 220,
+  BIG_STAR_RATIO: 0.14,
+  GIANT_STAR_RATIO: 0.04,
+  PARALLAX_ALPHA: 0.45,
+};
+
 /** Overlay buttons (retry / next). Sized for touch. */
 export const OVERLAY_BUTTON = {
   WIDTH: 520,
