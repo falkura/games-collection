@@ -234,6 +234,8 @@ class EngineClass {
   }
 
   private requestFullscreen(target: any) {
+    if (document.fullscreenElement !== null) return;
+
     target.webkitRequestFullScreen
       ? target.webkitRequestFullScreen()
       : target.mozRequestFullScreen
