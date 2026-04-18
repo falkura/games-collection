@@ -3,6 +3,7 @@ import { FederatedPointerEvent, Graphics, Point, Rectangle } from "pixi.js";
 import { Engine } from "@falkura-pet/engine";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem } from "./SpaceSystem";
+import { TRAJECTORY_PREVIEW } from "../config";
 
 export class InputSystem extends System<OrbitDrift> {
   static MODULE_ID = "input";
@@ -68,6 +69,7 @@ export class InputSystem extends System<OrbitDrift> {
     this.dragging = true;
     this.pointerId = e.pointerId;
 
+    space.setAiming(true);
     this.drawPreview();
   };
 
@@ -91,6 +93,7 @@ export class InputSystem extends System<OrbitDrift> {
       if (dx !== 0 || dy !== 0) {
         space.applyImpulse(dx, dy);
       }
+      space.setAiming(false);
     }
 
     this.preview.clear();
@@ -117,19 +120,19 @@ export class InputSystem extends System<OrbitDrift> {
     const vx = dx * space.dragImpulseScale;
     const vy = dy * space.dragImpulseScale;
 
-    const points = space.simulate(ship.x, ship.y, vx, vy, 220);
+    const points = space.simulate(ship.x, ship.y, vx, vy);
 
     this.preview.clear();
     if (points.length >= 2) {
-      for (let i = 1; i < points.length; i += 3) {
+      for (let i = 1; i < points.length; i += TRAJECTORY_PREVIEW.DASH_EVERY) {
         const a = points[i - 1];
         const b = points[i];
         this.preview.moveTo(a.x, a.y).lineTo(b.x, b.y);
       }
       this.preview.stroke({
-        color: 0xffd43b,
-        width: 2,
-        alpha: 0.75,
+        color: TRAJECTORY_PREVIEW.COLOR,
+        width: TRAJECTORY_PREVIEW.WIDTH,
+        alpha: TRAJECTORY_PREVIEW.ALPHA,
         pixelLine: true,
       });
     }
@@ -138,8 +141,13 @@ export class InputSystem extends System<OrbitDrift> {
     this.impulseLine
       .moveTo(ship.x, ship.y)
       .lineTo(ship.x + dx, ship.y + dy)
-      .stroke({ color: 0xffd43b, width: 2, alpha: 0.9, pixelLine: true })
+      .stroke({
+        color: TRAJECTORY_PREVIEW.COLOR,
+        width: 2,
+        alpha: 0.9,
+        pixelLine: true,
+      })
       .circle(ship.x + dx, ship.y + dy, 5)
-      .fill({ color: 0xffd43b });
+      .fill({ color: TRAJECTORY_PREVIEW.COLOR });
   }
 }

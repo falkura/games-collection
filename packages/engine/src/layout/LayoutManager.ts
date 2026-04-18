@@ -1,4 +1,4 @@
-import { Container, RectangleLike } from "pixi.js";
+import { Container, RectangleLike, isMobile } from "pixi.js";
 import { LayoutContainer } from "./LayoutContainer";
 import {
   HandlerOptions,
@@ -48,6 +48,10 @@ export class LayoutManager {
     handler: (opts: HandlerOptions<any>) => void,
   ) {
     this.handlers[key] = handler;
+  }
+
+  public get isMobile(): boolean {
+    return isMobile.any;
   }
 
   public static get instance() {

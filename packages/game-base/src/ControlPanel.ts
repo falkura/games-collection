@@ -12,12 +12,24 @@ export class ControlPanel {
     fps: 0,
     gameSpeed: 1,
   };
+  static options = {
+    startFolded: false,
+    foldedTitle: "⚙️",
+  };
 
   public static init(game: GameBase) {
     if (ControlPanel.initialized) return;
     ControlPanel.initialized = true;
 
-    game.pane.title = Assets.get("game.json").title;
+    const fullTitle = Assets.get("game.json").title;
+    game.pane.title = fullTitle;
+
+    const syncTitle = () => {
+      game.pane.title = game.pane.expanded
+        ? fullTitle
+        : ControlPanel.options.foldedTitle;
+    };
+    game.pane.on("fold", syncTitle);
 
     game.pane.addBinding(this.stats, "fps", {
       label: "FPS",
@@ -45,6 +57,11 @@ export class ControlPanel {
     ControlPanel.gameSystemsFolder = ControlPanel.engineFolder.addFolder({
       title: "Systems",
     });
+
+    if (ControlPanel.options.startFolded) {
+      game.pane.expanded = false;
+    }
+    syncTitle();
   }
 
   public static reset() {

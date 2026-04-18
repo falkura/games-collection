@@ -1,4 +1,4 @@
-import { TOTAL_LEVELS } from "./types";
+import { LEVEL } from "./config";
 
 const STORAGE_KEY = "orbit-drift:level";
 
@@ -7,7 +7,7 @@ export function loadProgress(): number {
     const raw = localStorage.getItem(STORAGE_KEY);
     const n = raw ? parseInt(raw, 10) : 1;
     if (!Number.isFinite(n)) return 1;
-    return Math.max(1, Math.min(TOTAL_LEVELS, n));
+    return Math.max(1, Math.min(LEVEL.TOTAL, n));
   } catch {
     return 1;
   }

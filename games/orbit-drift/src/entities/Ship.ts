@@ -1,9 +1,10 @@
 import { Container, Graphics } from "pixi.js";
 import Matter from "matter-js";
 import { PhysicsWorld } from "../physics/PhysicsWorld";
+import { PHYSICS } from "../config";
 
 export class Ship {
-  static RADIUS = 10;
+  static RADIUS = PHYSICS.SHIP_RADIUS;
 
   readonly view: Graphics;
   readonly body: Matter.Body;
@@ -41,11 +42,14 @@ export class Ship {
     Matter.Body.setVelocity(this.body, { x: vx, y: vy });
   }
 
+  /**
+   * Integrate gravity directly into velocity so one tick = `v += a`, matching
+   * `simulateTrajectory`. `applyForce` would go through matter's Verlet step
+   * and scale by `delta²`, desynchronizing the preview from actual motion.
+   */
   applyAccel(ax: number, ay: number) {
-    Matter.Body.applyForce(this.body, this.body.position, {
-      x: ax * this.body.mass,
-      y: ay * this.body.mass,
-    });
+    const v = this.body.velocity;
+    Matter.Body.setVelocity(this.body, { x: v.x + ax, y: v.y + ay });
   }
 
   clampSpeed(max: number) {

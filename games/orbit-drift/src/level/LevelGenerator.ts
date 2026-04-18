@@ -1,8 +1,5 @@
 import type { Vec } from "../types";
-
-const PLANET_COLORS = [
-  0xff6b6b, 0x4dabf7, 0xffd43b, 0xa29bfe, 0x55efc4, 0xfd79a8, 0xffa94d,
-];
+import { GENERATION, PLANET_COLORS } from "../config";
 
 export interface PlanetSpec {
   x: number;
@@ -61,13 +58,19 @@ type Zone = { x: number; y: number; r: number };
 
 export function levelParams(n: number, total: number): LevelParams {
   const t = n / total;
+  const gated = (start: number, step: number, max: number) =>
+    n < start ? 0 : Math.min(max, Math.floor((n - (start - 1)) / step));
   return {
-    planets: Math.min(5, 1 + Math.floor(t * 5)),
-    orbs: 3 + Math.floor(t * 5),
-    walls: n < 3 ? 0 : Math.min(3, Math.floor((n - 2) / 2)),
-    chasers: n < 4 ? 0 : Math.min(3, Math.floor((n - 3) / 2)),
-    shooters: n < 6 ? 0 : Math.min(2, Math.floor((n - 5) / 2)),
-    gravityShooters: n < 8 ? 0 : Math.min(2, Math.floor((n - 7) / 1.5)),
+    planets: Math.min(GENERATION.PLANET.MAX, 1 + Math.floor(t * 5)),
+    orbs: GENERATION.ORB.BASE + Math.floor(t * GENERATION.ORB.STEP),
+    walls: gated(GENERATION.WALL.START_LEVEL, 2, GENERATION.WALL.MAX),
+    chasers: gated(GENERATION.CHASER.START_LEVEL, 2, GENERATION.CHASER.MAX),
+    shooters: gated(GENERATION.SHOOTER.START_LEVEL, 2, GENERATION.SHOOTER.MAX),
+    gravityShooters: gated(
+      GENERATION.GRAVITY_SHOOTER.START_LEVEL,
+      1.5,
+      GENERATION.GRAVITY_SHOOTER.MAX,
+    ),
   };
 }
 
@@ -79,10 +82,17 @@ export function generateLevel(opts: GenerateOpts): LevelData {
 
   const planets: PlanetSpec[] = [];
   for (let i = 0; i < params.planets; i++) {
-    const mass = rand(700, 1300);
-    const radius = Math.sqrt(mass) * 1.15;
-    const spawnR = radius + 80;
-    const pos = tryPlace(width, height, margin, spawnR, zones, 80);
+    const mass = rand(GENERATION.PLANET.MIN_MASS, GENERATION.PLANET.MAX_MASS);
+    const radius = Math.sqrt(mass) * GENERATION.PLANET.RADIUS_FACTOR;
+    const spawnR = radius + GENERATION.PLANET.SAFE_PAD;
+    const pos = tryPlace(
+      width,
+      height,
+      margin,
+      spawnR,
+      zones,
+      GENERATION.PLANET.SPAWN_ATTEMPTS,
+    );
     if (!pos) continue;
     planets.push({
       x: pos.x,
@@ -94,12 +104,15 @@ export function generateLevel(opts: GenerateOpts): LevelData {
     zones.push({ x: pos.x, y: pos.y, r: spawnR });
   }
 
-  const shipSafeR = shipRadius + 60;
-  const ship =
-    tryPlace(width, height, margin, shipSafeR, zones, 120) ?? {
-      x: margin + shipSafeR,
-      y: height / 2,
-    };
+  const shipSafeR = shipRadius + GENERATION.SHIP_SAFE_PAD;
+  const ship = tryPlace(
+    width,
+    height,
+    margin,
+    shipSafeR,
+    zones,
+    GENERATION.SHIP_SPAWN_ATTEMPTS,
+  ) ?? { x: margin + shipSafeR, y: height / 2 };
   zones.push({ x: ship.x, y: ship.y, r: shipSafeR + 40 });
 
   const walls: WallSpec[] = [];
@@ -113,45 +126,93 @@ export function generateLevel(opts: GenerateOpts): LevelData {
 
   const orbs: Vec[] = [];
   for (let i = 0; i < params.orbs; i++) {
-    const pos = tryPlace(width, height, margin, 14 + 30, zones, 80);
+    const pos = tryPlace(
+      width,
+      height,
+      margin,
+      14 + GENERATION.ORB.SAFE_PAD,
+      zones,
+      GENERATION.ORB.SPAWN_ATTEMPTS,
+    );
     if (!pos) continue;
     orbs.push(pos);
-    zones.push({ x: pos.x, y: pos.y, r: 14 + 30 });
+    zones.push({ x: pos.x, y: pos.y, r: 14 + GENERATION.ORB.SAFE_PAD });
   }
 
   const chasers: ChaserSpec[] = [];
   for (let i = 0; i < params.chasers; i++) {
-    const pos = tryPlace(width, height, margin, 12 + 80, zones, 60);
+    const pos = tryPlace(
+      width,
+      height,
+      margin,
+      12 + GENERATION.CHASER.SAFE_PAD,
+      zones,
+      GENERATION.CHASER.SPAWN_ATTEMPTS,
+    );
     if (!pos) continue;
-    chasers.push({ x: pos.x, y: pos.y, speed: 1.1 + level * 0.06 });
+    chasers.push({
+      x: pos.x,
+      y: pos.y,
+      speed:
+        GENERATION.CHASER.SPEED_BASE + level * GENERATION.CHASER.SPEED_STEP,
+    });
     zones.push({ x: pos.x, y: pos.y, r: 12 + 60 });
   }
 
   const shooters: ShooterSpec[] = [];
   for (let i = 0; i < params.shooters; i++) {
-    const pos = tryPlace(width, height, margin, 14 + 60, zones, 60);
+    const pos = tryPlace(
+      width,
+      height,
+      margin,
+      14 + GENERATION.SHOOTER.SAFE_PAD,
+      zones,
+      GENERATION.SHOOTER.SPAWN_ATTEMPTS,
+    );
     if (!pos) continue;
     shooters.push({
       x: pos.x,
       y: pos.y,
-      cooldown: Math.max(80, 180 - level * 8),
-      projectileSpeed: 3.4 + level * 0.08,
+      cooldown: Math.max(
+        GENERATION.SHOOTER.COOLDOWN_MIN,
+        GENERATION.SHOOTER.COOLDOWN_BASE -
+          level * GENERATION.SHOOTER.COOLDOWN_STEP,
+      ),
+      projectileSpeed:
+        GENERATION.SHOOTER.SPEED_BASE + level * GENERATION.SHOOTER.SPEED_STEP,
       gravity: false,
     });
-    zones.push({ x: pos.x, y: pos.y, r: 14 + 60 });
+    zones.push({ x: pos.x, y: pos.y, r: 14 + GENERATION.SHOOTER.SAFE_PAD });
   }
 
   for (let i = 0; i < params.gravityShooters; i++) {
-    const pos = tryPlace(width, height, margin, 16 + 60, zones, 60);
+    const pos = tryPlace(
+      width,
+      height,
+      margin,
+      16 + GENERATION.GRAVITY_SHOOTER.SAFE_PAD,
+      zones,
+      GENERATION.GRAVITY_SHOOTER.SPAWN_ATTEMPTS,
+    );
     if (!pos) continue;
     shooters.push({
       x: pos.x,
       y: pos.y,
-      cooldown: Math.max(120, 240 - level * 6),
-      projectileSpeed: 2.6 + level * 0.05,
+      cooldown: Math.max(
+        GENERATION.GRAVITY_SHOOTER.COOLDOWN_MIN,
+        GENERATION.GRAVITY_SHOOTER.COOLDOWN_BASE -
+          level * GENERATION.GRAVITY_SHOOTER.COOLDOWN_STEP,
+      ),
+      projectileSpeed:
+        GENERATION.GRAVITY_SHOOTER.SPEED_BASE +
+        level * GENERATION.GRAVITY_SHOOTER.SPEED_STEP,
       gravity: true,
     });
-    zones.push({ x: pos.x, y: pos.y, r: 16 + 60 });
+    zones.push({
+      x: pos.x,
+      y: pos.y,
+      r: 16 + GENERATION.GRAVITY_SHOOTER.SAFE_PAD,
+    });
   }
 
   return { ship, planets, walls, orbs, chasers, shooters };
@@ -197,8 +258,8 @@ function tryPlaceWall(
   margin: number,
   zones: Zone[],
 ): { spec: WallSpec; zone: Zone } | null {
-  for (let i = 0; i < 40; i++) {
-    const length = rand(140, 260);
+  for (let i = 0; i < GENERATION.WALL.SPAWN_ATTEMPTS; i++) {
+    const length = rand(GENERATION.WALL.MIN_LEN, GENERATION.WALL.MAX_LEN);
     const cx = margin + 120 + Math.random() * (w - margin * 2 - 240);
     const cy = margin + 120 + Math.random() * (h - margin * 2 - 240);
     const vertical = Math.random() < 0.5;
@@ -206,7 +267,7 @@ function tryPlaceWall(
     const y1 = vertical ? cy - length / 2 : cy;
     const x2 = vertical ? cx : cx + length / 2;
     const y2 = vertical ? cy + length / 2 : cy;
-    const r = length / 2 + 40;
+    const r = length / 2 + GENERATION.WALL.SAFE_PAD;
     if (!isClear(cx, cy, r, zones)) continue;
     return { spec: { x1, y1, x2, y2 }, zone: { x: cx, y: cy, r } };
   }

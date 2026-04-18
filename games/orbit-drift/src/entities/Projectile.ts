@@ -2,9 +2,10 @@ import { Container, Graphics } from "pixi.js";
 import Matter from "matter-js";
 import { PhysicsWorld } from "../physics/PhysicsWorld";
 import { gravityAt, type GravitySource } from "../physics/gravity";
+import { PROJECTILE } from "../config";
 
 export class Projectile {
-  static RADIUS = 5;
+  static RADIUS = PROJECTILE.RADIUS;
 
   readonly view: Graphics;
   private body?: Matter.Body;
@@ -62,10 +63,15 @@ export class Projectile {
 
   update(dt: number, sources: GravitySource[]) {
     if (this.body) {
-      const { ax, ay } = gravityAt(this.body.position.x, this.body.position.y, sources);
-      Matter.Body.applyForce(this.body, this.body.position, {
-        x: ax * this.body.mass,
-        y: ay * this.body.mass,
+      const { ax, ay } = gravityAt(
+        this.body.position.x,
+        this.body.position.y,
+        sources,
+      );
+      const v = this.body.velocity;
+      Matter.Body.setVelocity(this.body, {
+        x: v.x + ax * dt,
+        y: v.y + ay * dt,
       });
       this._x = this.body.position.x;
       this._y = this.body.position.y;

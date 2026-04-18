@@ -19,10 +19,7 @@ export class PhysicsWorld {
     Matter.Engine.update(this.engine, dtMs);
   }
 
-  onCollision(
-    pairMatches: (a: string, b: string) => boolean,
-    cb: () => void,
-  ) {
+  onCollision(pairMatches: (a: string, b: string) => boolean, cb: () => void) {
     Matter.Events.on(this.engine, "collisionStart", (ev) => {
       for (const pair of ev.pairs) {
         const a = pair.bodyA.label;

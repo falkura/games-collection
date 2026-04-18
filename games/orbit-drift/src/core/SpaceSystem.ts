@@ -1,16 +1,19 @@
 import { System } from "@falkura-pet/game-base";
 import { Engine } from "@falkura-pet/engine";
 import { Graphics, Ticker } from "pixi.js";
+import gsap from "gsap";
 import { OrbitDrift } from "../OrbitDrift";
 import { PhysicsWorld } from "../physics/PhysicsWorld";
 import { gravityAt, simulateTrajectory } from "../physics/gravity";
-import type { Vec } from "../types";
+import type { Vec, FinishData, FinishReason } from "../types";
 import {
-  TOTAL_LEVELS,
-  LEVEL_NAMES,
-  type FinishData,
-  type FinishReason,
-} from "../types";
+  PHYSICS,
+  LEVEL,
+  AIM_TIME,
+  PROJECTILE as PROJECTILE_CFG,
+  SHIP_BOUNDS_MARGIN,
+  TRAJECTORY_PREVIEW,
+} from "../config";
 import { loadProgress, saveProgress } from "../progress";
 import { generateLevel } from "../level/LevelGenerator";
 import { Ship } from "../entities/Ship";
@@ -22,17 +25,17 @@ import { Shooter } from "../entities/Shooter";
 import { Projectile } from "../entities/Projectile";
 import { Trail } from "../entities/Trail";
 
-export { TOTAL_LEVELS } from "../types";
+export const TOTAL_LEVELS = LEVEL.TOTAL;
 export type { FinishData } from "../types";
 
 export class SpaceSystem extends System<OrbitDrift> {
   static MODULE_ID = "space";
 
-  readonly maxSpeed = 17;
-  readonly maxDragDistance = 380;
-  readonly dragImpulseScale = 0.03;
-  readonly safeMarginPct = 0.05;
-  readonly projectileLifeFrames = 420;
+  readonly maxSpeed = PHYSICS.MAX_SPEED;
+  readonly maxDragDistance = PHYSICS.MAX_DRAG_DISTANCE;
+  readonly dragImpulseScale = PHYSICS.DRAG_IMPULSE_SCALE;
+  readonly safeMarginPct = LEVEL.SAFE_MARGIN_PCT;
+  readonly projectileLifeFrames = PROJECTILE_CFG.LIFE_FRAMES;
 
   currentLevel = 1;
   levelName = "";
@@ -54,11 +57,13 @@ export class SpaceSystem extends System<OrbitDrift> {
 
   private world!: PhysicsWorld;
   private pendingEnd: FinishReason | null = null;
+  private aimTween: gsap.core.Tween | null = null;
+  private baseSpeed = 1;
 
   override start(): void {
     this.currentLevel = loadProgress();
     this.levelName =
-      LEVEL_NAMES[Math.min(this.currentLevel, LEVEL_NAMES.length) - 1] ??
+      LEVEL.NAMES[Math.min(this.currentLevel, LEVEL.NAMES.length) - 1] ??
       `Level ${this.currentLevel}`;
 
     this.world = new PhysicsWorld();
@@ -89,6 +94,10 @@ export class SpaceSystem extends System<OrbitDrift> {
 
     this.world?.destroy();
 
+    this.aimTween?.kill();
+    this.aimTween = null;
+    this.game.ticker.speed = 1;
+
     this.planets = [];
     this.orbs = [];
     this.walls = [];
@@ -105,10 +114,47 @@ export class SpaceSystem extends System<OrbitDrift> {
 
   applyImpulse(dx: number, dy: number) {
     this.shots++;
-    this.ship.setVelocity(
-      dx * this.dragImpulseScale,
-      dy * this.dragImpulseScale,
-    );
+    this.ship.setVelocity(dx * this.dragImpulseScale, dy * this.dragImpulseScale);
+  }
+
+  /**
+   * Smoothly scale game time toward `AIM_TIME.SPEED` while `aiming`, back to
+   * the pre-aim speed when released. If `AIM_TIME.TRANSITION_MS` is 0 the
+   * speed flips instantly instead of tweening.
+   */
+  setAiming(aiming: boolean) {
+    if (!this.active) return;
+    const ticker = this.game.ticker;
+
+    if (aiming) {
+      if (!this.aimTween) this.baseSpeed = ticker.speed;
+      this.aimTween?.kill();
+      const target = this.baseSpeed * AIM_TIME.SPEED;
+      if (AIM_TIME.TRANSITION_MS <= 0) {
+        ticker.speed = target;
+        this.aimTween = null;
+      } else {
+        this.aimTween = gsap.to(ticker, {
+          speed: target,
+          duration: AIM_TIME.TRANSITION_MS / 1000,
+          ease: "power2.out",
+          onComplete: () => (this.aimTween = null),
+        });
+      }
+    } else {
+      this.aimTween?.kill();
+      if (AIM_TIME.TRANSITION_MS <= 0) {
+        ticker.speed = this.baseSpeed;
+        this.aimTween = null;
+      } else {
+        this.aimTween = gsap.to(ticker, {
+          speed: this.baseSpeed,
+          duration: AIM_TIME.TRANSITION_MS / 1000,
+          ease: "power2.out",
+          onComplete: () => (this.aimTween = null),
+        });
+      }
+    }
   }
 
   retry() {
@@ -116,24 +162,18 @@ export class SpaceSystem extends System<OrbitDrift> {
   }
 
   nextLevel() {
-    const next = this.currentLevel >= TOTAL_LEVELS ? 1 : this.currentLevel + 1;
+    const next = this.currentLevel >= LEVEL.TOTAL ? 1 : this.currentLevel + 1;
     saveProgress(next);
     Engine.restartGame();
   }
 
   goToLevel(n: number) {
-    const clamped = Math.max(1, Math.min(TOTAL_LEVELS, Math.floor(n)));
+    const clamped = Math.max(1, Math.min(LEVEL.TOTAL, Math.floor(n)));
     saveProgress(clamped);
     Engine.restartGame();
   }
 
-  simulate(
-    sx: number,
-    sy: number,
-    vx: number,
-    vy: number,
-    steps: number,
-  ): Vec[] {
+  simulate(sx: number, sy: number, vx: number, vy: number): Vec[] {
     const { width, height } = Engine.layout.screen;
     return simulateTrajectory(
       { x: sx, y: sy },
@@ -144,7 +184,7 @@ export class SpaceSystem extends System<OrbitDrift> {
         maxSpeed: this.maxSpeed,
         shipRadius: Ship.RADIUS,
         bounds: { width, height, margin: 400 },
-        steps,
+        steps: TRAJECTORY_PREVIEW.STEPS,
       },
     );
   }
@@ -153,7 +193,7 @@ export class SpaceSystem extends System<OrbitDrift> {
     const { width, height } = Engine.layout.screen;
     const data = generateLevel({
       level: this.currentLevel,
-      totalLevels: TOTAL_LEVELS,
+      totalLevels: LEVEL.TOTAL,
       width,
       height,
       safeMarginPct: this.safeMarginPct,
@@ -214,10 +254,10 @@ export class SpaceSystem extends System<OrbitDrift> {
     this.elapsedMs += ticker.deltaMS;
 
     const shipAccel = gravityAt(this.ship.x, this.ship.y, this.planets);
-    this.ship.applyAccel(shipAccel.ax, shipAccel.ay);
+    this.ship.applyAccel(shipAccel.ax * dt, shipAccel.ay * dt);
     this.ship.clampSpeed(this.maxSpeed);
 
-    this.world.update(ticker.deltaMS);
+    this.world.update((1000 / 60) * dt);
     this.ship.syncView();
 
     this.trail.push(this.ship.x, this.ship.y);
@@ -274,7 +314,7 @@ export class SpaceSystem extends System<OrbitDrift> {
 
   private updateProjectiles(dt: number) {
     const { width, height } = Engine.layout.screen;
-    const margin = 200;
+    const margin = PROJECTILE_CFG.OFFSCREEN_MARGIN;
 
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i];
@@ -329,7 +369,7 @@ export class SpaceSystem extends System<OrbitDrift> {
       }
     }
     const { width, height } = Engine.layout.screen;
-    const m = 500;
+    const m = SHIP_BOUNDS_MARGIN;
     if (
       this.ship.x < -m ||
       this.ship.x > width + m ||
@@ -350,6 +390,10 @@ export class SpaceSystem extends System<OrbitDrift> {
 
   private finishWith(reason: FinishReason, won: boolean) {
     this.active = false;
+    this.aimTween?.kill();
+    this.aimTween = null;
+    this.game.ticker.speed = 1;
+
     if (won) saveProgress(this.currentLevel);
     const data: FinishData = {
       won,

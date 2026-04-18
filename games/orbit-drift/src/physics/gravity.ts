@@ -1,12 +1,5 @@
 import type { Vec } from "../types";
-
-export const G = 0.44;
-/**
- * Softening length. Gravity magnitude is `G·m / (r² + s²)` instead of `G·m / r²`,
- * so the curve plateaus smoothly near r=0 instead of spiking. At r<<s gravity is
- * roughly constant at `G·m/s²`; at r>>s it reduces to standard 1/r² falloff.
- */
-export const GRAVITY_SOFTEN = 770;
+import { PHYSICS } from "../config";
 
 export interface GravitySource {
   x: number;
@@ -29,13 +22,13 @@ export function gravityAt(
 ): { ax: number; ay: number } {
   let ax = 0;
   let ay = 0;
-  const s2 = GRAVITY_SOFTEN * GRAVITY_SOFTEN;
+  const s2 = PHYSICS.GRAVITY_SOFTEN * PHYSICS.GRAVITY_SOFTEN;
   for (const p of sources) {
     const dx = p.x - px;
     const dy = p.y - py;
     const r2 = dx * dx + dy * dy;
     const r = Math.sqrt(Math.max(r2, 1));
-    const a = (G * p.mass) / (r2 + s2);
+    const a = (PHYSICS.G * p.mass) / (r2 + s2);
     ax += (dx / r) * a;
     ay += (dy / r) * a;
   }

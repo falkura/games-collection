@@ -4,6 +4,7 @@ import { Container, Graphics, Text } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem, TOTAL_LEVELS } from "./SpaceSystem";
 import type { FinishData } from "./SpaceSystem";
+import { OVERLAY_BUTTON } from "../config";
 
 const REASON_LABEL: Record<NonNullable<FinishData["reason"]>, string> = {
   collision: "PLANET IMPACT",
@@ -81,6 +82,10 @@ export class HUDSystem extends System<OrbitDrift> {
     this.shownLevel = space.currentLevel;
   }
 
+  private get textScale() {
+    return Engine.layout.isMobile ? 1.3 : 1;
+  }
+
   private build() {
     this.levelText = new Text({
       text: "",
@@ -105,7 +110,6 @@ export class HUDSystem extends System<OrbitDrift> {
       },
     });
     this.scoreText.x = 30;
-    this.scoreText.y = 44;
     this.view.addChild(this.scoreText);
 
     this.statsText = new Text({
@@ -118,7 +122,6 @@ export class HUDSystem extends System<OrbitDrift> {
       },
     });
     this.statsText.x = 30;
-    this.statsText.y = 84;
     this.view.addChild(this.statsText);
 
     this.infoText = new Text({
@@ -208,15 +211,15 @@ export class HUDSystem extends System<OrbitDrift> {
     c.eventMode = "static";
     c.cursor = "pointer";
 
-    const w = 240;
-    const h = 64;
+    const w = OVERLAY_BUTTON.WIDTH;
+    const h = OVERLAY_BUTTON.HEIGHT;
 
     const bg = new Graphics();
     const text = new Text({
       text: label,
       style: {
         fill: 0xffffff,
-        fontSize: 22,
+        fontSize: OVERLAY_BUTTON.FONT_SIZE,
         fontFamily: "monospace",
         fontWeight: "bold",
       },
@@ -225,9 +228,9 @@ export class HUDSystem extends System<OrbitDrift> {
 
     const redraw = (hover: boolean) => {
       bg.clear()
-        .roundRect(-w / 2, -h / 2, w, h, 10)
-        .fill({ color, alpha: hover ? 0.28 : 0.14 })
-        .stroke({ color, width: 2 });
+        .roundRect(-w / 2, -h / 2, w, h, OVERLAY_BUTTON.RADIUS)
+        .fill({ color, alpha: hover ? 0.3 : 0.16 })
+        .stroke({ color, width: 3 });
     };
     redraw(false);
 
@@ -242,8 +245,15 @@ export class HUDSystem extends System<OrbitDrift> {
   private layoutAll() {
     const { width, height } = Engine.layout.screen;
     const isPortrait = Engine.layout.isPortrait;
+    const s = this.textScale;
 
-    this.infoText.style.fontSize = isPortrait ? 24 : 16;
+    this.levelText.style.fontSize = 16 * s;
+    this.scoreText.style.fontSize = 28 * s;
+    this.statsText.style.fontSize = 16 * s;
+    this.scoreText.y = this.levelText.y + 24 * s;
+    this.statsText.y = this.scoreText.y + 40 * s;
+
+    this.infoText.style.fontSize = (isPortrait ? 24 : 16) * s;
     this.infoText.style.wordWrapWidth = Math.max(200, width - 60);
     this.infoText.x = 30;
     this.infoText.y = height - 20;
@@ -253,28 +263,33 @@ export class HUDSystem extends System<OrbitDrift> {
       .rect(0, 0, width, height)
       .fill({ color: 0x000000, alpha: 0.78 });
 
-    this.overlayTitle.style.fontSize = isPortrait ? 56 : 72;
+    this.overlayTitle.style.fontSize = (isPortrait ? 56 : 72) * s;
     this.overlayTitle.style.wordWrapWidth = Math.max(200, width - 80);
     this.overlayTitle.x = width / 2;
     this.overlayTitle.y = height / 2 - 160;
 
-    this.overlaySub.style.fontSize = isPortrait ? 22 : 22;
+    this.overlaySub.style.fontSize = 22 * s;
     this.overlaySub.style.wordWrapWidth = Math.max(200, width - 100);
     this.overlaySub.x = width / 2;
     this.overlaySub.y = height / 2 - 60;
 
-    this.overlayStats.style.fontSize = isPortrait ? 22 : 26;
+    this.overlayStats.style.fontSize = (isPortrait ? 22 : 26) * s;
     this.overlayStats.x = width / 2;
     this.overlayStats.y = height / 2 - 10;
+
+    for (const btn of this.buttonRow.children) {
+      const t = btn.children?.find((c) => c instanceof Text) as Text | undefined;
+      if (t) t.style.fontSize = OVERLAY_BUTTON.FONT_SIZE * s;
+    }
 
     this.layoutButtons(width, height, isPortrait);
   }
 
   private layoutButtons(width: number, height: number, isPortrait: boolean) {
-    const gap = 30;
+    const gap = OVERLAY_BUTTON.GAP;
     const visibleChildren = this.buttonRow.children.filter((c) => c.visible);
     if (isPortrait) {
-      const step = 80;
+      const step = OVERLAY_BUTTON.PORTRAIT_STEP;
       let y = 0;
       for (const c of visibleChildren) {
         c.x = 0;
@@ -282,7 +297,7 @@ export class HUDSystem extends System<OrbitDrift> {
         y += step;
       }
     } else {
-      const btnWidth = 240;
+      const btnWidth = OVERLAY_BUTTON.WIDTH;
       const totalWidth =
         visibleChildren.length * btnWidth + (visibleChildren.length - 1) * gap;
       let x = -totalWidth / 2 + btnWidth / 2;
@@ -293,7 +308,7 @@ export class HUDSystem extends System<OrbitDrift> {
       }
     }
     this.buttonRow.x = width / 2;
-    this.buttonRow.y = height / 2 + (isPortrait ? 100 : 110);
+    this.buttonRow.y = height / 2 + (isPortrait ? 160 : 180);
   }
 
   private onFinished = (data?: FinishData) => {
