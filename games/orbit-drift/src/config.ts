@@ -28,9 +28,9 @@ export const PHYSICS = {
  */
 export const AIM_TIME = {
   /** Ticker speed multiplier while aiming (1 = normal, 0.25 = quarter speed). */
-  SPEED: 0.25,
+  SPEED: 0.15,
   /** Transition duration in ms from normal to aim speed (and back). */
-  TRANSITION_MS: 220,
+  TRANSITION_MS: 280,
 };
 
 export const LEVEL = {

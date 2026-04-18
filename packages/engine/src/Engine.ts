@@ -141,7 +141,7 @@ class EngineClass {
     this.app.stage.addChild(this.view, this.loadScene);
     this.app.ticker.add(this.loadScene.tick, this.loadScene);
 
-    this.setupMobileAutoFullscreen();
+    // this.setupMobileAutoFullscreen();
 
     if (__DEV__) {
       globalThis.app = globalThis.__PIXI_APP__ = this.app;
