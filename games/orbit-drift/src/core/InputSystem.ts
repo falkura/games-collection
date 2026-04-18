@@ -1,6 +1,7 @@
 import { System } from "@falkura-pet/game-base";
 import { FederatedPointerEvent, Graphics, Point, Rectangle } from "pixi.js";
 import { Engine } from "@falkura-pet/engine";
+import { Ticker } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem } from "./SpaceSystem";
 import { TRAJECTORY_PREVIEW } from "../config";
@@ -36,6 +37,13 @@ export class InputSystem extends System<OrbitDrift> {
     if (!this.built) return;
     const { width, height } = Engine.layout.screen;
     this.view.hitArea = new Rectangle(-800, -800, width + 1600, height + 1600);
+  }
+
+  override tick(_ticker: Ticker): void {
+    if (!this.dragging) return;
+    if (!this.space?.active) return;
+
+    this.drawPreview();
   }
 
   private build() {
