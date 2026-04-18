@@ -102,6 +102,8 @@ export class LayoutManager {
   }
 
   public updateSingleNode(node: LayoutContainer, includeChildren = true) {
+    if (!this.game.width) return;
+
     const vars = this.layoutContext;
 
     if (includeChildren) {

@@ -6,11 +6,16 @@ import { LayoutConfig, LayoutVars } from "./LayoutHandlers";
  * Base class for layout construction
  */
 export class LayoutContainer<T extends Container = any> extends Container {
+  public layoutWidth = 0;
+  public layoutHeight = 0;
+  public label = "";
+
   private _layout: LayoutConfig<T>;
   private _layoutLandscape!: LayoutConfig<T>;
   private _layoutPortrait!: LayoutConfig<T>;
   private _view: T;
   private _onResize: LayoutConfig["onResize"];
+  private _initialized = false;
 
   /** @internal */
   public layoutParams = {
@@ -30,8 +35,25 @@ export class LayoutContainer<T extends Container = any> extends Container {
     }
 
     this.layout = layout;
+    this._initialized = true;
 
     this.on("added", () => LayoutManager.instance.updateSingleNode(this));
+  }
+
+  public addChildWithLayout<TChild extends Container>(
+    child: TChild,
+    layout: Omit<LayoutConfig<TChild>, "view">,
+  ): LayoutContainer<TChild> {
+    const layoutChild = new LayoutContainer<TChild>({
+      view: child,
+      ...layout,
+    });
+
+    this.addChild(layoutChild);
+
+    LayoutManager.instance.updateSingleNode(layoutChild);
+
+    return layoutChild;
   }
 
   public get layout(): LayoutConfig<T> {
@@ -45,7 +67,8 @@ export class LayoutContainer<T extends Container = any> extends Container {
 
     this._recalculateLayout();
 
-    if (!initial) LayoutManager.instance.updateSingleNode(this);
+    if (!initial && this._initialized)
+      LayoutManager.instance.updateSingleNode(this);
   }
 
   /**
@@ -110,6 +133,7 @@ export class LayoutContainer<T extends Container = any> extends Container {
       this._onResize({
         manager,
         vars,
+        view: this.view,
       });
   }
 }
