@@ -36,7 +36,6 @@ class EngineClass {
   graphics: UISettings["graphics"];
 
   private _manifestName: string;
-  private removeFullscreenListeners: (() => void) | null = null;
 
   constructor() {
     this.state = GAME_STATE.Init;
@@ -234,64 +233,24 @@ class EngineClass {
     if (this.game) this.game.resize();
   }
 
+  private requestFullscreen(target: any) {
+    target.webkitRequestFullScreen
+      ? target.webkitRequestFullScreen()
+      : target.mozRequestFullScreen
+        ? target.mozRequestFullScreen()
+        : target.requestFullScreen && target.requestFullScreen();
+  }
+
   private setupMobileAutoFullscreen() {
-    this.removeFullscreenListeners?.();
-    this.removeFullscreenListeners = null;
-
     if (!this.layout?.isMobile) return;
-    if (!document.fullscreenEnabled && !("webkitRequestFullscreen" in root)) return;
 
-    const tryFullscreen = () => {
-      if (document.fullscreenElement) {
-        cleanup();
-        return;
-      }
-
-      const requestFullscreen = (
-        root as HTMLDivElement & {
-          webkitRequestFullscreen?: () => Promise<void> | void;
-        }
-      ).requestFullscreen?.bind(root)
-        ?? (
-          root as HTMLDivElement & {
-            webkitRequestFullscreen?: () => Promise<void> | void;
-          }
-        ).webkitRequestFullscreen?.bind(root);
-
-      if (!requestFullscreen) {
-        cleanup();
-        return;
-      }
-
-      try {
-        const result = requestFullscreen();
-        if (result && typeof result.catch === "function") {
-          result.catch(() => undefined);
-        }
-      } catch {
-        // Some mobile browsers reject fullscreen requests despite user input.
-      }
-
-      cleanup();
-    };
-
-    const cleanup = () => {
-      this.removeFullscreenListeners?.();
-      this.removeFullscreenListeners = null;
-    };
-
-    const events: Array<keyof DocumentEventMap> = ["pointerdown", "touchstart"];
-    const options: AddEventListenerOptions = { passive: true };
-
-    for (const eventName of events) {
-      document.addEventListener(eventName, tryFullscreen, options);
+    for (const eventName of ["pointerdown", "touchstart"]) {
+      document.addEventListener(
+        eventName,
+        () => this.requestFullscreen(document.body),
+        { passive: true },
+      );
     }
-
-    this.removeFullscreenListeners = () => {
-      for (const eventName of events) {
-        document.removeEventListener(eventName, tryFullscreen, options);
-      }
-    };
   }
 }
 

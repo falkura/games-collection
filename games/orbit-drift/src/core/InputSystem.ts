@@ -124,6 +124,9 @@ export class InputSystem extends System<OrbitDrift> {
     const space = this.space;
     const ship = space.ship;
     const { dx, dy } = this.clampedDrag();
+    const previewWidth = Engine.layout.isMobile
+      ? TRAJECTORY_PREVIEW.WIDTH * 2
+      : TRAJECTORY_PREVIEW.WIDTH;
 
     const vx = dx * space.dragImpulseScale;
     const vy = dy * space.dragImpulseScale;
@@ -139,7 +142,7 @@ export class InputSystem extends System<OrbitDrift> {
       }
       this.preview.stroke({
         color: TRAJECTORY_PREVIEW.COLOR,
-        width: TRAJECTORY_PREVIEW.WIDTH,
+        width: previewWidth,
         alpha: TRAJECTORY_PREVIEW.ALPHA,
         pixelLine: true,
       });
