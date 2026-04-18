@@ -17,6 +17,8 @@ Created during `Engine.initApplication()`. On every resize it:
 
 In systems, read `Engine.layout.screen` / `Engine.layout.game` / `Engine.layout.isPortrait` inside `resize()` to place things responsively.
 
+`Engine.layout.isMobile` is also available when you need coarse device-class branching. It proxies Pixi's mobile detection (`isMobile.any`).
+
 ## `LayoutContainer`
 
 A `Container` subclass that accepts a **layout config** and re-evaluates it on resize and on being added to the stage. You build your whole UI out of these.
