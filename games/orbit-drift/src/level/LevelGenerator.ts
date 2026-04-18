@@ -126,26 +126,28 @@ export function generateLevel(opts: GenerateOpts): LevelData {
 
   const orbs: Vec[] = [];
   for (let i = 0; i < params.orbs; i++) {
+    const orbRadius = 16;
     const pos = tryPlace(
       width,
       height,
       margin,
-      14 + GENERATION.ORB.SAFE_PAD,
+      orbRadius + GENERATION.ORB.SAFE_PAD,
       zones,
       GENERATION.ORB.SPAWN_ATTEMPTS,
     );
     if (!pos) continue;
     orbs.push(pos);
-    zones.push({ x: pos.x, y: pos.y, r: 14 + GENERATION.ORB.SAFE_PAD });
+    zones.push({ x: pos.x, y: pos.y, r: orbRadius + GENERATION.ORB.SAFE_PAD });
   }
 
   const chasers: ChaserSpec[] = [];
   for (let i = 0; i < params.chasers; i++) {
+    const chaserRadius = 14;
     const pos = tryPlace(
       width,
       height,
       margin,
-      12 + GENERATION.CHASER.SAFE_PAD,
+      chaserRadius + GENERATION.CHASER.SAFE_PAD,
       zones,
       GENERATION.CHASER.SPAWN_ATTEMPTS,
     );
@@ -156,16 +158,17 @@ export function generateLevel(opts: GenerateOpts): LevelData {
       speed:
         GENERATION.CHASER.SPEED_BASE + level * GENERATION.CHASER.SPEED_STEP,
     });
-    zones.push({ x: pos.x, y: pos.y, r: 12 + 60 });
+    zones.push({ x: pos.x, y: pos.y, r: chaserRadius + 60 });
   }
 
   const shooters: ShooterSpec[] = [];
   for (let i = 0; i < params.shooters; i++) {
+    const shooterRadius = 16;
     const pos = tryPlace(
       width,
       height,
       margin,
-      14 + GENERATION.SHOOTER.SAFE_PAD,
+      shooterRadius + GENERATION.SHOOTER.SAFE_PAD,
       zones,
       GENERATION.SHOOTER.SPAWN_ATTEMPTS,
     );
@@ -182,15 +185,20 @@ export function generateLevel(opts: GenerateOpts): LevelData {
         GENERATION.SHOOTER.SPEED_BASE + level * GENERATION.SHOOTER.SPEED_STEP,
       gravity: false,
     });
-    zones.push({ x: pos.x, y: pos.y, r: 14 + GENERATION.SHOOTER.SAFE_PAD });
+    zones.push({
+      x: pos.x,
+      y: pos.y,
+      r: shooterRadius + GENERATION.SHOOTER.SAFE_PAD,
+    });
   }
 
   for (let i = 0; i < params.gravityShooters; i++) {
+    const shooterRadius = 18;
     const pos = tryPlace(
       width,
       height,
       margin,
-      16 + GENERATION.GRAVITY_SHOOTER.SAFE_PAD,
+      shooterRadius + GENERATION.GRAVITY_SHOOTER.SAFE_PAD,
       zones,
       GENERATION.GRAVITY_SHOOTER.SPAWN_ATTEMPTS,
     );
@@ -211,7 +219,7 @@ export function generateLevel(opts: GenerateOpts): LevelData {
     zones.push({
       x: pos.x,
       y: pos.y,
-      r: 16 + GENERATION.GRAVITY_SHOOTER.SAFE_PAD,
+      r: shooterRadius + GENERATION.GRAVITY_SHOOTER.SAFE_PAD,
     });
   }
 

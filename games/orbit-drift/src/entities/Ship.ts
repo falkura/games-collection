@@ -5,16 +5,40 @@ import { PHYSICS } from "../config";
 
 export class Ship {
   static RADIUS = PHYSICS.SHIP_RADIUS;
+  private static readonly ROTATION_EPSILON = 0.05;
 
   readonly view: Graphics;
   readonly body: Matter.Body;
 
   constructor(x: number, y: number, private world: PhysicsWorld, parent: Container) {
-    this.view = new Graphics()
-      .circle(0, 0, Ship.RADIUS)
+    this.view = new Graphics();
+    this.view
+      .circle(0, 0, Ship.RADIUS + 10)
+      .fill({ color: 0x9fd8ff, alpha: 0.08 })
+      .circle(0, 0, Ship.RADIUS + 5)
+      .stroke({ color: 0xb8ecff, width: 1.5, alpha: 0.45 })
+      .poly([
+        -Ship.RADIUS - 1,
+        Ship.RADIUS - 1,
+        0,
+        -Ship.RADIUS - 7,
+        Ship.RADIUS + 1,
+        Ship.RADIUS - 1,
+      ])
+      .fill({ color: 0xdff6ff, alpha: 0.95 })
+      .circle(0, 1, Ship.RADIUS - 4)
       .fill({ color: 0xffffff })
-      .circle(0, 0, Ship.RADIUS + 6)
-      .stroke({ color: 0xffffff, width: 1, alpha: 0.35 });
+      .circle(0, -1, Ship.RADIUS - 8)
+      .fill({ color: 0x7fdcff })
+      .poly([
+        -5,
+        Ship.RADIUS - 1,
+        0,
+        Ship.RADIUS + 7,
+        5,
+        Ship.RADIUS - 1,
+      ])
+      .fill({ color: 0x4dc4ff, alpha: 0.8 });
     this.view.zIndex = 4;
     this.view.x = x;
     this.view.y = y;
@@ -66,6 +90,13 @@ export class Ship {
   syncView() {
     this.view.x = this.x;
     this.view.y = this.y;
+
+    const { x: vx, y: vy } = this.body.velocity;
+    if (Math.hypot(vx, vy) > Ship.ROTATION_EPSILON) {
+      // The ship art is authored facing up, so rotate 90deg from the
+      // velocity vector to align the nose with the travel direction.
+      this.view.rotation = Math.atan2(vy, vx) + Math.PI / 2;
+    }
   }
 
   destroy() {

@@ -33,10 +33,14 @@ export class Projectile {
 
     const color = gravity ? 0xffa94d : 0xff4d4d;
     this.view = new Graphics()
+      .circle(0, 0, Projectile.RADIUS + 5)
+      .fill({ color, alpha: 0.1 })
+      .circle(0, 0, Projectile.RADIUS + 2)
+      .stroke({ color, width: 1.5, alpha: 0.5 })
       .circle(0, 0, Projectile.RADIUS)
       .fill({ color })
-      .circle(0, 0, 8)
-      .stroke({ color, width: 1, alpha: 0.5 });
+      .circle(0, 0, Math.max(1.5, Projectile.RADIUS - 2))
+      .fill({ color: 0xffffff, alpha: 0.35 });
     this.view.x = x;
     this.view.y = y;
     this.view.zIndex = 2;

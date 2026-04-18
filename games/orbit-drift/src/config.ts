@@ -19,7 +19,7 @@ export const PHYSICS = {
   /** Drag distance is multiplied by this to become initial velocity. */
   DRAG_IMPULSE_SCALE: 0.08,
   /** Ship physical radius. */
-  SHIP_RADIUS: 10,
+  SHIP_RADIUS: 12,
 };
 
 /**
@@ -60,7 +60,7 @@ export const GENERATION = {
   PLANET: {
     MIN_MASS: 400,
     MAX_MASS: 1300,
-    RADIUS_FACTOR: 1.15,
+    RADIUS_FACTOR: 1.22,
     MAX: 5,
     SAFE_PAD: 80,
     SPAWN_ATTEMPTS: 80,
