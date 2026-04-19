@@ -58,16 +58,6 @@ export class IntroSystem extends System<ConnectDots> {
         align: "center",
         wordWrap: true,
         wordWrapWidth: 880,
-        tagStyles: {
-          t1: {
-            fill: INTRO.title,
-            fontWeight: "bold",
-          },
-          t2: {
-            fill: INTRO.accent,
-            fontWeight: "bold",
-          },
-        },
       },
       anchor: 0.5,
     });
@@ -91,10 +81,14 @@ export class IntroSystem extends System<ConnectDots> {
         view.style.fontSize = manager.isMobile ? 60 : 44;
         view.style.tagStyles = {
           t1: {
+            fill: INTRO.title,
+            fontWeight: "bold",
             fontSize: manager.isMobile ? 112 : 80,
           },
           t2: {
             fontSize: manager.isMobile ? 56 : 40,
+            fill: INTRO.accent,
+            fontWeight: "bold",
           },
         };
       },

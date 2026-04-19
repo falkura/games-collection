@@ -13,81 +13,57 @@ import { getLevels } from "../levels";
 import { loadLevelIndex, saveLevelIndex } from "../progress";
 import type { Cell, Level } from "../types";
 
-type PathMap = Map<string, Cell[]>;
-
 const BG = {
   page: "#08111f",
   panel: "#0f1b2f",
   panelStroke: "#2a3e62",
-  board: "#0b1627",
   boardInset: "#142338",
   cell: "#0f2138",
   grid: "#28415f",
-  text: "#f8fafc",
-  muted: "#9fb3c8",
-  accent: "#7dd3fc",
-  success: "#34d399",
 };
 
-const LABEL_PALETTE = [
-  "#ef4444", // red
-  "#22c55e", // green
-  "#3b82f6", // blue
-  "#eab308", // yellow
-  "#a855f7", // purple
-  "#f97316", // orange
-  "#06b6d4", // cyan
-  "#ec4899", // pink
-  "#84cc16", // lime
-  "#14b8a6", // teal
-  "#f59e0b", // amber
-  "#8b5cf6", // violet
+const PALETTE = [
+  "#ef4444",
+  "#22c55e",
+  "#3b82f6",
+  "#eab308",
+  "#a855f7",
+  "#f97316",
+  "#06b6d4",
+  "#ec4899",
+  "#84cc16",
+  "#14b8a6",
+  "#f59e0b",
+  "#8b5cf6",
 ];
 
 export class MainSystem extends System<ConnectDots> {
   static MODULE_ID = "main";
 
   private readonly levels = getLevels();
-
   private levelIndex = 0;
   private currentLevel!: Level;
-  private paths: PathMap = new Map();
-  private occupancy = new Map<string, string>();
-  private endpointOwner = new Map<string, string>();
 
-  private draggingColor: string | null = null;
+  private paths = new Map<string, Cell[]>();
+  private dragging: string | null = null;
 
   private boardRoot!: Container;
-  private boardChrome!: Graphics;
+  private chrome!: Graphics;
   private cellsView!: Graphics;
   private pathsView!: Graphics;
   private endpointsView!: Container;
-
-  private boardX = 0;
-  private boardY = 0;
   private cellSize = 32;
-  private boardPixelWidth = 0;
-  private boardPixelHeight = 0;
-  private boardPadding = 18;
 
-  get levelCount(): number {
+  get levelCount() {
     return this.levels.length;
   }
-
-  get levelNumber(): number {
+  get levelNumber() {
     return this.levelIndex + 1;
   }
-
-  get levelTitle(): string {
+  get levelTitle() {
     return this.currentLevel?.title ?? "";
   }
-
-  get levelMeta(): string {
-    if (!this.currentLevel) return "";
-    return `${this.currentLevel.width}x${this.currentLevel.height}`;
-  }
-
-  get levelSource(): string {
+  get levelSource() {
     return this.currentLevel?.source ?? "";
   }
 
@@ -95,65 +71,40 @@ export class MainSystem extends System<ConnectDots> {
     if (!this.boardRoot) this.build();
     if (!this.currentLevel) {
       this.loadLevel(loadLevelIndex(this.levels.length));
-      return;
     }
-
-    this.resetLevel();
-    this.drawStatic();
-    this.resize();
   }
 
   override reset(): void {
-    this.draggingColor = null;
-    this.paths.clear();
-    this.occupancy.clear();
-    this.endpointOwner.clear();
+    this.resetLevel();
   }
 
   override resize(): void {
-    if (!this.boardRoot || !this.currentLevel) return;
+    this.layoutBoard();
+  }
 
-    const { width, height } = Engine.layout.screen;
-    const mobile = Engine.layout.isMobile;
+  resetLevel() {
+    this.dragging = null;
+    this.paths.clear();
+    this.drawPaths();
+  }
 
-    this.view.hitArea = new Rectangle(0, 0, width, height);
-    const topReserved = mobile ? 210 : 148;
-    const bottomReserved = mobile ? 150 : 118;
-    const availableWidth = width - 64;
-    const availableHeight = height - topReserved - bottomReserved;
-    const boardScale = Math.min(
-      availableWidth / this.currentLevel.width,
-      availableHeight / this.currentLevel.height,
+  nextLevel() {
+    this.loadLevel((this.levelIndex + 1) % this.levels.length);
+  }
+
+  goToLevel(levelNumber: number) {
+    const clamped = Math.max(
+      1,
+      Math.min(this.levels.length, Math.floor(levelNumber)),
     );
-
-    this.cellSize = Math.max(18, Math.floor(boardScale));
-    this.boardPadding = mobile ? 22 : 18;
-    this.boardPixelWidth = this.currentLevel.width * this.cellSize;
-    this.boardPixelHeight = this.currentLevel.height * this.cellSize;
-    this.boardX = Math.round((width - this.boardPixelWidth) / 2);
-    this.boardY = Math.round(
-      topReserved + (availableHeight - this.boardPixelHeight) / 2,
-    );
-
-    this.boardRoot.position.set(this.boardX, this.boardY);
-    this.boardRoot.hitArea = new Rectangle(
-      0,
-      0,
-      this.boardPixelWidth,
-      this.boardPixelHeight,
-    );
-
-    this.drawStatic();
-    this.drawDynamic();
+    this.loadLevel(clamped - 1);
   }
 
   private build() {
-    this.boardChrome = new Graphics();
-    this.boardChrome.zIndex = 0;
-    this.view.addChild(this.boardChrome);
+    this.chrome = new Graphics();
+    this.view.addChild(this.chrome);
 
     this.boardRoot = new Container();
-    this.boardRoot.zIndex = 1;
     this.boardRoot.eventMode = "static";
     this.boardRoot.cursor = "crosshair";
     this.boardRoot.on("pointerdown", this.onPointerDown);
@@ -173,76 +124,75 @@ export class MainSystem extends System<ConnectDots> {
     this.levelIndex = index;
     this.currentLevel = this.levels[index];
     saveLevelIndex(index);
-    this.endpointOwner = new Map();
-
-    for (const label of this.currentLevel.labels) {
-      for (const cell of this.currentLevel.endpoints[label]) {
-        this.endpointOwner.set(this.cellKey(cell), label);
-      }
-    }
-
     this.resetLevel();
-    this.resize();
+    this.layoutBoard();
   }
 
-  resetLevel() {
-    this.draggingColor = null;
-    this.paths = new Map();
-    this.occupancy = new Map();
-    if (this.pathsView) this.drawDynamic();
-  }
+  private layoutBoard() {
+    if (!this.boardRoot || !this.currentLevel) return;
 
-  private drawStatic() {
-    if (!this.currentLevel) return;
+    const { width: sw, height: sh } = Engine.layout.screen;
+    const mobile = Engine.layout.isMobile;
+    const top = mobile ? 210 : 148;
+    const bottom = mobile ? 150 : 118;
+    const pad = mobile ? 22 : 18;
+    const availW = sw - 64;
+    const availH = sh - top - bottom;
 
-    const { width, height } = Engine.layout.screen;
+    this.cellSize = Math.max(
+      18,
+      Math.floor(
+        Math.min(
+          availW / this.currentLevel.width,
+          availH / this.currentLevel.height,
+        ),
+      ),
+    );
+    const boardW = this.currentLevel.width * this.cellSize;
+    const boardH = this.currentLevel.height * this.cellSize;
+    const x = Math.round((sw - boardW) / 2);
+    const y = Math.round(top + (availH - boardH) / 2);
 
-    this.boardChrome.clear();
-    this.boardChrome.rect(0, 0, width, height).fill(BG.page);
-    this.boardChrome
-      .roundRect(
-        this.boardX - this.boardPadding,
-        this.boardY - this.boardPadding,
-        this.boardPixelWidth + this.boardPadding * 2,
-        this.boardPixelHeight + this.boardPadding * 2,
-        26,
-      )
+    this.view.hitArea = new Rectangle(0, 0, sw, sh);
+    this.boardRoot.position.set(x, y);
+    this.boardRoot.hitArea = new Rectangle(0, 0, boardW, boardH);
+
+    this.chrome
+      .clear()
+      .rect(0, 0, sw, sh)
+      .fill(BG.page)
+      .roundRect(x - pad, y - pad, boardW + pad * 2, boardH + pad * 2, 26)
       .fill({ color: BG.panel, alpha: 0.92 })
       .stroke({ color: BG.panelStroke, width: 2, alpha: 0.9 });
 
-    this.drawCells();
+    this.drawCells(boardW, boardH);
     this.drawEndpoints();
+    this.drawPaths();
   }
 
-  private drawCells() {
-    this.cellsView.clear();
+  private drawCells(boardW: number, boardH: number) {
+    const { width, height } = this.currentLevel;
+    const s = this.cellSize;
+
     this.cellsView
-      .rect(0, 0, this.boardPixelWidth, this.boardPixelHeight)
+      .clear()
+      .rect(0, 0, boardW, boardH)
       .fill(BG.boardInset)
       .stroke({ color: BG.panelStroke, width: 2, alpha: 0.7 });
 
-    for (let y = 0; y < this.currentLevel.height; y++) {
-      for (let x = 0; x < this.currentLevel.width; x++) {
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
         this.cellsView
-          .rect(
-            x * this.cellSize + 1,
-            y * this.cellSize + 1,
-            this.cellSize - 2,
-            this.cellSize - 2,
-          )
+          .rect(x * s + 1, y * s + 1, s - 2, s - 2)
           .fill({ color: BG.cell, alpha: 0.75 });
       }
     }
 
-    for (let x = 0; x <= this.currentLevel.width; x++) {
-      this.cellsView
-        .moveTo(x * this.cellSize, 0)
-        .lineTo(x * this.cellSize, this.boardPixelHeight);
+    for (let x = 0; x <= width; x++) {
+      this.cellsView.moveTo(x * s, 0).lineTo(x * s, boardH);
     }
-    for (let y = 0; y <= this.currentLevel.height; y++) {
-      this.cellsView
-        .moveTo(0, y * this.cellSize)
-        .lineTo(this.boardPixelWidth, y * this.cellSize);
+    for (let y = 0; y <= height; y++) {
+      this.cellsView.moveTo(0, y * s).lineTo(boardW, y * s);
     }
     this.cellsView.stroke({
       color: BG.grid,
@@ -252,43 +202,18 @@ export class MainSystem extends System<ConnectDots> {
     });
   }
 
-  private drawDynamic() {
-    this.pathsView.clear();
-    const strokeWidth = this.cellSize * 0.38;
-
-    for (const label of this.currentLevel.labels) {
-      const path = this.paths.get(label);
-      if (!path || path.length < 2) continue;
-      const color = this.colorForLabel(label);
-
-      const first = this.cellCenter(path[0]);
-      this.pathsView.moveTo(first.x, first.y);
-      for (let i = 1; i < path.length; i++) {
-        const point = this.cellCenter(path[i]);
-        this.pathsView.lineTo(point.x, point.y);
-      }
-      this.pathsView.stroke({
-        color,
-        width: strokeWidth,
-        alpha: 0.9,
-        cap: "round",
-        join: "round",
-      });
-    }
-  }
-
   private drawEndpoints() {
     for (const child of this.endpointsView.removeChildren()) child.destroy();
-
     const fontSize = Math.max(10, Math.floor(this.cellSize * 0.36));
 
     for (const label of this.currentLevel.labels) {
-      const color = this.colorForLabel(label);
+      const color = this.colorOf(label);
       for (const cell of this.currentLevel.endpoints[label]) {
         const center = this.cellCenter(cell);
-        const dot = new Graphics();
-        dot.circle(0, 0, this.cellSize * 0.34).fill({ color });
-        dot.position.set(center.x, center.y);
+        const dot = new Graphics()
+          .circle(0, 0, this.cellSize * 0.34)
+          .fill({ color });
+        dot.position.copyFrom(center);
 
         const text = new Text({
           text: label,
@@ -300,180 +225,173 @@ export class MainSystem extends System<ConnectDots> {
           },
         });
         text.anchor.set(0.5);
-        text.position.set(center.x, center.y);
+        text.position.copyFrom(center);
 
         this.endpointsView.addChild(dot, text);
       }
     }
   }
 
+  private drawPaths() {
+    if (!this.pathsView) return;
+    this.pathsView.clear();
+    const w = this.cellSize * 0.38;
+
+    for (const [label, path] of this.paths) {
+      if (path.length < 2) continue;
+      const start = this.cellCenter(path[0]);
+      this.pathsView.moveTo(start.x, start.y);
+      for (let i = 1; i < path.length; i++) {
+        const p = this.cellCenter(path[i]);
+        this.pathsView.lineTo(p.x, p.y);
+      }
+      this.pathsView.stroke({
+        color: this.colorOf(label),
+        width: w,
+        alpha: 0.9,
+        cap: "round",
+        join: "round",
+      });
+    }
+  }
+
+  // --- interaction ---
+
   private onPointerDown = (event: FederatedPointerEvent) => {
     const cell = this.eventToCell(event);
     if (!cell) return;
 
-    // Resume an in-progress path when its last-drawn cell is tapped —
-    // lets the player pick the pen back up without retracing from the endpoint.
+    // Resume drawing if the tapped cell is the open end of a path.
     for (const [label, path] of this.paths) {
-      if (path.length === 0) continue;
-      if (!this.sameCell(cell, path[path.length - 1])) continue;
-      if (this.isClosedPath(label, path)) continue;
-      this.draggingColor = label;
-      return;
+      const last = path[path.length - 1];
+      if (last && sameCell(cell, last) && !this.isClosed(label, path)) {
+        this.dragging = label;
+        return;
+      }
     }
 
-    const label = this.endpointOwner.get(this.cellKey(cell));
-    if (!label) return;
+    const owner = this.endpointAt(cell);
+    if (!owner) return;
 
-    this.draggingColor = label;
-    this.paths.set(label, [cell]);
-    this.rebuildOccupancy();
-    this.drawDynamic();
+    this.dragging = owner;
+    this.paths.set(owner, [cell]);
+    this.drawPaths();
   };
 
   private onPointerMove = (event: FederatedPointerEvent) => {
-    if (!this.draggingColor) return;
+    if (!this.dragging) return;
     const cell = this.eventToCell(event);
     if (!cell) return;
 
-    const path = this.paths.get(this.draggingColor);
-    if (!path || path.length === 0) return;
+    const path = this.paths.get(this.dragging);
+    if (!path?.length) return;
 
     const last = path[path.length - 1];
-    if (this.sameCell(cell, last)) return;
+    if (sameCell(cell, last) || !isAdjacent(cell, last)) return;
 
-    if (!this.isAdjacent(cell, last)) return;
-
-    if (path.length > 1 && this.sameCell(cell, path[path.length - 2])) {
+    // Step back: moved onto the previous cell.
+    if (path.length > 1 && sameCell(cell, path[path.length - 2])) {
       path.pop();
-      this.rebuildOccupancy();
-      this.drawDynamic();
+      this.drawPaths();
       return;
     }
 
-    if (this.isClosedPath(this.draggingColor, path)) return;
+    if (this.isClosed(this.dragging, path)) return;
 
-    const targetOwner = this.endpointOwner.get(this.cellKey(cell));
-    if (targetOwner && targetOwner !== this.draggingColor) return;
+    // Blocked by another color's endpoint or path.
+    const endpointOwner = this.endpointAt(cell);
+    if (endpointOwner && endpointOwner !== this.dragging) return;
+    const pathOwner = this.pathOwnerAt(cell);
+    if (pathOwner && pathOwner !== this.dragging) return;
 
-    const occupiedBy = this.occupancy.get(this.cellKey(cell));
-    if (occupiedBy && occupiedBy !== this.draggingColor) return;
-
-    const seenIndex = path.findIndex((item) => this.sameCell(item, cell));
-    if (seenIndex >= 0) {
-      path.splice(seenIndex + 1);
-    } else {
-      if (targetOwner === this.draggingColor) {
-        const [a, b] = this.currentLevel.endpoints[this.draggingColor];
-        const start = path[0];
-        const opposite = this.sameCell(start, a) ? b : a;
-        if (!this.sameCell(cell, opposite)) return;
-      }
-      path.push(cell);
+    // Crossing own path: trim to that point.
+    const seen = path.findIndex((c) => sameCell(c, cell));
+    if (seen >= 0) {
+      path.splice(seen + 1);
+      this.drawPaths();
+      return;
     }
 
-    this.rebuildOccupancy();
-    this.drawDynamic();
+    // Landing on own endpoint only valid if it's the opposite one.
+    if (endpointOwner === this.dragging) {
+      const [a, b] = this.currentLevel.endpoints[this.dragging];
+      const opposite = sameCell(path[0], a) ? b : a;
+      if (!sameCell(cell, opposite)) return;
+    }
+
+    path.push(cell);
+    this.drawPaths();
   };
 
   private onPointerUp = () => {
-    this.draggingColor = null;
-
-    this.isSolved() && this.game.onSolved();
+    this.dragging = null;
+    if (this.isSolved()) this.game.onSolved();
   };
 
-  private eventToCell(event: FederatedPointerEvent): Cell | null {
-    const local = this.boardRoot.toLocal(event.global, undefined, new Point());
-    if (
-      local.x < 0 ||
-      local.y < 0 ||
-      local.x >= this.boardPixelWidth ||
-      local.y >= this.boardPixelHeight
-    ) {
-      return null;
-    }
+  // --- queries ---
 
-    const x = Math.floor(local.x / this.cellSize);
-    const y = Math.floor(local.y / this.cellSize);
-    if (
-      x < 0 ||
-      y < 0 ||
-      x >= this.currentLevel.width ||
-      y >= this.currentLevel.height
-    ) {
-      return null;
+  private endpointAt(cell: Cell): string | undefined {
+    for (const label of this.currentLevel.labels) {
+      const [a, b] = this.currentLevel.endpoints[label];
+      if (sameCell(cell, a) || sameCell(cell, b)) return label;
     }
-    return { x, y };
   }
 
-  private rebuildOccupancy() {
-    this.occupancy.clear();
+  private pathOwnerAt(cell: Cell): string | undefined {
     for (const [label, path] of this.paths) {
-      for (const cell of path) {
-        this.occupancy.set(this.cellKey(cell), label);
-      }
+      if (path.some((c) => sameCell(c, cell))) return label;
     }
   }
 
   private isSolved(): boolean {
+    let total = 0;
     for (const label of this.currentLevel.labels) {
       const path = this.paths.get(label);
-      if (!path || !this.isClosedPath(label, path)) return false;
+      if (!path || !this.isClosed(label, path)) return false;
+      total += path.length;
     }
-    return (
-      this.occupancy.size === this.currentLevel.width * this.currentLevel.height
-    );
+    return total === this.currentLevel.width * this.currentLevel.height;
   }
 
-  private isClosedPath(label: string, path: Cell[]): boolean {
+  private isClosed(label: string, path: Cell[]): boolean {
     if (path.length < 2) return false;
     const [a, b] = this.currentLevel.endpoints[label];
     const start = path[0];
     const end = path[path.length - 1];
     return (
-      (this.sameCell(start, a) && this.sameCell(end, b)) ||
-      (this.sameCell(start, b) && this.sameCell(end, a))
+      (sameCell(start, a) && sameCell(end, b)) ||
+      (sameCell(start, b) && sameCell(end, a))
     );
+  }
+
+  // --- utilities ---
+
+  private eventToCell(event: FederatedPointerEvent): Cell | null {
+    const local = this.boardRoot.toLocal(event.global, undefined, new Point());
+    const x = Math.floor(local.x / this.cellSize);
+    const y = Math.floor(local.y / this.cellSize);
+    const { width, height } = this.currentLevel;
+    if (x < 0 || y < 0 || x >= width || y >= height) return null;
+    return { x, y };
   }
 
   private cellCenter(cell: Cell): Point {
+    const half = this.cellSize / 2;
     return new Point(
-      cell.x * this.cellSize + this.cellSize / 2,
-      cell.y * this.cellSize + this.cellSize / 2,
+      cell.x * this.cellSize + half,
+      cell.y * this.cellSize + half,
     );
   }
 
-  private colorForLabel(label: string): string {
-    const index = this.currentLevel.labels.indexOf(label);
-    return LABEL_PALETTE[index % LABEL_PALETTE.length];
+  private colorOf(label: string): string {
+    return PALETTE[this.currentLevel.labels.indexOf(label) % PALETTE.length];
   }
+}
 
-  private cellKey(cell: Cell): string {
-    return `${cell.x},${cell.y}`;
-  }
+function sameCell(a: Cell, b: Cell): boolean {
+  return a.x === b.x && a.y === b.y;
+}
 
-  prevLevel() {
-    this.loadLevel(
-      (this.levelIndex - 1 + this.levels.length) % this.levels.length,
-    );
-  }
-
-  nextLevel() {
-    this.loadLevel((this.levelIndex + 1) % this.levels.length);
-  }
-
-  goToLevel(levelNumber: number) {
-    const index = Math.max(
-      0,
-      Math.min(this.levels.length - 1, Math.floor(levelNumber) - 1),
-    );
-    this.loadLevel(index);
-  }
-
-  private sameCell(a: Cell, b: Cell): boolean {
-    return a.x === b.x && a.y === b.y;
-  }
-
-  private isAdjacent(a: Cell, b: Cell): boolean {
-    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
-  }
+function isAdjacent(a: Cell, b: Cell): boolean {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
 }

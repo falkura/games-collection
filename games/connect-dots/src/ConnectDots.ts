@@ -6,6 +6,12 @@ import { OverlaySystem } from "./core/OverlaySystem";
 import { getLevels } from "./levels";
 import { saveLevelIndex } from "./progress";
 
+const GAMEPLAY_IDS = [
+  MainSystem.MODULE_ID,
+  HUDSystem.MODULE_ID,
+  OverlaySystem.MODULE_ID,
+];
+
 export class ConnectDots extends GameBase {
   protected override init(): void {
     this.systems.add(IntroSystem);
@@ -13,23 +19,23 @@ export class ConnectDots extends GameBase {
     this.systems.add(HUDSystem);
     this.systems.add(OverlaySystem);
 
-    this.disableGameplaySystems();
+    for (const id of GAMEPLAY_IDS) this.systems.disable(id);
 
     this.addGameControls();
   }
 
   override reset(): void {
     super.reset();
-    this.disableGameplaySystems();
+    for (const id of GAMEPLAY_IDS) this.systems.disable(id);
     this.systems.enable(IntroSystem);
   }
 
   play(): void {
     this.systems.disable(IntroSystem);
-    this.enableGameplaySystems();
 
-    for (const moduleId of this.systems.getEnabled()) {
-      const system = this.systems.get(moduleId);
+    for (const id of GAMEPLAY_IDS) {
+      this.systems.enable(id);
+      const system = this.systems.get(id);
       system.start();
       system.resize();
     }
@@ -55,31 +61,21 @@ export class ConnectDots extends GameBase {
     this.systems.get(OverlaySystem).hide();
   }
 
-  private disableGameplaySystems(): void {
-    for (const moduleId of this.systems.getEnabled()) {
-      if (moduleId === IntroSystem.MODULE_ID) continue;
-      this.systems.disable(moduleId);
-    }
-  }
-
-  private enableGameplaySystems(): void {
-    for (const moduleId of this.systems.getDisabled()) {
-      if (moduleId === IntroSystem.MODULE_ID) continue;
-      this.systems.enable(moduleId);
-    }
+  goToLevel(level: number) {
+    this.systems.get(MainSystem).goToLevel(level);
+    this.resetLevel();
   }
 
   private addGameControls(): void {
     const folder = this.pane.addFolder({ title: "Levels", expanded: false });
 
     folder.addButton({ title: "Reset Current Level" }).on("click", () => {
-      this.systems.get(MainSystem).resetLevel();
+      this.resetLevel();
     });
 
     folder.addButton({ title: "Reset Progress" }).on("click", () => {
       saveLevelIndex(0);
-      this.systems.get(MainSystem).goToLevel(1);
-      this.resetLevel();
+      this.goToLevel(1);
     });
 
     const state = { level: 1 };
@@ -93,7 +89,7 @@ export class ConnectDots extends GameBase {
     folder
       .addBinding(state, "level", { label: "Pick Level", options })
       .on("change", ({ value }) => {
-        this.systems.get(MainSystem).goToLevel(value);
+        this.goToLevel(value);
       });
   }
 }

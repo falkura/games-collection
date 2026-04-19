@@ -17,20 +17,20 @@ export class OverlaySystem extends System<ConnectDots> {
   private built = false;
   private text: HTMLText;
   private buttonRow: Container;
+  private buttonResizers: Array<() => void> = [];
 
   private buttonWidth = 240;
   private buttonHeight = 72;
+  private buttonFontSize = 26;
 
   override start(): void {
     if (!this.built) {
       this.build();
       this.built = true;
     }
-    this.hide();
   }
 
   override reset(): void {
-    if (!this.built) return;
     this.hide();
   }
 
@@ -44,7 +44,7 @@ export class OverlaySystem extends System<ConnectDots> {
   }
 
   private build() {
-    this.hide();
+    this.view.visible = false;
 
     const bg = new Graphics().rect(0, 0, 1, 1).fill({
       color: OVERLAY.tint,
@@ -96,29 +96,10 @@ export class OverlaySystem extends System<ConnectDots> {
       portrait: { y: "sh / 2 + 150" },
       onResize: ({ manager }) => {
         const mobile = manager.isMobile;
-        const s = mobile ? 1.3 : 1;
         this.buttonWidth = mobile ? 280 : 240;
         this.buttonHeight = mobile ? 88 : 72;
-
-        for (const btn of this.buttonRow.children) {
-          const btnBg = btn.children[0] as Graphics | undefined;
-          const btnText = btn.children.find((c) => c instanceof Text) as
-            | Text
-            | undefined;
-          if (btnText) {
-            btnText.style.fontSize = (mobile ? 30 : 26) * s;
-            btnText.x = this.buttonWidth / 2;
-            btnText.y = this.buttonHeight / 2;
-          }
-          if (btnBg) {
-            btnBg
-              .clear()
-              .roundRect(0, 0, this.buttonWidth, this.buttonHeight, 18)
-              .fill({ color: OVERLAY.panel, alpha: 0.95 })
-              .stroke({ color: OVERLAY.panelStroke, width: 2 });
-          }
-        }
-
+        this.buttonFontSize = mobile ? 39 : 26;
+        for (const redraw of this.buttonResizers) redraw();
         this.layoutButtons(manager.isPortrait);
       },
     });
@@ -138,46 +119,54 @@ export class OverlaySystem extends System<ConnectDots> {
         fontWeight: "bold",
         fontSize: 26,
       },
+      anchor: 0.5,
     });
-    text.anchor.set(0.5);
+    button.addChild(bg, text);
 
-    const redraw = (hovered: boolean) => {
+    let hovered = false;
+    const redraw = () => {
+      text.style.fontSize = this.buttonFontSize;
+      text.x = this.buttonWidth / 2;
+      text.y = this.buttonHeight / 2;
       bg.clear()
         .roundRect(0, 0, this.buttonWidth, this.buttonHeight, 18)
         .fill({ color: hovered ? OVERLAY.hover : OVERLAY.panel, alpha: 0.95 })
         .stroke({ color: OVERLAY.panelStroke, width: 2 });
-      text.x = this.buttonWidth / 2;
-      text.y = this.buttonHeight / 2;
     };
 
-    redraw(false);
-    button.on("pointerover", () => redraw(true));
-    button.on("pointerout", () => redraw(false));
+    redraw();
+    this.buttonResizers.push(redraw);
+
+    button.on("pointerover", () => {
+      hovered = true;
+      redraw();
+    });
+    button.on("pointerout", () => {
+      hovered = false;
+      redraw();
+    });
     button.on("pointertap", onTap);
-    button.addChild(bg, text);
+
     return button;
   }
 
   private layoutButtons(isPortrait: boolean) {
     const gap = isPortrait ? 20 : 24;
-    const visibleChildren = this.buttonRow.children.filter((c) => c.visible);
+    const buttons = this.buttonRow.children;
+    const n = buttons.length;
 
     if (isPortrait) {
-      const totalHeight =
-        visibleChildren.length * this.buttonHeight +
-        Math.max(0, visibleChildren.length - 1) * gap;
-      let y = -totalHeight / 2;
-      for (const c of visibleChildren) {
+      let y = -(n * this.buttonHeight + (n - 1) * gap) / 2;
+
+      for (const c of buttons) {
         c.x = -this.buttonWidth / 2;
         c.y = y;
         y += this.buttonHeight + gap;
       }
     } else {
-      const totalWidth =
-        visibleChildren.length * this.buttonWidth +
-        (visibleChildren.length - 1) * gap;
-      let x = -totalWidth / 2;
-      for (const c of visibleChildren) {
+      let x = -(n * this.buttonWidth + (n - 1) * gap) / 2;
+
+      for (const c of buttons) {
         c.x = x;
         c.y = 0;
         x += this.buttonWidth + gap;
