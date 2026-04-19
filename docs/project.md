@@ -95,7 +95,7 @@ Hosted on Cloudflare Pages: <http://games-collection-7ga.pages.dev/>
 
 - Build command: `bun run assemble`
 - Output directory: `/build`
-- Required env vars: `NODE_ENV=production`, `__DEV__=false`
+- Required env vars: `NODE_ENV=production`
 
 ## Maintainer
 
