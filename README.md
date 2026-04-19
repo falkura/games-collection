@@ -56,7 +56,6 @@ Use `bun run assemble` as the build command, `/build` as the output directory. S
 
 ```bash
 NODE_ENV=production     # production Rspack build
-__DEV__=false           # disable dev globals
 ```
 
 ## License
