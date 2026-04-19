@@ -11,6 +11,17 @@ const gamesMetaFile = path.resolve(PATHS.buildPath, "meta.json");
 
 const isProd = process.env.NODE_ENV === "production";
 
+const wrapperJsonPath = path.resolve("assets/wrapper.json");
+const wrapperConfig: IWrapperConfig = JSON.parse(
+  fs.readFileSync(wrapperJsonPath, "utf-8"),
+);
+const wrapperBaseUrl = wrapperConfig.url?.replace(/\/$/, "") ?? "";
+const wrapperTemplate = fs
+  .readFileSync("public/index.html", "utf-8")
+  .replace(/%TITLE%/g, wrapperConfig.title)
+  .replace(/%DESCRIPTION%/g, wrapperConfig.subtitle)
+  .replace(/%OG_URL%/g, wrapperBaseUrl ? `${wrapperBaseUrl}/` : "");
+
 export default defineConfig(async ({ RSPACK_SERVE }) => {
   // No need to clear for dev server
   if (RSPACK_SERVE) {
@@ -67,7 +78,7 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
         __DEV__: !isProd,
       }),
       new rspack.HtmlRspackPlugin({
-        template: "public/index.html",
+        templateContent: wrapperTemplate,
       }),
       new rspack.CopyRspackPlugin({
         patterns: [

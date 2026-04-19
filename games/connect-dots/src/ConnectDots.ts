@@ -67,7 +67,7 @@ export class ConnectDots extends GameBase {
   }
 
   private addGameControls(): void {
-    const folder = this.pane.addFolder({ title: "Levels", expanded: false });
+    const folder = this.pane.addFolder({ title: "Levels", expanded: true });
 
     folder.addButton({ title: "Reset Current Level" }).on("click", () => {
       this.resetLevel();

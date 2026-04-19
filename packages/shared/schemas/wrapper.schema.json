@@ -20,6 +20,10 @@
     "subtitle": {
       "type": "string",
       "description": "Wrapper description"
+    },
+    "url": {
+      "type": "string",
+      "description": "Absolute base URL of the deployed site (e.g. https://games.example.com). Used to build absolute og:image / og:url meta tags for link previews."
     }
   },
   "additionalProperties": true

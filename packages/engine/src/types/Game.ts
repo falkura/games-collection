@@ -1,4 +1,7 @@
+import type { Ticker } from "pixi.js";
+
 export interface GameInstance {
+  ticker: Ticker;
   start(): void;
   finish(data?: any): void;
   reset(): void;

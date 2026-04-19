@@ -27,10 +27,22 @@
       "path": "./packages/wrapper"
     },
     {
+      "path": "games/boids-simulation"
+    },
+    {
+      "path": "games/connect-dots"
+    },
+    {
+      "path": "games/orbit-drift"
+    },
+    {
       "path": "packages/engine"
     },
     {
       "path": "packages/game-base"
+    },
+    {
+      "path": "packages/wrapper"
     }
   ]
 }

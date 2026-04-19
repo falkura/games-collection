@@ -87,7 +87,20 @@ After modifying a game, bump `version` in `games/<name>/assets/game.json` (semve
 - Games build to `games/<name>/dist/`; wrapper copies all game dists + engine output + icons into `/build`.
 - `packages/shared/scripts/gamesMeta.ts` scans `games/*/assets/game.json`, filters disabled games, writes `meta.json` — consumed via the `@gamesMeta` alias in the wrapper.
 - `packages/shared/scripts/copyGameIcons.ts` copies each game's icon into `packages/wrapper/public/icons/`.
-- Rspack configs live in `packages/shared/rspack/`: `base.config.ts` (shared loaders), `engine.config.ts` (Rslib), `game.config.ts` (port 3000, injects `game.json` title into HTML), `wrapper.config.ts` (port 3001, runs meta/icon scripts before bundling).
+- Rspack configs live in `packages/shared/rspack/`: `base.config.ts` (shared loaders), `engine.config.ts` (Rslib), `game.config.ts` (port 3000, injects `game.json` + `wrapper.json` into the HTML template's `%TITLE%` / `%DESCRIPTION%` / `%OG_IMAGE%` / `%OG_URL%` placeholders for link previews; copies `assets/icon.*` to the game's dist root as a stable OG image), `wrapper.config.ts` (port 3001, runs meta/icon scripts before bundling and replaces the same placeholders on the wrapper's own HTML).
+
+### Link previews & social meta
+
+- Each game's HTML (`packages/shared/html/game.index.html`) and the wrapper's HTML (`packages/wrapper/public/index.html`) contain `%TITLE%`, `%DESCRIPTION%`, `%OG_IMAGE%`, `%OG_URL%` placeholders.
+- For games: values come from `games/<name>/assets/game.json` (`title`, `description`) plus `packages/wrapper/assets/wrapper.json#url` (absolute base URL).
+- For the wrapper: values come from `packages/wrapper/assets/wrapper.json` (`title`, `subtitle`, `url`).
+- Set the absolute deployment URL in `wrapper.json#url` (e.g. `https://games-collection-7ga.pages.dev`); without it, OG URLs fall back to relative paths and crawlers will likely ignore them.
+- The game rspack config also copies `assets/icon.*` to the game dist root as `icon.<ext>` so the OG image URL resolves to a stable (non-cache-busted) path — separate from AssetPack's hashed icon used at runtime.
+
+### Game ordering in the wrapper
+
+- `game.json#order` (number, optional) controls the position in the wrapper list — lower = earlier.
+- Games without `order` sort last, alphabetically by title.
 
 ## Deployment
 

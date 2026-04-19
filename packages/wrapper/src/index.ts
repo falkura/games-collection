@@ -13,7 +13,14 @@ Engine.initWrapper(gamesMeta);
 document.getElementById("header-title")!.innerHTML = wrapperConfig.title;
 document.getElementById("header-subtitle")!.innerHTML = wrapperConfig.subtitle;
 
-wrapper.innerHTML = Object.entries(gamesMeta)
+const sortedGames = Object.entries(gamesMeta).sort(([, a], [, b]) => {
+  const ao = a.order ?? Number.POSITIVE_INFINITY;
+  const bo = b.order ?? Number.POSITIVE_INFINITY;
+  if (ao !== bo) return ao - bo;
+  return a.title.localeCompare(b.title);
+});
+
+wrapper.innerHTML = sortedGames
   .map(([gameFolder, game]) => {
     const iconExt = game.icon
       ? game.icon.substring(game.icon.lastIndexOf("."))

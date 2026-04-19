@@ -22,5 +22,6 @@ fileGroups:
     - "src/**/*"
     - "rspack.config.ts"
     - "public/**/*"
+    - "assets/wrapper.json"
     - "/packages/shared/rspack/base.config.ts"
     - "/packages/shared/rspack/wrapper.config.ts"

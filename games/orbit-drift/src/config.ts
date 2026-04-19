@@ -52,7 +52,7 @@ export const LEVEL = {
 };
 
 export const PLANET_COLORS = [
-  "#ff6b6b", "#4dabf7", "#ffd43b", "#a29bfe", "#55efc4", "#fd79a8", "#ffa94d",
+  "#ff6b6b", "#4dabf7", "#ffd43b", "#a29bfe", "#9b5de5", "#fd79a8", "#ffa94d",
 ];
 
 /** Counts per level + per-entity scaling. Used by the level generator. */
@@ -139,12 +139,3 @@ export const STARFIELD = {
   PARALLAX_ALPHA: 0.45,
 };
 
-/** Overlay buttons (retry / next). Sized for touch. */
-export const OVERLAY_BUTTON = {
-  WIDTH: 520,
-  HEIGHT: 140,
-  RADIUS: 18,
-  FONT_SIZE: 42,
-  GAP: 40,
-  PORTRAIT_STEP: 170,
-};

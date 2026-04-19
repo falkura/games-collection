@@ -4,48 +4,63 @@ import { IntroSystem } from "./core/IntroSystem";
 import { SpaceSystem } from "./core/SpaceSystem";
 import { InputSystem } from "./core/InputSystem";
 import { HUDSystem } from "./core/HUDSystem";
+import { OverlaySystem } from "./core/OverlaySystem";
 import { LEVEL } from "./config";
 import { saveProgress } from "./progress";
 
+const GAMEPLAY_IDS = [
+  SpaceSystem.MODULE_ID,
+  InputSystem.MODULE_ID,
+  HUDSystem.MODULE_ID,
+  OverlaySystem.MODULE_ID,
+];
+
 export class OrbitDrift extends GameBase {
+  private introShown = false;
+
   protected override init(): void {
     this.systems.add(IntroSystem);
     this.systems.add(SpaceSystem);
     this.systems.add(InputSystem);
     this.systems.add(HUDSystem);
+    this.systems.add(OverlaySystem);
 
-    this.disableGameplaySystems();
+    for (const id of GAMEPLAY_IDS) this.systems.disable(id);
 
     this.addGameControls();
   }
 
-  play(): void {
-    this.systems.disable(IntroSystem);
-    this.enableGameplaySystems();
+  override reset(): void {
+    super.reset();
+    if (this.introShown) {
+      this.systems.disable(IntroSystem);
+    } else {
+      for (const id of GAMEPLAY_IDS) this.systems.disable(id);
+      this.systems.enable(IntroSystem);
+    }
+  }
 
-    for (const moduleId of this.systems.getEnabled()) {
-      const system = this.systems.get(moduleId);
+  play(): void {
+    this.introShown = true;
+    this.systems.disable(IntroSystem);
+    for (const id of GAMEPLAY_IDS) {
+      this.systems.enable(id);
+      const system = this.systems.get(id);
       system.start();
       system.resize();
     }
   }
 
-  private disableGameplaySystems(): void {
-    for (const moduleId of this.systems.getEnabled()) {
-      if (moduleId === IntroSystem.MODULE_ID) continue;
-      this.systems.disable(moduleId);
-    }
+  retry(): void {
+    this.systems.get(SpaceSystem).retry();
   }
 
-  private enableGameplaySystems(): void {
-    for (const moduleId of this.systems.getDisabled()) {
-      if (moduleId === IntroSystem.MODULE_ID) continue;
-      this.systems.enable(moduleId);
-    }
+  nextLevel(): void {
+    this.systems.get(SpaceSystem).nextLevel();
   }
 
   private addGameControls(): void {
-    const folder = this.pane.addFolder({ title: "Progress", expanded: false });
+    const folder = this.pane.addFolder({ title: "Progress", expanded: true });
 
     folder.addButton({ title: "Reset Progress" }).on("click", () => {
       saveProgress(1);

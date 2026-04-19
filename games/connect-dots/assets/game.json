@@ -2,8 +2,9 @@
   "$schema": "../../../packages/shared/schemas/game.schema.json",
   "title": "CONNECT DOTS",
   "description": "Link each matching color pair, fill the whole grid, and untangle increasingly dense Numberlink-style boards.",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "route": "connect-dots",
   "icon": "icon.png",
+  "order": 0,
   "enabled": true
 }

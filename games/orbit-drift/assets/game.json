@@ -2,8 +2,9 @@
   "$schema": "../../../packages/shared/schemas/game.schema.json",
   "title": "ORBIT DRIFT",
   "description": "Slingshot through gravity wells. Drag to launch, ride stable orbits, collect every energy orb without crashing.",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "route": "orbit-drift",
   "icon": "icon.png",
+  "order": 1,
   "enabled": true
 }

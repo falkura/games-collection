@@ -23,6 +23,15 @@ export enum GAME_STATE {
   Finished = "Finished",
 }
 
+const GRAPHICS_PRESETS: Record<
+  UISettings["graphics"],
+  { resolutionScale: number; maxFPS: number }
+> = {
+  High: { resolutionScale: 1, maxFPS: 120 },
+  Medium: { resolutionScale: 0.85, maxFPS: 60 },
+  Low: { resolutionScale: 0.5, maxFPS: 30 },
+};
+
 class EngineClass {
   game: GameInstance;
   app: Application;
@@ -105,11 +114,13 @@ class EngineClass {
     await this.app.init({
       backgroundColor: "#1e1e1e",
       preference: "webgpu",
-      resolution: window.devicePixelRatio,
+      resolution: this.targetResolution(),
       antialias: true,
       resizeTo: window,
       canvas: canvas,
     });
+
+    this.applyGraphics();
 
     root.appendChild(this.app.canvas);
 
@@ -162,6 +173,8 @@ class EngineClass {
     this.view.visible = true;
     this.app.ticker.remove(this.loadScene.tick, this.loadScene);
     this.app.stage.removeChild(this.loadScene);
+
+    this.applyGraphics();
   }
 
   public initWrapper(config: IGamesConfig) {
@@ -223,9 +236,36 @@ class EngineClass {
   public changeSettings(opts: Partial<UISettings>) {
     if (typeof opts.graphics === "string") {
       this.graphics = opts.graphics;
+      this.applyGraphics();
     }
 
     this.events.emit("engine:settings-updated", opts);
+  }
+
+  private targetResolution(): number {
+    const dpr = window.devicePixelRatio || 1;
+    return dpr * GRAPHICS_PRESETS[this.graphics].resolutionScale;
+  }
+
+  private applyGraphics() {
+    const { maxFPS } = GRAPHICS_PRESETS[this.graphics];
+    const resolution = this.targetResolution();
+
+    Ticker.shared.maxFPS = maxFPS;
+
+    if (this.app) {
+      this.app.ticker.maxFPS = maxFPS;
+      if (this.app.renderer.resolution !== resolution) {
+        this.app.renderer.resize(
+          window.innerWidth,
+          window.innerHeight,
+          resolution,
+        );
+      }
+    }
+    if (this.game) {
+      this.game.ticker.maxFPS = maxFPS;
+    }
   }
 
   private onResize(width: number, height: number, resolution: number) {

@@ -46,7 +46,7 @@ Window resizes cascade the same way: `Engine.onResize` → `layout.resize` → `
 | `Engine.layout` | `LayoutManager` | Responsive layout driver — see [layout.md](./layout.md). |
 | `Engine.events` | `EventEmitter<EngineEvents>` | Typed engine event bus — see [events.md](./events.md). |
 | `Engine.state` | `GAME_STATE` | Current lifecycle phase. |
-| `Engine.graphics` | `"Low" \| "Medium" \| "High"` | Graphics quality setting from the ControlPanel. |
+| `Engine.graphics` | `"Low" \| "Medium" \| "High"` | Graphics quality — drives renderer resolution and ticker FPS cap. **High**: 1× DPR, 120 FPS. **Medium**: 0.85× DPR, 60 FPS. **Low**: 0.5× DPR, 30 FPS. Applied on init and whenever `Engine.changeSettings({ graphics })` fires. |
 | `Engine.gameConfig` | `IGameConfig` | The game's `game.json` contents, passed to the `GameBase` constructor. |
 
 ## Assets
