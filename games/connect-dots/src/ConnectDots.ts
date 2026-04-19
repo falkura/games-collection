@@ -2,6 +2,7 @@ import { GameBase } from "@falkura-pet/game-base";
 import { IntroSystem } from "./core/IntroSystem";
 import { MainSystem } from "./core/MainSystem";
 import { HUDSystem } from "./core/HUDSystem";
+import { OverlaySystem } from "./core/OverlaySystem";
 import { getLevels } from "./levels";
 import { saveLevelIndex } from "./progress";
 
@@ -10,6 +11,8 @@ export class ConnectDots extends GameBase {
     this.systems.add(IntroSystem);
     this.systems.add(MainSystem);
     this.systems.add(HUDSystem);
+    this.systems.add(OverlaySystem);
+
     this.disableGameplaySystems();
 
     this.addGameControls();
@@ -30,6 +33,26 @@ export class ConnectDots extends GameBase {
       system.start();
       system.resize();
     }
+  }
+
+  onSolved() {
+    const main = this.systems.get(MainSystem);
+
+    this.systems
+      .get(OverlaySystem)
+      .show("LEVEL COMPLETE", `${main.levelTitle} cleared.`);
+  }
+
+  resetLevel(): void {
+    this.systems.get(MainSystem).resetLevel();
+    this.systems.get(HUDSystem).onLevelStart();
+    this.systems.get(OverlaySystem).hide();
+  }
+
+  nextLevel(): void {
+    this.systems.get(MainSystem).nextLevel();
+    this.systems.get(HUDSystem).onLevelStart();
+    this.systems.get(OverlaySystem).hide();
   }
 
   private disableGameplaySystems(): void {
@@ -56,6 +79,7 @@ export class ConnectDots extends GameBase {
     folder.addButton({ title: "Reset Progress" }).on("click", () => {
       saveLevelIndex(0);
       this.systems.get(MainSystem).goToLevel(1);
+      this.resetLevel();
     });
 
     const state = { level: 1 };

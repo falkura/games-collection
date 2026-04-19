@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { LayoutManager } from "./LayoutManager";
-import { LayoutConfig, LayoutVars } from "./LayoutHandlers";
+import { HandlerOptions, LayoutConfig, LayoutVars } from "./LayoutHandlers";
 
 /**
  * Base class for layout construction
@@ -8,7 +8,8 @@ import { LayoutConfig, LayoutVars } from "./LayoutHandlers";
 export class LayoutContainer<T extends Container = any> extends Container {
   public layoutWidth = 0;
   public layoutHeight = 0;
-  public label = "";
+  public customHandlers: Record<string, (opts: HandlerOptions<any>) => void> =
+    {};
 
   private _layout: LayoutConfig<T>;
   private _layoutLandscape!: LayoutConfig<T>;
@@ -23,9 +24,13 @@ export class LayoutContainer<T extends Container = any> extends Container {
     height: 0,
   };
 
-  constructor(layout: LayoutConfig<T> = {} as any) {
+  constructor(layout: LayoutConfig<T> = {}) {
     super();
 
+    this.initLayout(layout);
+  }
+
+  protected initLayout(layout: LayoutConfig<T> = {}) {
     // Required for zIndex to work
     this.sortableChildren = true;
 
@@ -116,7 +121,8 @@ export class LayoutContainer<T extends Container = any> extends Container {
 
     Object.entries(config).forEach(([key, value]) => {
       const k = key as keyof LayoutConfig<any> | "unknown";
-      const handler = LayoutManager.instance.handlers[k];
+      const handler =
+        this.customHandlers[k] || LayoutManager.instance.handlers[k];
 
       if (handler) {
         handler.call(this, { vars, key: k, value });

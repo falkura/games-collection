@@ -69,7 +69,6 @@ export class MainSystem extends System<ConnectDots> {
   private boardPixelWidth = 0;
   private boardPixelHeight = 0;
   private boardPadding = 18;
-  completed = false;
 
   get levelCount(): number {
     return this.levels.length;
@@ -109,7 +108,6 @@ export class MainSystem extends System<ConnectDots> {
     this.paths.clear();
     this.occupancy.clear();
     this.endpointOwner.clear();
-    this.completed = false;
   }
 
   override resize(): void {
@@ -133,10 +131,17 @@ export class MainSystem extends System<ConnectDots> {
     this.boardPixelWidth = this.currentLevel.width * this.cellSize;
     this.boardPixelHeight = this.currentLevel.height * this.cellSize;
     this.boardX = Math.round((width - this.boardPixelWidth) / 2);
-    this.boardY = Math.round(topReserved + (availableHeight - this.boardPixelHeight) / 2);
+    this.boardY = Math.round(
+      topReserved + (availableHeight - this.boardPixelHeight) / 2,
+    );
 
     this.boardRoot.position.set(this.boardX, this.boardY);
-    this.boardRoot.hitArea = new Rectangle(0, 0, this.boardPixelWidth, this.boardPixelHeight);
+    this.boardRoot.hitArea = new Rectangle(
+      0,
+      0,
+      this.boardPixelWidth,
+      this.boardPixelHeight,
+    );
 
     this.drawStatic();
     this.drawDynamic();
@@ -184,7 +189,6 @@ export class MainSystem extends System<ConnectDots> {
     this.draggingColor = null;
     this.paths = new Map();
     this.occupancy = new Map();
-    this.completed = false;
     if (this.pathsView) this.drawDynamic();
   }
 
@@ -231,12 +235,21 @@ export class MainSystem extends System<ConnectDots> {
     }
 
     for (let x = 0; x <= this.currentLevel.width; x++) {
-      this.cellsView.moveTo(x * this.cellSize, 0).lineTo(x * this.cellSize, this.boardPixelHeight);
+      this.cellsView
+        .moveTo(x * this.cellSize, 0)
+        .lineTo(x * this.cellSize, this.boardPixelHeight);
     }
     for (let y = 0; y <= this.currentLevel.height; y++) {
-      this.cellsView.moveTo(0, y * this.cellSize).lineTo(this.boardPixelWidth, y * this.cellSize);
+      this.cellsView
+        .moveTo(0, y * this.cellSize)
+        .lineTo(this.boardPixelWidth, y * this.cellSize);
     }
-    this.cellsView.stroke({ color: BG.grid, width: 1, alpha: 0.55, pixelLine: true });
+    this.cellsView.stroke({
+      color: BG.grid,
+      width: 1,
+      alpha: 0.55,
+      pixelLine: true,
+    });
   }
 
   private drawDynamic() {
@@ -274,9 +287,7 @@ export class MainSystem extends System<ConnectDots> {
       for (const cell of this.currentLevel.endpoints[label]) {
         const center = this.cellCenter(cell);
         const dot = new Graphics();
-        dot
-          .circle(0, 0, this.cellSize * 0.34)
-          .fill({ color });
+        dot.circle(0, 0, this.cellSize * 0.34).fill({ color });
         dot.position.set(center.x, center.y);
 
         const text = new Text({
@@ -332,10 +343,7 @@ export class MainSystem extends System<ConnectDots> {
 
     if (!this.isAdjacent(cell, last)) return;
 
-    if (
-      path.length > 1 &&
-      this.sameCell(cell, path[path.length - 2])
-    ) {
+    if (path.length > 1 && this.sameCell(cell, path[path.length - 2])) {
       path.pop();
       this.rebuildOccupancy();
       this.drawDynamic();
@@ -369,9 +377,8 @@ export class MainSystem extends System<ConnectDots> {
 
   private onPointerUp = () => {
     this.draggingColor = null;
-    if (this.isSolved()) {
-      this.completed = true;
-    }
+
+    this.isSolved() && this.game.onSolved();
   };
 
   private eventToCell(event: FederatedPointerEvent): Cell | null {
@@ -412,7 +419,9 @@ export class MainSystem extends System<ConnectDots> {
       const path = this.paths.get(label);
       if (!path || !this.isClosedPath(label, path)) return false;
     }
-    return this.occupancy.size === this.currentLevel.width * this.currentLevel.height;
+    return (
+      this.occupancy.size === this.currentLevel.width * this.currentLevel.height
+    );
   }
 
   private isClosedPath(label: string, path: Cell[]): boolean {
@@ -443,7 +452,9 @@ export class MainSystem extends System<ConnectDots> {
   }
 
   prevLevel() {
-    this.loadLevel((this.levelIndex - 1 + this.levels.length) % this.levels.length);
+    this.loadLevel(
+      (this.levelIndex - 1 + this.levels.length) % this.levels.length,
+    );
   }
 
   nextLevel() {
@@ -451,7 +462,10 @@ export class MainSystem extends System<ConnectDots> {
   }
 
   goToLevel(levelNumber: number) {
-    const index = Math.max(0, Math.min(this.levels.length - 1, Math.floor(levelNumber) - 1));
+    const index = Math.max(
+      0,
+      Math.min(this.levels.length - 1, Math.floor(levelNumber) - 1),
+    );
     this.loadLevel(index);
   }
 
