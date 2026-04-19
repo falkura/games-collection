@@ -57,7 +57,3 @@ Use `bun run assemble` as the build command, `/build` as the output directory. S
 ```bash
 NODE_ENV=production     # production Rspack build
 ```
-
-## License
-
-License is **TBD**. Until a license is added, all rights are reserved by the author.
