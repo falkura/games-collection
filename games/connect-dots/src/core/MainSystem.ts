@@ -29,6 +29,21 @@ const BG = {
   success: "#34d399",
 };
 
+const LABEL_PALETTE = [
+  "#ef4444", // red
+  "#22c55e", // green
+  "#3b82f6", // blue
+  "#eab308", // yellow
+  "#a855f7", // purple
+  "#f97316", // orange
+  "#06b6d4", // cyan
+  "#ec4899", // pink
+  "#84cc16", // lime
+  "#14b8a6", // teal
+  "#f59e0b", // amber
+  "#8b5cf6", // violet
+];
+
 export class MainSystem extends System<ConnectDots> {
   static MODULE_ID = "main";
 
@@ -418,49 +433,9 @@ export class MainSystem extends System<ConnectDots> {
     );
   }
 
-  private colorForLabel(label: string): number {
+  private colorForLabel(label: string): string {
     const index = this.currentLevel.labels.indexOf(label);
-    const hue = (index * 137.508) % 360;
-    return this.hslToHex(hue, 72, 58);
-  }
-
-  private hslToHex(h: number, s: number, l: number): number {
-    const saturation = s / 100;
-    const lightness = l / 100;
-    const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
-    const huePrime = h / 60;
-    const x = chroma * (1 - Math.abs((huePrime % 2) - 1));
-
-    let r = 0;
-    let g = 0;
-    let b = 0;
-
-    if (huePrime >= 0 && huePrime < 1) {
-      r = chroma;
-      g = x;
-    } else if (huePrime < 2) {
-      r = x;
-      g = chroma;
-    } else if (huePrime < 3) {
-      g = chroma;
-      b = x;
-    } else if (huePrime < 4) {
-      g = x;
-      b = chroma;
-    } else if (huePrime < 5) {
-      r = x;
-      b = chroma;
-    } else {
-      r = chroma;
-      b = x;
-    }
-
-    const match = lightness - chroma / 2;
-    const red = Math.round((r + match) * 255);
-    const green = Math.round((g + match) * 255);
-    const blue = Math.round((b + match) * 255);
-
-    return (red << 16) | (green << 8) | blue;
+    return LABEL_PALETTE[index % LABEL_PALETTE.length];
   }
 
   private cellKey(cell: Cell): string {
