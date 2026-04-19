@@ -9,6 +9,8 @@ import fs from "fs";
 
 const gamesMetaFile = path.resolve(PATHS.buildPath, "meta.json");
 
+const isProd = process.env.NODE_ENV === "production";
+
 export default defineConfig(async ({ RSPACK_SERVE }) => {
   // No need to clear for dev server
   if (RSPACK_SERVE) {
@@ -43,6 +45,8 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
     },
     output: {
       path: PATHS.buildPath,
+      filename: isProd ? "[name].[contenthash].js" : "[name].js",
+      chunkFilename: isProd ? "[name].[contenthash].js" : "[name].js",
     },
     devServer: {
       port: 3001,
@@ -60,7 +64,7 @@ export default defineConfig(async ({ RSPACK_SERVE }) => {
     },
     plugins: [
       new rspack.DefinePlugin({
-        __DEV__: process.env.NODE_ENV === "development",
+        __DEV__: !isProd,
       }),
       new rspack.HtmlRspackPlugin({
         template: "public/index.html",

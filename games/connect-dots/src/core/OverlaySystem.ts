@@ -99,6 +99,7 @@ export class OverlaySystem extends System<ConnectDots> {
         this.buttonWidth = mobile ? 280 : 240;
         this.buttonHeight = mobile ? 88 : 72;
         this.buttonFontSize = mobile ? 39 : 26;
+
         for (const redraw of this.buttonResizers) redraw();
         this.layoutButtons(manager.isPortrait);
       },

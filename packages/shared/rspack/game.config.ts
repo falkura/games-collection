@@ -5,12 +5,16 @@ import { rspack, RspackOptions } from "@rspack/core";
 const config: IGameConfig = await import(path.resolve("assets", "game.json"));
 const outDist = path.resolve("dist");
 
+const isProd = process.env.NODE_ENV === "production";
+
 export default defineConfig(() => {
   return {
     extends: path.join(__dirname, "/base.config.ts"),
     entry: "./src/index.ts",
     output: {
       path: outDist,
+      filename: isProd ? "[name].[contenthash].js" : "[name].js",
+      chunkFilename: isProd ? "[name].[contenthash].js" : "[name].js",
       clean: {
         keep: "assets",
       },
@@ -27,7 +31,7 @@ export default defineConfig(() => {
     },
     plugins: [
       new rspack.DefinePlugin({
-        __DEV__: process.env.NODE_ENV === "development",
+        __DEV__: !isProd,
       }),
       new rspack.HtmlRspackPlugin({
         template: path.join(__dirname, "../html/game.index.html"),
