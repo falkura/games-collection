@@ -11,7 +11,7 @@
   },
   "peerDependencies": {
     "gsap": "^3.13.0",
-    "pixi.js": "^8.13.2"
+    "pixi.js": "^8.17.1"
   },
   "exports": {
     ".": {

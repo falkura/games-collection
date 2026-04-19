@@ -1,14 +1,14 @@
-/* Material Design 3 - Essential Colors Only */
+/* Material Design 3 - Essential Colors Only (Dark) */
 :root {
-  --primary: #004be2;
-  --primary-hover: #0041c7;
-  --on-primary: #f2f1ff;
-  --surface: #f5f6f7;
-  --on-surface: #2c2f30;
-  --on-surface-variant: #595c5d;
-  --surface-container-lowest: #ffffff;
-  --surface-dim: #d1d5d7;
-  --surface-container-low: #eff1f2;
+  --primary: #6d8ef7;
+  --primary-hover: #c8d4ff;
+  --on-primary: #041f51;
+  --surface: #111416;
+  --on-surface: #e2e2e6;
+  --on-surface-variant: #a8abb1;
+  --surface-container-lowest: #202326;
+  --surface-dim: #2a2d31;
+  --surface-container-low: #1f2225;
 
   --font-family: "Inter", sans-serif;
 }
@@ -138,16 +138,13 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 32px;
-  background-color: var(--primary);
-  color: var(--on-primary);
-  border-radius: 8px;
+  color: var(--on-surface);
 }
 
 .game-card-icon img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
+  object-fit: contain;
 }
 
 /* Game info */
@@ -207,7 +204,7 @@ body {
 
 .button-play:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 2px 8px rgba(0, 75, 226, 0.3);
+  box-shadow: 0 2px 8px rgba(180, 197, 255, 0.25);
 }
 
 .button-play:active {
@@ -258,10 +255,6 @@ body {
     height: 80px;
     font-size: 40px;
     flex-shrink: 0;
-  }
-
-  .game-card-icon img {
-    border-radius: 8px;
   }
 
   .game-card-info {

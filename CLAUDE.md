@@ -306,6 +306,14 @@ When creating a new game (via `moon generate game` or by user request):
 4. **Replace the placeholder `description`** in `games/<name>/assets/game.json` (defaults to `"template project"`) with a short, non-implementation-specific blurb — it's surfaced in the wrapper's game picker, so describe what the player does, not how the code works.
 5. Verify with `moon run <name>:build`.
 
+## Game Versioning
+
+After modifying a game, bump `version` in `games/<name>/assets/game.json` (semver) — the wrapper's game picker surfaces it. Rules:
+
+- **Patch** (`x.y.Z`) — bug fixes, tweaks, small content/UX changes.
+- **Minor** (`x.Y.0`) — new features, new systems, sizable content additions, anything user-visible.
+- **Major** (`X.0.0`) — only when the user explicitly asks for it. Never bump on your own.
+
 ## Structuring Game Logic Across Systems
 
 For complex games, split functionality across multiple `System` subclasses. Cross-system coordination belongs in the game class itself — reach another system using `this.systems.get(OtherSystem)` (from the game) or `this.game.systems.get(OtherSystem)` (from within a system).

@@ -24,13 +24,13 @@
       "path": "./packages/game-base"
     },
     {
+      "path": "./packages/wrapper"
+    },
+    {
       "path": "packages/engine"
     },
     {
       "path": "packages/game-base"
-    },
-    {
-      "path": "packages/wrapper"
     }
   ]
 }
