@@ -136,6 +136,10 @@ puzzleSolved({score}) {
 }
 ```
 
+### Good practice
+
+Each game needs intro page, most needs overlay/HUD. You can use `games/connect-dots/` systems for examples of it.
+
 ## Game Assets
 
 Each game has its own `assets/` folder. Anything you drop into `assets/` ends up in the built bundle. All assets loads automatically by engine.

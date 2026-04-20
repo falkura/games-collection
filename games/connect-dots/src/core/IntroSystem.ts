@@ -17,6 +17,7 @@ export class IntroSystem extends System<ConnectDots> {
 
   private built = false;
   private text: HTMLText;
+  private panel: Graphics;
 
   override start(): void {
     if (!this.built) {
@@ -75,11 +76,13 @@ export class IntroSystem extends System<ConnectDots> {
       },
     );
 
+    this.panel = new Graphics();
+    this.view.addChildWithLayout(this.panel, {});
+
     this.view.addChildWithLayout(this.text, {
       x: "sw / 2",
       y: "sh / 2",
-      zIndex: 2,
-      onResize({ manager, view }) {
+      onResize: ({ manager, view, vars }) => {
         view.style.fontSize = manager.isMobile ? 60 : 44;
         view.style.tagStyles = {
           t1: {
@@ -93,15 +96,10 @@ export class IntroSystem extends System<ConnectDots> {
             fontWeight: "bold",
           },
         };
-      },
-    });
 
-    this.view.addChildWithLayout(new Graphics(), {
-      zIndex: 1,
-      onResize: ({ vars, view }) => {
         const padding = 100;
 
-        view
+        this.panel
           .clear()
           .roundRect(
             vars.sw / 2 - this.text.width / 2 - padding / 2,

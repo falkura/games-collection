@@ -248,7 +248,7 @@ class EngineClass {
   }
 
   public get textResolution() {
-    return Math.min(this.app.renderer.resolution, 1.5)
+    return Math.min(this.app.renderer.resolution, 1)
   }
 
   private applyGraphics() {
