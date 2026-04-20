@@ -34,20 +34,20 @@ bun run assemble
 - **Moon** orchestrates the workspace; each package/game has a `moon.yml` defining its layer, tags, and dependencies.
 - **Bun** is the package manager (workspaces: `packages/*`, `games/*`).
 
-| Directory             | Purpose                                                                                                                   | Build tool |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `packages/engine/`    | PixiJS engine: Application, layout system, load scene, lifecycle, event emitter, asset loading                            | Rslib      |
-| `packages/game-base/` | `GameBase` abstract class, `System` abstract class, `SystemController`, `ControlPanel` (Tweakpane)                        | Rslib      |
-| `packages/wrapper/`   | Launcher, game picker, final production assembler                                                                         | Rspack     |
-| `packages/shared/`    | Shared Rspack/Rslib configs, TypeScript configs, AssetPack configs, JSON schemas, build scripts, global types, HTML/CSS   | —          |
-| `games/<name>/`       | Individual games, each with `src/`, `assets/`, and `game.json` config                                                     | Rspack     |
-| `templates/`          | Moon generator templates for new games                                                                                    | —          |
+| Directory             | Purpose                                                                                                                 | Build tool |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `packages/engine/`    | PixiJS engine: Application, layout system, load scene, lifecycle, event emitter, asset loading                          | Rslib      |
+| `packages/game-base/` | `GameBase` abstract class, `System` abstract class, `SystemController`, `ControlPanel` (Tweakpane)                      | Rslib      |
+| `packages/wrapper/`   | Launcher, game picker, final production assembler                                                                       | Rspack     |
+| `packages/shared/`    | Shared Rspack/Rslib configs, TypeScript configs, AssetPack configs, JSON schemas, build scripts, global types, HTML/CSS | —          |
+| `games/<name>/`       | Individual games, each with `src/`, `assets/`, and `game.json` config                                                   | Rspack     |
+| `templates/`          | Moon generator templates for new games                                                                                  | —          |
 
 ## Architecture summary
 
-- **Engine** (`packages/engine/src/Engine.ts`) — singleton owning the PixiJS `Application`, GSAP setup, `LayoutManager`, root `view`, typed event bus, asset loading, and game lifecycle state. Game-agnostic; holds no assets. See [engine.md](./engine.md).
-- **Game Base** (`packages/game-base/`) — Wires up `Ticker`, master GSAP `Timeline`, `view`, Tweakpane `Pane`, `SystemController`. See [game-base.md](./game-base.md).
-- **Systems** (`packages/game-base/src/system/System.ts`) — all gameplay code lives here. Modules with lifecycle hooks and auto-provisioned infrastructure. See [game-base.md](./game-base.md).
+- **Engine** (`packages/engine/src/Engine.ts`) — singleton owning the PixiJS `Application`, GSAP setup, `LayoutManager`, root `view`, typed event bus, asset loading, and game lifecycle state. Game-agnostic; holds no assets.
+- **Game Base** (`packages/game-base/`) — Wires up `Ticker`, master GSAP `Timeline`, `view`, Tweakpane `Pane`, `SystemController`.
+- **Systems** (`packages/game-base/src/system/System.ts`) — all gameplay code lives here. Modules with lifecycle hooks and auto-provisioned infrastructure.
 - **Wrapper** (`packages/wrapper/`) — launcher with game picker. During `bun run assemble`, aggregates all game builds, engine output, and a generated `@gamesMeta` module into a single deployable bundle.
 
 ## Key conventions
