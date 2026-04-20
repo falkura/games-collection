@@ -14,11 +14,11 @@ This creates `games/<slug>/` from the template in `templates/`, wires it into th
 Two placeholders ship with the template and must be replaced before the game is shown:
 
 - `games/<name>/README.md` — the `_Add a description..._` line.
-- `games/<name>/assets/game.json` — the `description` field (defaults to `"template project"`). This string is rendered on the launcher card in the wrapper, so describe what the **player** does, not how the code works.
+- `games/<name>/assets/game.json` — the `description` field. This string is rendered on the launcher card in the wrapper, so describe what the **player** does, not how the code works.
 
 ## 3. Implement the game
 
-All gameplay lives in **systems** — subclasses of `System` under `games/<name>/src/core/`. For a small game, put everything in `MainSystem.ts`. For a larger one, split by concern (`BoardSystem`, `InputSystem`, `ScoreSystem`, …) and register each in your game class:
+All gameplay lives in **systems** — subclasses of `System` under `games/<name>/src/core/`. For a small game, put all the logic in `MainSystem.ts`. For a larger one, split by concern (`BoardSystem`, `InputSystem`, `ScoreSystem`, …) and register each in your game class:
 
 ```ts
 // games/<name>/src/<GameName>.ts
@@ -40,18 +40,30 @@ See [game-base.md](./game-base.md) for the `System` contract and [engine.md](./e
 
 ### Color convention
 
-When specifying colors in game code, use **hex string representation only**:
+When specifying colors in game code, use **hex string representation** - `"#ffffff"`.
+
+### Passing data through the systems
 
 ```ts
-fill: "#ffffff"
-stroke({ color: "#7dd3fc" })
-```
+// In a gameplay system:
+this.game.puzzleSolved({score: 80});
 
-Do not use numeric color literals like `0xffffff` in game source files.
+// In the game
+onSolved(data) {
+  const hud = this.systems.get(OverlaySystem);
+  this.systems.enable(OverlaySystem);
+  hud.puzzleSolved(data);
+}
+
+// In the OverlaySystem:
+puzzleSolved({score}) {
+  this.showWin(score);
+}
+```
 
 ## 4. Add assets
 
-Drop images, audio, JSON, etc. into `games/<name>/assets/`. AssetPack builds a manifest and `Assets.get("path/relative/to/assets")` returns them at runtime — details in [assets.md](./assets.md).
+Drop images, audio, JSON, etc. into `games/<name>/assets/` — details in [assets.md](./assets.md).
 
 ## 5. Run it
 
@@ -65,15 +77,3 @@ moon run <name>:build      # production build in games/<name>/dist/
 Before calling it done:
 
 - `moon run <name>:build` succeeds with zero TypeScript errors.
-- The game is playable in the wrapper launcher (`moon run games-wrapper:dev` → pick the card).
-- The game picker card shows the right title, icon, and description.
-
-## 7. Final assembly
-
-When you're ready to deploy:
-
-```bash
-bun run assemble
-```
-
-Builds every game, the engine, and the wrapper into `/build/`. Cloudflare Pages serves that directory — see [CLAUDE.md](../CLAUDE.md#deployment) for env vars.

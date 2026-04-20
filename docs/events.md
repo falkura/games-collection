@@ -12,15 +12,11 @@ Engine.events.on("engine:game-finished", (data) => {
 
 ## Event catalogue
 
-| Event                     | Payload               | Emitted by                                                    |
-| ------------------------- | --------------------- | ------------------------------------------------------------- |
-| `engine:game-started`     | —                     | `Engine.startGame()` before `game.start()` cascade.           |
-| `engine:game-finished`    | `data?: any`          | `Engine.finishGame(data)` after the cascade.                  |
-| `engine:game-reseted`     | —                     | `Engine.resetGame()` (called internally by `restartGame`).    |
-| `engine:settings-updated` | `Partial<UISettings>` | `Engine.changeSettings` — e.g. when graphics quality changes. |
-| `engine:game-chosen`      | `gameKey: string`     | `Engine.chooseGame` — the wrapper's game picker.              |
-
-Event types live in `packages/engine/src/types/EngineEvents.ts`.
+| Event                  | Payload      | Emitted by                                                 |
+| ---------------------- | ------------ | ---------------------------------------------------------- |
+| `engine:game-started`  | —            | `Engine.startGame()` before `game.start()` cascade.        |
+| `engine:game-finished` | `data?: any` | `Engine.finishGame(data)` after the cascade.               |
+| `engine:game-reseted`  | —            | `Engine.resetGame()` (called internally by `restartGame`). |
 
 ## Firing engine events the right way
 
@@ -30,14 +26,9 @@ Drive lifecycle transitions **through the public engine API**, not by hand:
 // Correct:
 Engine.restartGame();
 Engine.finishGame({ score, moves });
-
-// Wrong — bypasses GAME_STATE and skips the event emit:
-this.game.reset();
-this.game.start();
-this.game.finish(data);
 ```
 
-Listeners everywhere — ControlPanel, wrapper overlays, analytics — rely on the events. Calling `GameBase` methods directly silently breaks them.
+Listeners everywhere rely on the events.
 
 ## Passing data to the finish event
 
@@ -56,17 +47,6 @@ Engine.events.on("engine:game-finished", (data) => {
 
 ## Cleaning up listeners
 
-Listeners attached in `start()` fire again on every `Engine.restartGame()` — stack them naively and you'll wire duplicate handlers. Patterns that work:
-
-1. **`built` flag** — subscribe once in `start()` guarded by a boolean; reset state in `reset()`.
-2. **Unsubscribe in `reset()`** — pair every `Engine.events.on` with `Engine.events.off` using the same bound reference.
+Listeners attached in `start()` fire again on every `Engine.restartGame()` — stack them naively and you'll wire duplicate handlers. Patterns that work: **`built` flag** — subscribe once in `start()` guarded by a boolean; reset state in `reset()`.
 
 Pick one per system and be consistent.
-
-## Custom events
-
-For signals inside a single game, you can either:
-
-- Add an `EventEmitter` to your `GameBase` subclass (scoped to that game only).
-- Use a cross-system method call via `this.game.systems.get(OtherSystem).foo()`.
-- Extend the engine's typed event map only if the signal is genuinely engine-wide — resist this for game-specific events.
