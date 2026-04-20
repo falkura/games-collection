@@ -70,6 +70,10 @@ export class HUDSystem extends System<OrbitDrift> {
         };
       },
     });
+
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.infoText.updateCacheTexture();
+    });
   }
 
   private sync() {

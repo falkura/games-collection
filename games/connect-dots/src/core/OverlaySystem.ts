@@ -67,6 +67,10 @@ export class OverlaySystem extends System<ConnectDots> {
       anchor: 0.5,
     });
 
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.text.updateCacheTexture();
+    });
+
     this.view.addChildWithLayout(this.text, {
       x: "sw / 2",
       y: "sh / 2 - 100",

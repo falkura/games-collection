@@ -120,6 +120,10 @@ export class IntroSystem extends System<OrbitDrift> {
           .stroke({ color: INTRO.panelStroke, width: 4, alpha: 0.85 });
       },
     });
+
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.text.updateCacheTexture();
+    });
   }
 
   private onPlay = () => {

@@ -114,6 +114,12 @@ export class OverlaySystem extends System<OrbitDrift> {
       },
       anchor: 0.5,
     });
+
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.titleText.updateCacheTexture();
+      if (v) this.statsText.updateCacheTexture();
+    });
+
     this.view.addChildWithLayout(this.statsText, {
       x: "sw / 2",
       y: "sh / 2 + 40",
@@ -230,9 +236,9 @@ export class OverlaySystem extends System<OrbitDrift> {
 
     const nextLabel =
       data.won && data.level >= TOTAL_LEVELS ? "PLAY AGAIN" : "NEXT LEVEL";
-    const nextText = this.nextButton.children.find(
-      (c) => c instanceof Text,
-    ) as Text | undefined;
+    const nextText = this.nextButton.children.find((c) => c instanceof Text) as
+      | Text
+      | undefined;
     if (nextText) nextText.text = nextLabel;
 
     this.nextButton.visible = data.won;

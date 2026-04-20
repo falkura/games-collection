@@ -108,5 +108,9 @@ export class IntroSystem extends System<BoidsSimulation> {
           .stroke({ color: C.panelStroke, width: 4, alpha: 0.8 });
       },
     });
+
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.text.updateCacheTexture();
+    });
   }
 }

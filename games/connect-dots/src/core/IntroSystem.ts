@@ -112,6 +112,10 @@ export class IntroSystem extends System<ConnectDots> {
           .stroke({ color: INTRO.panelStroke, width: 4, alpha: 0.85 });
       },
     });
+
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.text.updateCacheTexture();
+    });
   }
 
   private onPlay = () => {

@@ -63,6 +63,10 @@ export class HUDSystem extends System<ConnectDots> {
         };
       },
     });
+
+    this.view.on("visibleChanged", (v) => {
+      if (v) this.infoText.updateCacheTexture();
+    });
   }
 
   private syncTexts() {
