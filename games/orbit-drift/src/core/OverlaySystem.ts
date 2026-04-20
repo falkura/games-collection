@@ -80,6 +80,7 @@ export class OverlaySystem extends System<OrbitDrift> {
         align: "center",
         wordWrap: true,
       },
+      resolution: Engine.textResolution,
       anchor: 0.5,
     });
 
@@ -112,12 +113,8 @@ export class OverlaySystem extends System<OrbitDrift> {
         fontWeight: "bold",
         align: "center",
       },
+      resolution: Engine.textResolution,
       anchor: 0.5,
-    });
-
-    this.view.on("visibleChanged", (v) => {
-      if (v) this.titleText.updateCacheTexture();
-      if (v) this.statsText.updateCacheTexture();
     });
 
     this.view.addChildWithLayout(this.statsText, {

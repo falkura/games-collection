@@ -247,6 +247,10 @@ class EngineClass {
     return dpr * GRAPHICS_PRESETS[this.graphics].resolutionScale;
   }
 
+  public get textResolution() {
+    return Math.min(this.app.renderer.resolution, 1.5)
+  }
+
   private applyGraphics() {
     const { maxFPS } = GRAPHICS_PRESETS[this.graphics];
     const resolution = this.targetResolution();
@@ -263,6 +267,7 @@ class EngineClass {
         );
       }
     }
+
     if (this.game) {
       this.game.ticker.maxFPS = maxFPS;
     }

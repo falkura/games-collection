@@ -2,6 +2,7 @@ import { System } from "@falkura-pet/game-base";
 import { HTMLText } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem, TOTAL_LEVELS } from "./SpaceSystem";
+import { Engine } from "@falkura-pet/engine";
 
 const HUD = {
   text: "#f8fbff",
@@ -48,6 +49,7 @@ export class HUDSystem extends System<OrbitDrift> {
         wordWrap: true,
         breakWords: true,
       },
+      resolution: Engine.textResolution,
     });
 
     this.view.addChildWithLayout(this.infoText, {
@@ -69,10 +71,6 @@ export class HUDSystem extends System<OrbitDrift> {
           t3: { fill: HUD.accent, fontSize: manager.isMobile ? 26 : 18 },
         };
       },
-    });
-
-    this.view.on("visibleChanged", (v) => {
-      if (v) this.infoText.updateCacheTexture();
     });
   }
 

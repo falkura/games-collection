@@ -1,6 +1,7 @@
 import { System } from "@falkura-pet/game-base";
 import { Graphics, HTMLText, Rectangle } from "pixi.js";
 import { BoidsSimulation } from "../BoidsSimulation";
+import { Engine } from "@falkura-pet/engine";
 
 const C = {
   tint: "#030510",
@@ -62,6 +63,7 @@ export class IntroSystem extends System<BoidsSimulation> {
         wordWrap: true,
         wordWrapWidth: 900,
       },
+      resolution: Engine.textResolution,
       anchor: 0.5,
     });
 
@@ -107,10 +109,6 @@ export class IntroSystem extends System<BoidsSimulation> {
           .fill({ color: C.panel, alpha: 0.97 })
           .stroke({ color: C.panelStroke, width: 4, alpha: 0.8 });
       },
-    });
-
-    this.view.on("visibleChanged", (v) => {
-      if (v) this.text.updateCacheTexture();
     });
   }
 }

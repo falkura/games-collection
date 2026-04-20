@@ -1,6 +1,7 @@
 import { System } from "@falkura-pet/game-base";
 import { Container, Graphics, HTMLText, Text } from "pixi.js";
 import { ConnectDots } from "../ConnectDots";
+import { Engine } from "@falkura-pet/engine";
 
 const OVERLAY = {
   text: "#f8fafc",
@@ -64,11 +65,8 @@ export class OverlaySystem extends System<ConnectDots> {
         align: "center",
         wordWrap: true,
       },
+      resolution: Engine.textResolution,
       anchor: 0.5,
-    });
-
-    this.view.on("visibleChanged", (v) => {
-      if (v) this.text.updateCacheTexture();
     });
 
     this.view.addChildWithLayout(this.text, {

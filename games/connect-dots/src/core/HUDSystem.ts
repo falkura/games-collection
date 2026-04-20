@@ -2,6 +2,7 @@ import { System } from "@falkura-pet/game-base";
 import { HTMLText } from "pixi.js";
 import { ConnectDots } from "../ConnectDots";
 import { MainSystem } from "./MainSystem";
+import { Engine } from "@falkura-pet/engine";
 
 const HUD = {
   text: "#f8fafc",
@@ -41,6 +42,7 @@ export class HUDSystem extends System<ConnectDots> {
         wordWrap: true,
         breakWords: true,
       },
+      resolution: Engine.textResolution,
     });
 
     this.view.addChildWithLayout(this.infoText, {
@@ -62,10 +64,6 @@ export class HUDSystem extends System<ConnectDots> {
           t3: { fill: HUD.accent, fontSize: manager.isMobile ? 24 : 18 },
         };
       },
-    });
-
-    this.view.on("visibleChanged", (v) => {
-      if (v) this.infoText.updateCacheTexture();
     });
   }
 

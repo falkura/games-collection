@@ -1,6 +1,7 @@
 import { System } from "@falkura-pet/game-base";
 import { Graphics, HTMLText, Rectangle } from "pixi.js";
 import { ConnectDots } from "../ConnectDots";
+import { Engine } from "@falkura-pet/engine";
 
 const INTRO = {
   tint: "#08111f",
@@ -59,6 +60,7 @@ export class IntroSystem extends System<ConnectDots> {
         wordWrap: true,
         wordWrapWidth: 880,
       },
+      resolution: Engine.textResolution,
       anchor: 0.5,
     });
 
@@ -111,10 +113,6 @@ export class IntroSystem extends System<ConnectDots> {
           .fill({ color: INTRO.panel, alpha: 0.96 })
           .stroke({ color: INTRO.panelStroke, width: 4, alpha: 0.85 });
       },
-    });
-
-    this.view.on("visibleChanged", (v) => {
-      if (v) this.text.updateCacheTexture();
     });
   }
 
