@@ -1,7 +1,6 @@
-import { System } from "@falkura-pet/game-base";
 import { Container, Graphics, HTMLText, Text } from "pixi.js";
 import { ConnectDots } from "../ConnectDots";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 
 const OVERLAY = {
   text: "#f8fafc",
@@ -15,48 +14,26 @@ const OVERLAY = {
 export class OverlaySystem extends System<ConnectDots> {
   static MODULE_ID = "overlay";
 
-  private built = false;
   private text: HTMLText;
+  private background: Graphics;
   private buttonRow: Container;
-  private buttonResizers: Array<() => void> = [];
+  private buttonResizers: Array<(resize?: boolean) => void> = [];
 
   private buttonWidth = 240;
   private buttonHeight = 72;
   private buttonFontSize = 26;
 
-  override start(): void {
-    if (!this.built) {
-      this.build();
-      this.built = true;
-    }
-  }
-
-  override reset(): void {
-    this.hide();
-  }
-
   show(title: string, sub: string) {
     this.text.text = `<t1>${title}</t1><br><br>${sub}`;
-    this.view.visible = true;
   }
 
-  hide() {
-    this.view.visible = false;
-  }
-
-  private build() {
-    this.view.visible = false;
-
-    const bg = new Graphics().rect(0, 0, 1, 1).fill({
+  override build() {
+    this.background = new Graphics().rect(0, 0, 1, 1).fill({
       color: OVERLAY.tint,
       alpha: 0.78,
     });
-    bg.eventMode = "static";
 
-    this.view.addChildWithLayout(bg, {
-      width: "sw",
-      height: "sh",
-    });
+    this.background.eventMode = "static";
 
     this.text = new HTMLText({
       style: {
@@ -69,44 +46,16 @@ export class OverlaySystem extends System<ConnectDots> {
       anchor: 0.5,
     });
 
-    this.view.addChildWithLayout(this.text, {
-      x: "sw / 2",
-      y: "sh / 2 - 100",
-      onResize: ({ manager, view, vars }) => {
-        const s = manager.isMobile ? 1.3 : 1;
-        view.style.fontSize = (manager.isMobile ? 28 : 34) * s;
-        view.style.wordWrapWidth = Math.max(240, vars.sw - 80);
-        view.style.tagStyles = {
-          t1: {
-            fill: OVERLAY.text,
-            fontWeight: "bold",
-            fontSize: (manager.isMobile ? 58 : 72) * s,
-          },
-        };
-      },
-    });
-
     this.buttonRow = new Container();
     this.buttonRow.addChild(
       this.makeButton("RESTART", () => this.game.resetLevel()),
       this.makeButton("NEXT", () => this.game.nextLevel()),
     );
 
-    this.view.addChildWithLayout(this.buttonRow, {
-      x: "sw / 2",
-      y: "sh / 2 + 170",
-      portrait: { y: "sh / 2 + 150" },
-      onResize: ({ manager }) => {
-        const mobile = manager.isMobile;
-        this.buttonWidth = mobile ? 280 : 240;
-        this.buttonHeight = mobile ? 88 : 72;
-        this.buttonFontSize = mobile ? 39 : 26;
-
-        for (const redraw of this.buttonResizers) redraw();
-        this.layoutButtons(manager.isPortrait);
-      },
-    });
+    this.view.addChild(this.background, this.text, this.buttonRow);
   }
+
+  override mount(): void {}
 
   private makeButton(label: string, onTap: () => void): Container {
     const button = new Container();
@@ -123,11 +72,14 @@ export class OverlaySystem extends System<ConnectDots> {
         fontSize: 26,
       },
       anchor: 0.5,
+      resolution: Engine.textResolution,
     });
     button.addChild(bg, text);
 
     let hovered = false;
-    const redraw = () => {
+    const redraw = (resize = false) => {
+      if (resize) hovered = false;
+
       text.style.fontSize = this.buttonFontSize;
       text.x = this.buttonWidth / 2;
       text.y = this.buttonHeight / 2;
@@ -175,5 +127,33 @@ export class OverlaySystem extends System<ConnectDots> {
         x += this.buttonWidth + gap;
       }
     }
+  }
+
+  override resize(): void {
+    this.background.width = Layout.screen.width;
+    this.background.height = Layout.screen.height;
+
+    this.text.x = Layout.screen.center.x;
+    this.text.y = Layout.screen.center.y - 100;
+
+    this.text.style.fontSize = Layout.isMobile ? 36 : 44;
+    this.text.style.wordWrapWidth = Layout.screen.width - 80;
+    this.text.style.tagStyles = {
+      t1: {
+        fill: OVERLAY.text,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 75 : 94,
+      },
+    };
+
+    this.buttonRow.x = Layout.screen.center.x;
+    this.buttonRow.y = Layout.screen.center.y + (Layout.isMobile ? 150 : 170);
+
+    this.buttonWidth = Layout.isMobile ? 280 : 240;
+    this.buttonHeight = Layout.isMobile ? 88 : 72;
+    this.buttonFontSize = Layout.isMobile ? 39 : 26;
+
+    for (const redraw of this.buttonResizers) redraw(true);
+    this.layoutButtons(Layout.isPortrait);
   }
 }

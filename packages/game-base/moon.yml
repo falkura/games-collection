@@ -1,4 +1,0 @@
-id: lib-game-base
-layer: library
-dependsOn:
-  - lib-engine

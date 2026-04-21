@@ -1,13 +1,15 @@
 import { Container, Ticker } from "pixi.js";
-import { GameBase } from "../GameBase";
-import { LayoutContainer } from "@falkura-pet/engine";
+import { GameController } from "../GameController";
 
-export abstract class System<T extends GameBase = GameBase> {
+export abstract class System<T extends GameController = GameController> {
   public timeline: GSAPTimeline;
   public game: T;
-  public view: LayoutContainer;
+  public view: Container;
   public enabled: boolean;
 
+  public mount() {}
+  public unmount() {}
+  public build() {}
   public start() {}
   public finish(data?: any) {}
   public reset() {}

@@ -1,5 +1,4 @@
-import { System } from "@falkura-pet/game-base";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 import {
   Container,
   FederatedPointerEvent,
@@ -42,33 +41,35 @@ export class MainSystem extends System<ConnectDots> {
 
   private readonly levels = getLevels();
   private levelIndex = 0;
-  private currentLevel!: Level;
+  private currentLevel: Level;
 
   private paths = new Map<string, Cell[]>();
   private dragging: string | null = null;
 
-  private boardRoot!: Container;
-  private chrome!: Graphics;
-  private cellsView!: Graphics;
-  private pathsView!: Graphics;
-  private endpointsView!: Container;
+  private boardRoot: Container;
+  private chrome: Graphics;
+  private cellsView: Graphics;
+  private pathsView: Graphics;
+  private endpointsView: Container;
   private cellSize = 32;
 
   get levelCount() {
     return this.levels.length;
   }
+
   get levelNumber() {
     return this.levelIndex + 1;
   }
+
   get levelTitle() {
     return this.currentLevel?.title ?? "";
   }
+
   get levelSource() {
     return this.currentLevel?.source ?? "";
   }
 
   override start(): void {
-    if (!this.boardRoot) this.build();
     if (!this.currentLevel) {
       this.loadLevel(loadLevelIndex(this.levels.length));
     }
@@ -100,7 +101,7 @@ export class MainSystem extends System<ConnectDots> {
     this.loadLevel(clamped - 1);
   }
 
-  private build() {
+  override build() {
     this.chrome = new Graphics();
     this.view.addChild(this.chrome);
 
@@ -131,13 +132,12 @@ export class MainSystem extends System<ConnectDots> {
   private layoutBoard() {
     if (!this.boardRoot || !this.currentLevel) return;
 
-    const { width: sw, height: sh } = Engine.layout.screen;
-    const mobile = Engine.layout.isMobile;
+    const mobile = Layout.isMobile;
     const top = mobile ? 210 : 148;
     const bottom = mobile ? 150 : 118;
     const pad = mobile ? 22 : 18;
-    const availW = sw - 64;
-    const availH = sh - top - bottom;
+    const availW = Layout.screen.width - 64;
+    const availH = Layout.screen.height - top - bottom;
 
     this.cellSize = Math.max(
       18,
@@ -150,16 +150,21 @@ export class MainSystem extends System<ConnectDots> {
     );
     const boardW = this.currentLevel.width * this.cellSize;
     const boardH = this.currentLevel.height * this.cellSize;
-    const x = Math.round((sw - boardW) / 2);
+    const x = Math.round((Layout.screen.width - boardW) / 2);
     const y = Math.round(top + (availH - boardH) / 2);
 
-    this.view.hitArea = new Rectangle(0, 0, sw, sh);
+    this.view.hitArea = new Rectangle(
+      Layout.screen.x,
+      Layout.screen.y,
+      Layout.screen.width,
+      Layout.screen.height,
+    );
     this.boardRoot.position.set(x, y);
     this.boardRoot.hitArea = new Rectangle(0, 0, boardW, boardH);
 
     this.chrome
       .clear()
-      .rect(0, 0, sw, sh)
+      .rect(0, 0, Layout.screen.width, Layout.screen.height)
       .fill(BG.page)
       .roundRect(x - pad, y - pad, boardW + pad * 2, boardH + pad * 2, 26)
       .fill({ color: BG.panel, alpha: 0.92 })

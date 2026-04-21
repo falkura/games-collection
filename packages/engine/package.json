@@ -1,23 +1,17 @@
 {
   "name": "@falkura-pet/engine",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "dependencies": {
     "gsap": "^3.13.0",
-    "pixi.js": "^8.17.1"
+    "pixi.js": "^8.17.1",
+    "tweakpane": "^4.0.5"
   },
   "devDependencies": {
     "@falkura-pet/shared": "workspace: *",
-    "@types/greensock": "^1.15.32"
+    "@types/greensock": "^1.15.32",
+    "@tweakpane/core": "^2.0.5"
   },
   "exports": {
-    "./types/Game": {
-      "import": "./dist/types/Game.js",
-      "types": "./dist/types/Game.d.ts"
-    },
-    "./types/globals": {
-      "import": "./dist/types/globals.js",
-      "types": "./dist/types/globals.d.ts"
-    },
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"

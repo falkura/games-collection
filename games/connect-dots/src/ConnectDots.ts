@@ -1,49 +1,41 @@
-import { GameBase } from "@falkura-pet/game-base";
-import { IntroSystem } from "./core/IntroSystem";
-import { MainSystem } from "./core/MainSystem";
-import { HUDSystem } from "./core/HUDSystem";
-import { OverlaySystem } from "./core/OverlaySystem";
+import { IntroSystem } from "./systems/IntroSystem";
+import { MainSystem } from "./systems/MainSystem";
+import { HUDSystem } from "./systems/HUDSystem";
+import { OverlaySystem } from "./systems/OverlaySystem";
 import { getLevels } from "./levels";
 import { saveLevelIndex } from "./progress";
+import { Engine, GameController } from "@falkura-pet/engine";
 
-const GAMEPLAY_IDS = [
-  MainSystem.MODULE_ID,
-  HUDSystem.MODULE_ID,
-  OverlaySystem.MODULE_ID,
-];
+const GAMEPLAY_SYSTEMS = [MainSystem, HUDSystem];
 
-export class ConnectDots extends GameBase {
-  protected override init(): void {
+export class ConnectDots extends GameController {
+  override init(): void {
     this.systems.add(IntroSystem);
     this.systems.add(MainSystem);
     this.systems.add(HUDSystem);
     this.systems.add(OverlaySystem);
 
-    for (const id of GAMEPLAY_IDS) this.systems.disable(id);
+    this.systems.disableAll();
+    this.systems.enable(IntroSystem);
 
     this.addGameControls();
   }
 
   override reset(): void {
     super.reset();
-    for (const id of GAMEPLAY_IDS) this.systems.disable(id);
-    this.systems.enable(IntroSystem);
+    this.systems.disable(OverlaySystem);
   }
 
-  play(): void {
+  onPlay() {
     this.systems.disable(IntroSystem);
-
-    for (const id of GAMEPLAY_IDS) {
-      this.systems.enable(id);
-      const system = this.systems.get(id);
-      system.start();
-      system.resize();
-    }
+    for (const id of GAMEPLAY_SYSTEMS) this.systems.enable(id);
+    Engine.startGame();
   }
 
   onSolved() {
     const main = this.systems.get(MainSystem);
 
+    this.systems.enable(OverlaySystem);
     this.systems
       .get(OverlaySystem)
       .show("LEVEL COMPLETE", `${main.levelTitle} cleared.`);
@@ -52,13 +44,13 @@ export class ConnectDots extends GameBase {
   resetLevel(): void {
     this.systems.get(MainSystem).resetLevel();
     this.systems.get(HUDSystem).onLevelStart();
-    this.systems.get(OverlaySystem).hide();
+    this.systems.disable(OverlaySystem);
   }
 
   nextLevel(): void {
     this.systems.get(MainSystem).nextLevel();
     this.systems.get(HUDSystem).onLevelStart();
-    this.systems.get(OverlaySystem).hide();
+    this.systems.disable(OverlaySystem);
   }
 
   goToLevel(level: number) {

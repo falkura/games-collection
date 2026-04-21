@@ -1,10 +1,4 @@
 {
   "extends": "@falkura-pet/shared/tsconfig/wrapper.tsconfig.json",
-  "compilerOptions": {},
-  "include": ["src/**/*"],
-  "references": [
-    {
-      "path": "../engine"
-    }
-  ]
+  "include": ["src/**/*"]
 }

@@ -1,17 +1,11 @@
 import "@falkura-pet/shared/normalize/normalize.css";
 import gamesMeta from "@gamesMeta";
 import wrapperConfig from "../assets/wrapper.json";
-import { Engine } from "@falkura-pet/engine";
 
-declare global {
-  const wrapper: HTMLDivElement;
-}
+const wrapper = document.getElementById("wrapper") as HTMLDivElement;
 
-Engine.initEvents();
-Engine.initWrapper(gamesMeta);
-
-document.getElementById("header-title")!.innerHTML = wrapperConfig.title;
-document.getElementById("header-subtitle")!.innerHTML = wrapperConfig.subtitle;
+document.getElementById("header-title").innerHTML = wrapperConfig.title;
+document.getElementById("header-subtitle").innerHTML = wrapperConfig.subtitle;
 
 const sortedGames = Object.entries(gamesMeta).sort(([, a], [, b]) => {
   const ao = a.order ?? Number.POSITIVE_INFINITY;
@@ -50,5 +44,5 @@ document.addEventListener("click", (e) => {
 
   const route = button.getAttribute("data-route")!;
 
-  Engine.chooseGame(route);
+  window.location.href = route;
 });

@@ -1,3 +1,3 @@
-import config from "@falkura-pet/shared/rspack/engine.config.ts";
+import config from "@falkura-pet/shared/rspack/library.config.ts";
 
 export default config;

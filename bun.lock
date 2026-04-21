@@ -19,7 +19,6 @@
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
-        "@falkura-pet/game-base": "workspace:*",
       },
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
@@ -36,7 +35,6 @@
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
-        "@falkura-pet/game-base": "workspace:*",
       },
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
@@ -53,7 +51,6 @@
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
-        "@falkura-pet/game-base": "workspace:*",
         "matter-js": "^0.20.0",
       },
       "devDependencies": {
@@ -73,26 +70,12 @@
       "dependencies": {
         "gsap": "^3.13.0",
         "pixi.js": "^8.17.1",
-      },
-      "devDependencies": {
-        "@falkura-pet/shared": "workspace: *",
-        "@types/greensock": "^1.15.32",
-      },
-    },
-    "packages/game-base": {
-      "name": "@falkura-pet/game-base",
-      "version": "0.0.0",
-      "dependencies": {
-        "@falkura-pet/engine": "workspace:*",
         "tweakpane": "^4.0.5",
       },
       "devDependencies": {
-        "@falkura-pet/shared": "workspace:*",
+        "@falkura-pet/shared": "workspace: *",
         "@tweakpane/core": "^2.0.5",
-      },
-      "peerDependencies": {
-        "gsap": "^3.13.0",
-        "pixi.js": "^8.17.1",
+        "@types/greensock": "^1.15.32",
       },
     },
     "packages/shared": {
@@ -102,9 +85,6 @@
     "packages/wrapper": {
       "name": "@falkura-pet/wrapper",
       "version": "0.0.0",
-      "dependencies": {
-        "@falkura-pet/engine": "workspace:*",
-      },
       "devDependencies": {
         "@falkura-pet/shared": "workspace:*",
       },
@@ -149,8 +129,6 @@
     "@falkura-pet/connect-dots": ["@falkura-pet/connect-dots@workspace:games/connect-dots"],
 
     "@falkura-pet/engine": ["@falkura-pet/engine@workspace:packages/engine"],
-
-    "@falkura-pet/game-base": ["@falkura-pet/game-base@workspace:packages/game-base"],
 
     "@falkura-pet/orbit-drift": ["@falkura-pet/orbit-drift@workspace:games/orbit-drift"],
 

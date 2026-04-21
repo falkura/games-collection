@@ -5,19 +5,18 @@ import {
   Ticker,
   Size,
   EventEmitter,
+  Container,
 } from "pixi.js";
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import PixiPlugin from "gsap/PixiPlugin.js";
-import "./types/globals";
 
-import { EngineEvents, UISettings } from "./types/EngineEvents";
-import { GameConstructor, GameInstance } from "./types/Game";
-import { LayoutManager } from "./layout/LayoutManager";
-import { LayoutContainer } from "./layout/LayoutContainer";
-import { LoadScene } from "./scenes/LoadScene";
+import { LoadScene } from "./game/scenes/LoadScene";
+import { Layout } from "./layout/Layout";
+import { GameController } from "./game/GameController";
+import { ControlPanel } from "./game/ControlPanel";
 
-export enum GAME_STATE {
+enum GAME_STATE {
   Init = "Init",
   Started = "Started",
   Finished = "Finished",
@@ -32,24 +31,30 @@ const GRAPHICS_PRESETS: Record<
   Low: { resolutionScale: 0.5, maxFPS: 30 },
 };
 
-class EngineClass {
-  game: GameInstance;
-  app: Application;
-  events: EventEmitter<EngineEvents>;
-  layout: LayoutManager;
-  loadScene: LoadScene;
-  view: LayoutContainer;
-  wrapperConfig: IGamesConfig;
-  gameConfig: IGameConfig;
-  state: GAME_STATE;
-  graphics: UISettings["graphics"];
+interface EngineEvents {
+  "engine:game-started": () => void;
+  "engine:game-finished": (data?: any) => void;
+  "engine:game-reseted": () => void;
+  "engine:settings-updated": (settings: Partial<UISettings>) => void;
+}
 
+interface UISettings {
+  graphics: "Low" | "Medium" | "High";
+}
+
+class EngineClass {
+  public app: Application;
+  public events: EventEmitter<EngineEvents>;
+  public graphics: UISettings["graphics"];
+
+  private game: GameController;
+  private gameConfig: IGameConfig;
+  private view: Container;
+  private state: GAME_STATE;
+  private loadScene: LoadScene;
   private _manifestName: string;
 
   constructor() {
-    this.state = GAME_STATE.Init;
-    this.graphics = "High";
-
     if (__DEV__) {
       globalThis.engine = this;
       globalThis.PIXI = PIXI;
@@ -85,15 +90,59 @@ class EngineClass {
     this.events.emit("engine:game-reseted");
   }
 
+  private resize(width: number, height: number, resolution: number) {
+    Layout.resize(width, height, resolution);
+    this.view.scale.set(Layout.scale);
+
+    if (this.loadScene) this.loadScene.resize();
+    if (this.game) this.game.resize();
+  }
+
   // #endregion lifecycle
 
   // #region initialization
 
-  public initEvents() {
+  public async init<T extends GameController>(options: {
+    gameCtor: new (config: IGameConfig, view: Container) => T;
+    gameConfig: IGameConfig;
+    sizeLandscape?: Size;
+    sizePortrait?: Size;
+    onLoadProgress?: ProgressCallback;
+    basePath?: string;
+    manifest?: string;
+    defaultBundle?: string;
+    graphics?: UISettings["graphics"];
+    controlPanelStartFolded?: boolean;
+  }) {
+    this.state = GAME_STATE.Init;
+    this.graphics = options.graphics || "High";
+
     this.events = new EventEmitter<EngineEvents>();
+
+    ControlPanel.options.startFolded = options.controlPanelStartFolded ?? true;
+
+    await this.initApplication(options.sizeLandscape, options.sizePortrait);
+    // this.setupMobileAutoFullscreen();
+    this.initGSAP();
+
+    this.showLoad();
+    await this.loadAssets(options);
+    this.hideLoad();
+
+    this.gameConfig = options.gameConfig;
+    this.game = new options.gameCtor(options.gameConfig, this.view);
+
+    this.view.visible = true;
+    this.applyGraphics();
+
+    this.app.renderer.resize(
+      window.innerWidth,
+      window.innerHeight,
+      this.app.renderer.resolution,
+    );
   }
 
-  public initGSAP() {
+  private initGSAP() {
     gsap.registerPlugin(PixiPlugin);
     PixiPlugin.registerPIXI(PIXI);
 
@@ -108,7 +157,7 @@ class EngineClass {
     }
   }
 
-  public async initApplication(sizeLandscape?: Size, sizePortrait?: Size) {
+  private async initApplication(sizeLandscape?: Size, sizePortrait?: Size) {
     this.app = new Application();
 
     await this.app.init({
@@ -116,11 +165,10 @@ class EngineClass {
       preference: "webgpu",
       resolution: this.targetResolution(),
       antialias: true,
+      autoDensity: true,
       resizeTo: window,
       canvas: canvas,
     });
-
-    this.applyGraphics();
 
     root.appendChild(this.app.canvas);
 
@@ -130,69 +178,46 @@ class EngineClass {
       height: sizePortrait?.height || (sizeLandscape || landscape).width,
     };
 
-    this.layout = new LayoutManager(this.app.stage, {
-      width: landscape.width,
-      height: landscape.height,
-      portrait: { width: portrait.width, height: portrait.height },
-    });
+    Layout.updateTargetDimensions(landscape, portrait);
 
-    this.app.renderer.on("resize", this.onResize, this);
-    this.app.renderer.resize(
-      window.innerWidth,
-      window.innerHeight,
-      this.app.renderer.resolution,
-    );
+    this.app.renderer.on("resize", this.resize, this);
 
-    this.view = new LayoutContainer({ width: "sw", height: "sh" });
+    this.view = new Container();
     this.view.sortableChildren = true;
     this.view.visible = false;
-
-    this.loadScene = new LoadScene();
-
-    this.app.stage.addChild(this.view, this.loadScene);
-    this.app.ticker.add(this.loadScene.tick, this.loadScene);
-
-    // this.setupMobileAutoFullscreen();
+    this.app.stage.addChild(this.view);
 
     if (__DEV__) {
       globalThis.app = globalThis.__PIXI_APP__ = this.app;
-      globalThis.layout = this.layout;
+      globalThis.layout = Layout;
     }
-  }
-
-  public initGame(Ctor: GameConstructor, config: IGameConfig) {
-    this.gameConfig = config;
-
-    if (!this.app) {
-      throw new Error("You must call initApplication before initGame!");
-    }
-
-    this.game = new Ctor(config);
-
-    this.loadScene.visible = false;
-    this.view.visible = true;
-    this.app.ticker.remove(this.loadScene.tick, this.loadScene);
-    this.app.stage.removeChild(this.loadScene);
-
-    this.applyGraphics();
-  }
-
-  public initWrapper(config: IGamesConfig) {
-    this.wrapperConfig = config;
   }
 
   // #endregion initialization
 
   // #region loading
 
-  public async loadManifest(
+  private showLoad() {
+    this.loadScene = new LoadScene();
+    this.app.stage.addChild(this.loadScene);
+    this.app.ticker.add(this.loadScene.tick, this.loadScene);
+  }
+
+  private hideLoad() {
+    if (!this.loadScene) return;
+
+    this.app.ticker.remove(this.loadScene.tick, this.loadScene);
+    this.app.stage.removeChild(this.loadScene);
+    this.loadScene.destroy();
+    this.loadScene = undefined;
+  }
+
+  private async loadManifest(
     options?: Partial<{
       basePath: string;
       manifest: string;
     }>,
   ) {
-    options ??= {};
-
     this._manifestName = options.manifest || "manifest.json";
     const basePath = options.basePath || "./assets/";
 
@@ -202,16 +227,14 @@ class EngineClass {
     await Assets.load(this._manifestName);
   }
 
-  public async loadAssets(
-    options?: Partial<{
-      onProgress: ProgressCallback;
+  private async loadAssets(
+    options: Partial<{
+      onLoadProgress: ProgressCallback;
       basePath: string;
       manifest: string;
       defaultBundle: string;
     }>,
   ) {
-    options ??= {};
-
     if (!this._manifestName) {
       await this.loadManifest(options);
     }
@@ -220,21 +243,14 @@ class EngineClass {
     const manifest = await Assets.load(this._manifestName);
 
     Assets.addBundle(bundleName, manifest.bundles[0].assets);
-    await Assets.loadBundle(bundleName, options.onProgress);
+    await Assets.loadBundle(bundleName, options.onLoadProgress);
   }
 
   // #endregion loading
 
-  public chooseGame(gameKey: string) {
-    console.log("Open game:", gameKey);
-
-    this.events.emit("engine:game-chosen", gameKey);
-
-    window.location.href = gameKey;
-  }
-
+  // #region graphics settings
   public changeSettings(opts: Partial<UISettings>) {
-    if (typeof opts.graphics === "string") {
+    if (opts.graphics) {
       this.graphics = opts.graphics;
       this.applyGraphics();
     }
@@ -248,7 +264,7 @@ class EngineClass {
   }
 
   public get textResolution() {
-    return Math.min(this.app.renderer.resolution, 1)
+    return Math.min(this.app.renderer.resolution, 1);
   }
 
   private applyGraphics() {
@@ -273,10 +289,9 @@ class EngineClass {
     }
   }
 
-  private onResize(width: number, height: number, resolution: number) {
-    if (this.layout) this.layout.resize(width, height, resolution);
-    if (this.game) this.game.resize();
-  }
+  // #endregion graphics settings
+
+  // #region fullscreen
 
   private requestFullscreen(target: any) {
     if (document.fullscreenElement !== null) return;
@@ -289,7 +304,7 @@ class EngineClass {
   }
 
   private setupMobileAutoFullscreen() {
-    if (!this.layout?.isMobile) return;
+    if (!Layout?.isMobile) return;
 
     for (const eventName of ["pointerdown", "touchstart"]) {
       document.addEventListener(
@@ -299,6 +314,8 @@ class EngineClass {
       );
     }
   }
+
+  // #endregion fullscreen
 }
 
 export const Engine = new EngineClass();

@@ -3,4 +3,3 @@ tags:
   - game
 dependsOn:
   - lib-engine
-  - lib-game-base

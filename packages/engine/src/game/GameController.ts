@@ -1,21 +1,20 @@
 import "pixi.js/math-extras";
-import { Container, EventEmitter, Ticker } from "pixi.js";
+import { Container, Ticker } from "pixi.js";
 import gsap from "gsap";
 import { SystemController } from "./system/SystemController";
-import { GameInstance } from "@falkura-pet/engine/types/Game";
-import { Engine } from "@falkura-pet/engine";
 import { Pane } from "tweakpane";
 import { ControlPanel } from "./ControlPanel";
 
-export abstract class GameBase implements GameInstance {
+export abstract class GameController {
   public readonly ticker: Ticker;
   public readonly systems: SystemController;
   public readonly timeline: GSAPTimeline;
-  public readonly view: Container;
   public readonly pane: Pane;
 
-  constructor(public readonly config: IGameConfig) {
-    this.view = Engine.view;
+  constructor(
+    public readonly config: IGameConfig,
+    public readonly view: Container,
+  ) {
     this.pane = new Pane();
 
     this.systems = new SystemController(this);
@@ -32,14 +31,7 @@ export abstract class GameBase implements GameInstance {
     }
   }
 
-  public onSystemAdded(system: string) {
-    if (!ControlPanel.initialized) return;
-
-    ControlPanel.onSystemAdded(system, this);
-  }
-
-  // Register systems here
-  protected init() {
+  public init() {
     // override me
   }
 

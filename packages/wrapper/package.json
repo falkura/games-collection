@@ -2,9 +2,6 @@
   "name": "@falkura-pet/wrapper",
   "version": "0.0.0",
   "type": "module",
-  "dependencies": {
-    "@falkura-pet/engine": "workspace:*"
-  },
   "devDependencies": {
     "@falkura-pet/shared": "workspace:*"
   }

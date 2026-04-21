@@ -8,7 +8,7 @@ fileGroups:
   library-sources:
     - "src/**/*"
     - "rslib.config.ts"
-    - "/packages/shared/rspack/engine.config.ts"
+    - "/packages/shared/rspack/library.config.ts"
 
   game-sources:
     - "src/**/*"

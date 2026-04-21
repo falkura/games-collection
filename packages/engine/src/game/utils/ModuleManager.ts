@@ -6,10 +6,7 @@ export interface ModuleConstructor<T> extends Constructor<T> {
 export class ModuleManager<TBase> {
   protected readonly list: Map<string, TBase> = new Map();
 
-  public add<T extends ModuleConstructor<TBase>>(
-    Ctor: T,
-    ...args: ConstructorParameters<T>
-  ): InstanceType<T> {
+  public add<T extends ModuleConstructor<TBase>>(Ctor: T): InstanceType<T> {
     const id = Ctor.MODULE_ID;
 
     if (!id) {
@@ -22,17 +19,15 @@ export class ModuleManager<TBase> {
       throw new Error(`Module with id [${id}] already added.`);
     }
 
-    const instance = new Ctor(...args);
-
-    this.onInit(instance);
+    const instance = this.create(Ctor) as InstanceType<T>;
 
     this.list.set(id, instance);
 
-    return instance as InstanceType<T>;
+    return instance;
   }
 
-  protected onInit<T extends TBase>(instance: T): T {
-    return instance;
+  protected create<T extends ModuleConstructor<TBase>>(Ctor: T): TBase {
+    return new Ctor();
   }
 
   public get<T extends ModuleConstructor<TBase>>(

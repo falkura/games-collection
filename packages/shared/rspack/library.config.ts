@@ -1,4 +1,4 @@
-import { defineConfig, RslibConfig } from "@rslib/core";
+import { defineConfig } from "@rslib/core";
 
 const isProd = process.env.NODE_ENV === "production";
 

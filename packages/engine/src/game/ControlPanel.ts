@@ -1,23 +1,23 @@
-import { Engine, GAME_STATE } from "@falkura-pet/engine";
 import { Assets } from "pixi.js";
 import { FolderApi, Pane } from "tweakpane";
-import { GameBase } from "./GameBase";
+import { GameController } from "./GameController";
+import { Engine } from "../Engine";
 
 export class ControlPanel {
   static engineFolder: FolderApi;
-  static gameSystemsFolder: FolderApi;
   static initialized = false;
   static gameSpeedControl: ReturnType<Pane["addBinding"]>;
   static stats = {
     fps: 0,
     gameSpeed: 1,
   };
+
   static options = {
     startFolded: true,
     foldedTitle: "⚙️",
   };
 
-  public static init(game: GameBase) {
+  public static init(game: GameController) {
     if (ControlPanel.initialized) return;
     ControlPanel.initialized = true;
 
@@ -54,44 +54,16 @@ export class ControlPanel {
     ControlPanel.addGameControls(ControlPanel.engineFolder);
     ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
 
-    ControlPanel.gameSystemsFolder = ControlPanel.engineFolder.addFolder({
-      title: "Systems",
-    });
-
     if (ControlPanel.options.startFolded) {
       game.pane.expanded = false;
     }
+
     syncTitle();
   }
 
   public static reset() {
     ControlPanel.stats.gameSpeed = 1;
     ControlPanel.gameSpeedControl.refresh();
-  }
-
-  public static onSystemAdded(system: string, game: GameBase) {
-    const getTitle = () => {
-      let title = game.systems.get(system) ? "🟢" : "⚫";
-      return title + " " + system;
-    };
-
-    const button = ControlPanel.gameSystemsFolder.addButton({
-      title: getTitle(),
-    });
-
-    Engine.events.on("engine:game-reseted", () => {
-      button.title = getTitle();
-    });
-
-    button.on("click", () => {
-      if (game.systems.get(system)) {
-        game.systems.disable(system);
-      } else {
-        game.systems.enable(system);
-      }
-
-      button.title = getTitle();
-    });
   }
 
   public static addGameControls(parent: FolderApi) {
