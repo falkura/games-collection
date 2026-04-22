@@ -2,6 +2,6 @@ export { Engine } from "./Engine";
 export { Layout } from "./Layout";
 
 export { GameController } from "./game/GameController";
-export { System } from "./game/system/System";
-export { SystemController } from "./game/system/SystemController";
+export { System } from "./game/System";
+export { SystemController } from "./game/SystemController";
 export { ControlPanel } from "./game/ControlPanel";

@@ -1,8 +1,8 @@
 import { Container, Ticker } from "pixi.js";
-import { GameController } from "../GameController";
+import { GameController } from "./GameController";
 import { System } from "./System";
 import gsap from "gsap";
-import { type ModuleConstructor, ModuleManager } from "../utils/ModuleManager";
+import { type ModuleConstructor, ModuleManager } from "../ModuleManager";
 
 export class SystemController<
   TGame extends GameController = GameController,

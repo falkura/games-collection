@@ -1,7 +1,7 @@
 import "pixi.js/math-extras";
 import { Container, Ticker } from "pixi.js";
 import gsap from "gsap";
-import { SystemController } from "./system/SystemController";
+import { SystemController } from "./SystemController";
 import { Pane } from "tweakpane";
 import { ControlPanel } from "./ControlPanel";
 

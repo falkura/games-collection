@@ -1,5 +1,5 @@
 import { Container, Ticker } from "pixi.js";
-import { GameController } from "../GameController";
+import { GameController } from "./GameController";
 
 export abstract class System<T extends GameController = GameController> {
   public timeline: GSAPTimeline;
