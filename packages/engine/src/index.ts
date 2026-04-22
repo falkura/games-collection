@@ -1,5 +1,5 @@
 export { Engine } from "./Engine";
-export { Layout } from "./layout/Layout";
+export { Layout } from "./Layout";
 
 export { GameController } from "./game/GameController";
 export { System } from "./game/system/System";

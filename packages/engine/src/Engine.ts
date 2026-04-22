@@ -11,8 +11,8 @@ import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import PixiPlugin from "gsap/PixiPlugin.js";
 
-import { LoadScene } from "./game/scenes/LoadScene";
-import { Layout } from "./layout/Layout";
+import { LoadScene } from "./LoadScene";
+import { Layout } from "./Layout";
 import { GameController } from "./game/GameController";
 import { ControlPanel } from "./game/ControlPanel";
 

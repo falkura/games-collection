@@ -1,5 +1,5 @@
 import { Container, Graphics, Text, Ticker } from "pixi.js";
-import { Layout } from "../../layout/Layout";
+import { Layout } from "./Layout";
 
 export class LoadScene extends Container {
   private background: Graphics;
