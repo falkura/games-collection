@@ -90,9 +90,13 @@ class EngineClass {
     this.events.emit("engine:game-reseted");
   }
 
-  private resize(width: number, height: number, resolution: number) {
+  private resize(
+    width: number = window.innerWidth,
+    height: number = window.innerHeight,
+    resolution: number = this.app.renderer.resolution,
+  ) {
     Layout.resize(width, height, resolution);
-    this.view.scale.set(Layout.scale);
+    this.app.stage.scale.set(Layout.scale);
 
     if (this.loadScene) this.loadScene.resize();
     if (this.game) this.game.resize();
@@ -126,6 +130,7 @@ class EngineClass {
     this.initGSAP();
 
     this.showLoad();
+    this.resize();
     await this.loadAssets(options);
     this.hideLoad();
 
@@ -135,11 +140,7 @@ class EngineClass {
     this.view.visible = true;
     this.applyGraphics();
 
-    this.app.renderer.resize(
-      window.innerWidth,
-      window.innerHeight,
-      this.app.renderer.resolution,
-    );
+    this.resize();
   }
 
   private initGSAP() {

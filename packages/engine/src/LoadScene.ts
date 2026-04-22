@@ -32,7 +32,6 @@ export class LoadScene extends Container {
     this.spinner.rotation += 0.15 * ticker.deltaTime;
   }
 
-  // TODO
   public resize() {
     this.background.width = Layout.screenWidth;
     this.background.height = Layout.screenHeight;
