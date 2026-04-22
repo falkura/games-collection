@@ -1,10 +1,9 @@
-import { System } from "@falkura-pet/game-base";
 import { Graphics, Point, Ticker } from "pixi.js";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 import { BoidsSimulation } from "../BoidsSimulation";
 import { BladeApi } from "tweakpane";
-import { Boid } from "./Boid";
-import { SpatialGrid } from "./SpatialGrid";
+import { Boid } from "../Boid";
+import { SpatialGrid } from "../SpatialGrid";
 
 const DEFAULTS = {
   count: 800,
@@ -32,9 +31,7 @@ export class MainSystem extends System<BoidsSimulation> {
   private screenW = 0;
   private screenH = 0;
 
-  override start(): void {
-    this.config = { ...DEFAULTS };
-
+  override build(): void {
     this.bg = new Graphics();
     this.view.addChild(this.bg);
 
@@ -44,19 +41,20 @@ export class MainSystem extends System<BoidsSimulation> {
       this.mousePos.set(p.x, p.y);
     });
     this.view.on("pointerleave", () => this.mousePos.set(-99999, -99999));
+  }
 
-    this.resize();
+  override start(): void {
+    this.config = { ...DEFAULTS };
     this.spawnBoids(this.config.count);
     this.buildPane();
   }
 
   override resize(): void {
-    const { width, height } = Engine.layout.screen;
+    const { width, height } = Layout.screen;
     this.screenW = width;
     this.screenH = height;
-    if (this.bg) {
-      this.bg.clear().rect(0, 0, width, height).fill({ color: "#030510" });
-    }
+
+    this.bg.clear().rect(0, 0, width, height).fill({ color: "#030510" });
   }
 
   override reset(): void {
@@ -65,7 +63,6 @@ export class MainSystem extends System<BoidsSimulation> {
     this.boids = [];
     this.paneItems = [];
     this.mousePos.set(-99999, -99999);
-    this.view.removeAllListeners();
   }
 
   override tick(ticker: Ticker): void {
@@ -109,12 +106,14 @@ export class MainSystem extends System<BoidsSimulation> {
     if (total === 0) return;
     const inv = 1 / total;
 
-    sep.x *= inv; sep.y *= inv;
+    sep.x *= inv;
+    sep.y *= inv;
     this.limitMag(sep, this.config.maxForce);
     b.acceleration.x += sep.x * this.config.separationWeight;
     b.acceleration.y += sep.y * this.config.separationWeight;
 
-    ali.x *= inv; ali.y *= inv;
+    ali.x *= inv;
+    ali.y *= inv;
     this.limitMag(ali, this.config.maxForce);
     b.acceleration.x += ali.x * this.config.alignmentWeight;
     b.acceleration.y += ali.y * this.config.alignmentWeight;
@@ -134,7 +133,8 @@ export class MainSystem extends System<BoidsSimulation> {
     const r2 = this.config.mouseRadius * this.config.mouseRadius;
     if (d2 >= r2 || d2 === 0) return;
     const dist = Math.sqrt(d2);
-    const force = this.config.mouseStrength * (1 - dist / this.config.mouseRadius);
+    const force =
+      this.config.mouseStrength * (1 - dist / this.config.mouseRadius);
     const sign = this.config.mouseRepel ? 1 : -1;
     b.acceleration.x += (dx / dist) * force * sign;
     b.acceleration.y += (dy / dist) * force * sign;
@@ -159,7 +159,10 @@ export class MainSystem extends System<BoidsSimulation> {
 
   private spawnBoids(count: number) {
     while (this.boids.length < count) {
-      const b = new Boid(Math.random() * this.screenW, Math.random() * this.screenH);
+      const b = new Boid(
+        Math.random() * this.screenW,
+        Math.random() * this.screenH,
+      );
       this.boids.push(b);
       this.view.addChild(b.graphics);
     }
@@ -167,7 +170,10 @@ export class MainSystem extends System<BoidsSimulation> {
 
   private setCount(count: number) {
     while (this.boids.length < count) {
-      const b = new Boid(Math.random() * this.screenW, Math.random() * this.screenH);
+      const b = new Boid(
+        Math.random() * this.screenW,
+        Math.random() * this.screenH,
+      );
       this.boids.push(b);
       this.view.addChild(b.graphics);
     }
@@ -180,33 +186,65 @@ export class MainSystem extends System<BoidsSimulation> {
   private buildPane() {
     const pane = this.game.pane;
 
-    const countItem = pane.addBinding(this.config, "count", { min: 50, max: 3000, step: 1 })
+    const countItem = pane
+      .addBinding(this.config, "count", { min: 50, max: 3000, step: 1 })
       .on("change", ({ value }) => this.setCount(value));
     this.paneItems.push(countItem);
 
     const perception = pane.addFolder({ title: "Perception" });
     this.paneItems.push(perception);
-    perception.addBinding(this.config, "perceptionRadius", { min: 10, max: 200, step: 1 });
+    perception.addBinding(this.config, "perceptionRadius", {
+      min: 10,
+      max: 200,
+      step: 1,
+    });
 
     const forces = pane.addFolder({ title: "Forces" });
     this.paneItems.push(forces);
-    forces.addBinding(this.config, "alignmentWeight", { min: 0, max: 0.3, step: 0.001 });
-    forces.addBinding(this.config, "cohesionWeight", { min: 0, max: 0.1, step: 0.001 });
-    forces.addBinding(this.config, "separationWeight", { min: 0, max: 0.5, step: 0.001 });
+    forces.addBinding(this.config, "alignmentWeight", {
+      min: 0,
+      max: 0.3,
+      step: 0.001,
+    });
+    forces.addBinding(this.config, "cohesionWeight", {
+      min: 0,
+      max: 0.1,
+      step: 0.001,
+    });
+    forces.addBinding(this.config, "separationWeight", {
+      min: 0,
+      max: 0.5,
+      step: 0.001,
+    });
 
     const speed = pane.addFolder({ title: "Speed" });
     this.paneItems.push(speed);
     speed.addBinding(this.config, "maxSpeed", { min: 0.5, max: 12, step: 0.1 });
-    speed.addBinding(this.config, "maxForce", { min: 0.001, max: 0.5, step: 0.001 });
+    speed.addBinding(this.config, "maxForce", {
+      min: 0.001,
+      max: 0.5,
+      step: 0.001,
+    });
 
     const mouse = pane.addFolder({ title: "Mouse" });
     this.paneItems.push(mouse);
     mouse.addBinding(this.config, "mouseEnabled", { label: "enabled" });
     mouse.addBinding(this.config, "mouseRepel", { label: "repel" });
-    mouse.addBinding(this.config, "mouseRadius", { min: 30, max: 400, step: 1, label: "radius" });
-    mouse.addBinding(this.config, "mouseStrength", { min: 0, max: 1, step: 0.01, label: "strength" });
+    mouse.addBinding(this.config, "mouseRadius", {
+      min: 30,
+      max: 400,
+      step: 1,
+      label: "radius",
+    });
+    mouse.addBinding(this.config, "mouseStrength", {
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "strength",
+    });
 
-    const resetBtn = pane.addButton({ title: "Scatter velocities" })
+    const resetBtn = pane
+      .addButton({ title: "Scatter velocities" })
       .on("click", () => {
         for (const b of this.boids) {
           const angle = Math.random() * Math.PI * 2;

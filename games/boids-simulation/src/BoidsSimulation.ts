@@ -1,25 +1,21 @@
-import { GameBase } from "@falkura-pet/game-base";
-import { IntroSystem } from "./core/IntroSystem";
-import { MainSystem } from "./core/MainSystem";
+import { Engine, GameController } from "@falkura-pet/engine";
+import { MainSystem } from "./system/MainSystem";
+import { IntroSystem } from "./system/IntroSystem";
 
-export class BoidsSimulation extends GameBase {
-  protected override init(): void {
+const GAMEPLAY_SYSTEMS = [MainSystem];
+
+export class BoidsSimulation extends GameController {
+  override init(): void {
     this.systems.add(IntroSystem);
     this.systems.add(MainSystem);
-    this.systems.disable(MainSystem.MODULE_ID);
+
+    this.systems.disableAll();
+    this.systems.enable(IntroSystem);
   }
 
-  override reset(): void {
-    super.reset();
-    this.systems.disable(MainSystem.MODULE_ID);
-    this.systems.enable(IntroSystem.MODULE_ID);
-  }
-
-  play(): void {
-    this.systems.disable(IntroSystem.MODULE_ID);
-    this.systems.enable(MainSystem.MODULE_ID);
-    const main = this.systems.get(MainSystem);
-    main.start();
-    main.resize();
+  onPlay() {
+    this.systems.disable(IntroSystem);
+    for (const id of GAMEPLAY_SYSTEMS) this.systems.enable(id);
+    Engine.startGame();
   }
 }

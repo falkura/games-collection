@@ -2,7 +2,7 @@
 
 Watch emergent flocking behavior arise from three simple rules: separation, alignment, and cohesion. Tweak perception radius, force weights, and boid count in real time via the control panel.
 
-> Part of the [Games Collection](../../README.md) monorepo — built on shared [engine](../../packages/engine/README.md) and shared [game-base](../../packages/game-base/README.md).
+> Part of the [Games Collection](../../README.md) monorepo — built on shared [engine](../../packages/engine/README.md).
 
 ### Install dependencies
 
