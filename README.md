@@ -1,6 +1,6 @@
 # Games Collection
 
-A PixiJS game collection monorepo. A shared engine and wrapper let you create multiple small web games that are developed independently but deployed as a single application.
+A monorepo for building and shipping multiple games with minimal overhead. It includes a shared engine and wrapper that handle asset loading, rendering, layout, resizing, lifecycle, dev tools, and build configuration. Creating a new game requires a single command and a few lifecycle methods. Multiple games can be bundled into one deployable app just as easily.
 
 [PROJECT DEPLOY](http://games-collection-7ga.pages.dev/)
 
@@ -15,17 +15,17 @@ A PixiJS game collection monorepo. A shared engine and wrapper let you create mu
 
 ### New game
 
-To create new game run `moon generate game` then `bun install`. Game will be created in `/games` folder.
+To create new game run `moon generate game` then `bun install`. Game will be created in `/games/<game-name>` folder.
 
-Alternatively, you can ask [Claude Code](https://claude.com/claude-code) to scaffold and implement a game for you — just type `create <game name>` (e.g. `create tetris`) and Claude will generate the project and write the game logic.
+Alternatively, you can ask [Claude Code](https://claude.com/claude-code) to create a new game for you — just type `create <game-name>` (e.g. `create tetris`) and Claude will generate the project and write the game logic.
 
 ### Develop game
 
-To develop new game run `moon run <game-name>:dev` and open in browser [http://localhost:3000](http://localhost:3000).
+To develop new game run `moon run <game-name>:dev` and open in browser <http://localhost:3000>.
 
 ### Develop wrapper
 
-Wrapper can be developed with `moon run games-wrapper:dev`. It will be served at [http://localhost:3001](http://localhost:3001).
+Wrapper can be developed with `moon run games-wrapper:dev`. It will be served at <http://localhost:3001>.
 
 ### Build
 
@@ -33,22 +33,19 @@ Run `bun run assemble` to assemble application. It will be assembled to `/build`
 
 ## Project Structure
 
-| Directory                                                         | Description                                                                |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [`packages/engine/`](./packages/engine/README.md)                 | PixiJS game engine — rendering, animations, lifecycle, asset loading       |
-| [`packages/game-base/`](./packages/game-base/README.md)           | Abstract game classes                                                      |
-| [`packages/shared/`](./packages/shared/README.md)                 | Rspack/Rslib configs, TypeScript configs, AssetPack configs, build scripts |
-| [`packages/wrapper/`](./packages/wrapper/README.md)               | Launcher app — game picker, final production assembler                     |
-| `games/<name>/`                                                   | Individual games, each with `src/`, `assets/`, and `game.json`             |
-| [`templates/game-template/`](./templates/game-template/README.md) | Moon generator template for new games                                      |
+| Directory                                           | Description                                            |
+| --------------------------------------------------- | ------------------------------------------------------ |
+| [`packages/engine/`](./packages/engine/README.md)   | PixiJS Game engine                                     |
+| [`packages/shared/`](./packages/shared/README.md)   | Rspack / TypeScript / AssetPack configs, build scripts |
+| [`packages/wrapper/`](./packages/wrapper/README.md) | Application launcher and game picker                   |
+| [`templates/game/`](./templates/game/README.md)     | Moon generator template for base game                  |
+| `games/<name>/`                                     | Individual games                                       |
 
 ## Architecture
 
-Library packages (engine, game-base) are built unbundled with Rslib, games and the wrapper are bundled as applications with Rspack.
+The project is a monorepo managed with `Moon` and the `Bun` package manager. It includes a shared engine built on `PixiJS`, `GSAP`, and `Tweakpane`, a wrapper application with a game picker, and all the games.
 
-The **engine** is game-agnostic and defines `GameInstance` interface. **game-base** is the default implementations, consumed by every game. Games register their logic as systems via `SystemController`. The **wrapper** assembles all game builds, engine output, and a generated `@gamesMeta` module into a single deployable bundle.
-
-**Moon** orchestrates all tasks. **Bun** is the package manager.
+The architecture also includes **build** and **assembly** scripts, asset processing via `AssetPack`, `Rspack` for games and wrapper, and `Rslib` for the engine. Game scaffolding is handled through `Tera` templates integrated with `Moon` generators, along with predefined `Claude Code` instructions for rapid game creation.
 
 ## Deployment
 

@@ -84,12 +84,6 @@ export class SystemController<
     return system as InstanceType<T>;
   }
 
-  public get all(): System<TGame>[] {
-    return Array.from(this.list.values()).concat(
-      Array.from(this.disabledRegistry.values()),
-    );
-  }
-
   public build() {
     this.list.forEach((system, MODULE_ID) => {
       system.build();
