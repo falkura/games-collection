@@ -1,10 +1,8 @@
 {
   "name": "@falkura-pet/{{ name | kebab_case }}",
   "version": "0.0.0",
-  "templateVersion": "0.0.0",
   "dependencies": {
-    "@falkura-pet/engine": "workspace:*",
-    "@falkura-pet/game-base": "workspace:*"
+    "@falkura-pet/engine": "workspace:*"
   },
   "devDependencies": {
     "@falkura-pet/shared": "workspace:*"

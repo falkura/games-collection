@@ -1,0 +1,27 @@
+/**
+ * This file is an example of work with local storage.
+ *
+ * Update storage key to match the game.
+ *
+ * Feel free to make any changes here or remove this file if not needed.
+ */
+const STORAGE_KEY = "{{ name | kebab_case }}:level";
+
+export function loadLevel(count: number): number {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const number = raw ? parseInt(raw, 10) : 0;
+    if (!Number.isFinite(number)) return 0;
+    return Math.max(0, Math.min(count - 1, number));
+  } catch {
+    return 0;
+  }
+}
+
+export function saveLevel(index: number): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, String(index));
+  } catch {
+    console.error("Storage unavailable!");
+  }
+}

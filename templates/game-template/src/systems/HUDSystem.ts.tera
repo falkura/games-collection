@@ -1,0 +1,71 @@
+{% set component_name = name | pascal_case %}
+
+import { HTMLText } from "pixi.js";
+import { {{ component_name }} } from "../{{ component_name }}";
+import { Engine, Layout, System } from "@falkura-pet/engine";
+import { IHUDData } from "../types";
+
+const PALETTE = {
+  text: "#f8fafc",
+  accent: "#7dd3fc",
+  accentWarm: "#ffd43b",
+};
+
+/**
+ * This class is an example of HUD system.
+ *
+ * Update text, styles and palette to match new game.
+ *
+ * Unnecessary fields can be removed, feel free to make any changes here.
+ */
+export class HUDSystem extends System<{{ component_name }}> {
+  static MODULE_ID = "hud";
+
+  private textField: HTMLText;
+
+  override reset(): void {
+    this.textField.text = "";
+  }
+
+  override build() {
+    this.textField = new HTMLText({
+      style: {
+        fill: PALETTE.text,
+        fontFamily: "monospace",
+        fontSize: 20,
+        wordWrap: true,
+        breakWords: true,
+      },
+      resolution: Engine.textResolution,
+    });
+
+    this.view.addChild(this.textField);
+  }
+
+  override resize(): void {
+    this.textField.x = 30;
+    this.textField.y = 20;
+
+    this.textField.style.wordWrapWidth = Layout.screen.width - 80;
+    this.textField.style.tagStyles = {
+      t1: {
+        fill: PALETTE.accentWarm,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 44 : 24,
+      },
+      t2: {
+        fill: PALETTE.text,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 56 : 28,
+      },
+      t3: { fill: PALETTE.accent, fontSize: Layout.isMobile ? 24 : 18 },
+    };
+  }
+
+  public update(data: IHUDData) {
+    this.textField.text =
+      `<t1>LEVEL ${data.levelNumber} / ${data.levelCount}</t1><br>` +
+      `<t2>${data.levelTitle.toUpperCase()}</t2><br>` +
+      `<t3>${data.levelSource}</t3>`;
+  }
+}

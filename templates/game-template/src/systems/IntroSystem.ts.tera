@@ -1,0 +1,114 @@
+{% set component_name = name | pascal_case %}
+
+import { Graphics, HTMLText, Rectangle } from "pixi.js";
+import { {{ component_name }} } from "../{{ component_name }}";
+import { Engine, Layout, System } from "@falkura-pet/engine";
+
+const PALETTE = {
+  tint: "#050816",
+  panel: "#0f182a",
+  panelStroke: "#6970ff",
+  title: "#f8fbff",
+  body: "#dce7f7",
+  accent: "#7cc7ff",
+  orb: "#00ffaa",
+};
+
+/**
+ * This class is an example of Intro system.
+ * 
+ * Update text, styles and palette to match new game.
+ */
+export class IntroSystem extends System<{{ component_name }}> {
+  static MODULE_ID = "intro";
+
+  private textField: HTMLText;
+  private panel: Graphics;
+  private background: Graphics;
+
+  override build() {
+    this.view.eventMode = "static";
+    this.view.cursor = "pointer";
+    this.view.on("pointertap", this.onPlay);
+
+    this.textField = new HTMLText({
+      text:
+        "<t1>ORBIT DRIFT</t1><br><br>" +
+        "Drag anywhere to launch your ship.<br><br>" +
+        "Collect every <orb>GREEN ORB</orb> to clear the level.<br><br>" +
+        "Use gravity wells to curve your path. Avoid planets, walls, hunters, and incoming fire.<br><br>" +
+        "<t2>TAP ANYWHERE TO START</t2>",
+      style: {
+        fill: PALETTE.body,
+        fontFamily: "monospace",
+        fontSize: 32,
+        align: "center",
+        wordWrap: true,
+        wordWrapWidth: 880,
+      },
+      resolution: Engine.textResolution,
+      anchor: 0.5,
+    });
+
+    this.background = new Graphics().rect(0, 0, 1, 1).fill({
+      color: PALETTE.tint,
+      alpha: 0.86,
+    });
+
+    this.panel = new Graphics();
+
+    this.view.addChild(this.background, this.panel, this.textField);
+  }
+
+  override resize(): void {
+    this.view.hitArea = new Rectangle(
+      Layout.screen.x,
+      Layout.screen.y,
+      Layout.screen.width,
+      Layout.screen.height,
+    );
+
+    this.background.width = Layout.screen.width;
+    this.background.height = Layout.screen.height;
+
+    this.textField.x = Layout.screen.center.x;
+    this.textField.y = Layout.screen.center.y;
+
+    this.textField.style.fontSize = Layout.isMobile ? 46 : 32;
+    this.textField.style.tagStyles = {
+      t1: {
+        fill: PALETTE.title,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 100 : 74,
+      },
+      t2: {
+        fill: PALETTE.accent,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 46 : 32,
+      },
+      orb: {
+        fill: PALETTE.orb,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 46 : 32,
+      },
+    };
+
+    const padding = 70;
+
+    this.panel
+      .clear()
+      .roundRect(
+        Layout.screen.width / 2 - this.textField.width / 2 - padding / 2,
+        Layout.screen.height / 2 - this.textField.height / 2 - padding / 2,
+        this.textField.width + padding,
+        this.textField.height + padding,
+        40,
+      )
+      .fill({ color: PALETTE.panel, alpha: 0.96 })
+      .stroke({ color: PALETTE.panelStroke, width: 4, alpha: 0.85 });
+  }
+
+  private onPlay = () => {
+    this.game.onPlay();
+  };
+}
