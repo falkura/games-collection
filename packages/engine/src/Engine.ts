@@ -71,20 +71,17 @@ class EngineClass {
     }
   }
 
-  public restartGame() {
-    this.resetGame();
-    this.startGame();
-  }
-
   public finishGame(data?: any) {
     if (this.state !== GAME_STATE.Finished) {
       this.state = GAME_STATE.Finished;
       this.game.finish(data);
       this.events.emit("engine:game-finished", data);
+
+      this.resize();
     }
   }
 
-  private resetGame() {
+  public resetGame() {
     this.game.reset();
     this.state = GAME_STATE.Init;
     this.events.emit("engine:game-reseted");

@@ -68,7 +68,8 @@ export class ControlPanel {
 
   public static addGameControls(parent: FolderApi) {
     parent.addButton({ title: "Restart" }).on("click", () => {
-      Engine.restartGame();
+      Engine.resetGame();
+      Engine.startGame();
     });
   }
 

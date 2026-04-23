@@ -5,6 +5,7 @@
     "target": "esnext",
     "module": "esnext",
     "allowImportingTsExtensions": true,
+    "strict": false,
     "noEmit": true
   },
   "references": [
