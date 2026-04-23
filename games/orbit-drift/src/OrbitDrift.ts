@@ -58,7 +58,8 @@ export class OrbitDrift extends GameController {
 
     folder.addButton({ title: "Reset Progress" }).on("click", () => {
       saveProgress(1);
-      Engine.restartGame();
+      Engine.resetGame();
+      Engine.startGame();
     });
 
     const state = { level: 1 };
@@ -73,7 +74,8 @@ export class OrbitDrift extends GameController {
       .addBinding(state, "level", { label: "Pick Level", options })
       .on("change", ({ value }) => {
         saveProgress(value);
-        Engine.restartGame();
+        Engine.resetGame();
+        Engine.startGame();
       });
   }
 }

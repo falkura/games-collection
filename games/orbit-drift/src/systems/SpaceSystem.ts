@@ -165,19 +165,20 @@ export class SpaceSystem extends System<OrbitDrift> {
   }
 
   retry() {
-    Engine.restartGame();
+    Engine.resetGame();
+    Engine.startGame();
   }
 
   nextLevel() {
     const next = this.currentLevel >= LEVEL.TOTAL ? 1 : this.currentLevel + 1;
     saveProgress(next);
-    Engine.restartGame();
+    this.retry();
   }
 
   goToLevel(n: number) {
     const clamped = Math.max(1, Math.min(LEVEL.TOTAL, Math.floor(n)));
     saveProgress(clamped);
-    Engine.restartGame();
+    this.retry();
   }
 
   simulate(sx: number, sy: number, vx: number, vy: number): Vec[] {
