@@ -1,4 +1,0 @@
-# TODO
-
-- graphics settings
-- tsgo ?

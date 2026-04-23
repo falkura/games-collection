@@ -25,6 +25,7 @@ export abstract class GameController {
 
     ControlPanel.init(this);
     this.init();
+    this.build();
 
     if (__DEV__) {
       globalThis.game = this;
@@ -33,6 +34,11 @@ export abstract class GameController {
 
   public init() {
     // override me
+  }
+
+  // build all enabled systems
+  private build() {
+    this.systems.build();
   }
 
   public start() {

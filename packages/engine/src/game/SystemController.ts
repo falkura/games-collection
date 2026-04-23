@@ -90,6 +90,13 @@ export class SystemController<
     );
   }
 
+  public build() {
+    this.list.forEach((system, MODULE_ID) => {
+      system.build();
+      this.buildedRegistry.set(MODULE_ID, system);
+    });
+  }
+
   public enableAll() {
     this.disabledRegistry.forEach((_, ID) => this.enable(ID));
   }
