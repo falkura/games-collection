@@ -1,0 +1,9 @@
+{
+  "extends": "@falkura-pet/shared/tsconfig/game.tsconfig.json",
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../../packages/engine"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 $schema: ../../.moon/cache/schemas/template.json
 description: |
-  Package with engine, assets management and building / development pipelines.
+  Advanced game template with extra systems, level management example, HUD, overlays and intro.
 destination: "/games/[name | kebab_case]"
-title: Game Template
-id: game
+title: Game template
+id: game-advanced
 variables:
   name:
     type: "string"

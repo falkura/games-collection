@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../packages/shared/schemas/game.schema.json",
+  "title": "{{ name | upper_case }}",
+  "description": "template project",
+  "version": "0.0.0",
+  "route": "{{ name | kebab_case }}",
+  "icon": "icon.png",
+  "enabled": true
+}
