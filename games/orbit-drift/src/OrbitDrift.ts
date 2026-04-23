@@ -1,5 +1,4 @@
-import { GameBase } from "@falkura-pet/game-base";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, GameController } from "@falkura-pet/engine";
 import { IntroSystem } from "./core/IntroSystem";
 import { SpaceSystem } from "./core/SpaceSystem";
 import { InputSystem } from "./core/InputSystem";
@@ -8,47 +7,42 @@ import { OverlaySystem } from "./core/OverlaySystem";
 import { LEVEL } from "./config";
 import { saveProgress } from "./progress";
 
-const GAMEPLAY_IDS = [
-  SpaceSystem.MODULE_ID,
-  InputSystem.MODULE_ID,
-  HUDSystem.MODULE_ID,
-  OverlaySystem.MODULE_ID,
-];
+const GAMEPLAY_SYSTEMS = [SpaceSystem, InputSystem, HUDSystem];
 
-export class OrbitDrift extends GameBase {
-  private introShown = false;
-
-  protected override init(): void {
+export class OrbitDrift extends GameController {
+  override init(): void {
     this.systems.add(IntroSystem);
     this.systems.add(SpaceSystem);
     this.systems.add(InputSystem);
     this.systems.add(HUDSystem);
     this.systems.add(OverlaySystem);
 
-    for (const id of GAMEPLAY_IDS) this.systems.disable(id);
+    this.systems.disableAll();
+    this.systems.enable(IntroSystem);
 
     this.addGameControls();
   }
 
   override reset(): void {
     super.reset();
-    if (this.introShown) {
-      this.systems.disable(IntroSystem);
-    } else {
-      for (const id of GAMEPLAY_IDS) this.systems.disable(id);
-      this.systems.enable(IntroSystem);
-    }
+    this.systems.disable(OverlaySystem);
   }
 
-  play(): void {
-    this.introShown = true;
+  override finish(data: any): void {
+    this.systems.enable(OverlaySystem);
+    this.systems.get(OverlaySystem).showResult(data);
+
+    super.finish(data);
+  }
+
+  onPlay() {
     this.systems.disable(IntroSystem);
-    for (const id of GAMEPLAY_IDS) {
-      this.systems.enable(id);
-      const system = this.systems.get(id);
-      system.start();
-      system.resize();
-    }
+    for (const id of GAMEPLAY_SYSTEMS) this.systems.enable(id);
+    Engine.startGame();
+  }
+
+  updateHUD() {
+    this.systems.get(HUDSystem).update();
   }
 
   retry(): void {

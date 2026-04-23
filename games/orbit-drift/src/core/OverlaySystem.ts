@@ -1,5 +1,4 @@
-import { System } from "@falkura-pet/game-base";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 import { Container, Graphics, HTMLText, Text } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { TOTAL_LEVELS } from "./SpaceSystem";
@@ -36,42 +35,24 @@ function formatTime(ms: number) {
 export class OverlaySystem extends System<OrbitDrift> {
   static MODULE_ID = "overlay";
 
-  private built = false;
-  private titleText!: HTMLText;
-  private statsText!: HTMLText;
-  private buttonRow!: Container;
-  private retryButton!: Container;
-  private nextButton!: Container;
-  private buttonResizers: Array<() => void> = [];
+  private titleText: HTMLText;
+  private statsText: HTMLText;
+  private background: Graphics;
+  private buttonRow: Container;
+  private retryButton: Container;
+  private nextButton: Container;
+  private buttonResizers: Array<(resize?: boolean) => void> = [];
 
   private buttonWidth = 240;
   private buttonHeight = 72;
   private buttonFontSize = 26;
 
-  override start(): void {
-    if (!this.built) {
-      this.build();
-      this.built = true;
-    }
-    this.view.visible = false;
-  }
-
-  override reset(): void {
-    this.view.visible = false;
-  }
-
-  private build() {
-    this.view.visible = false;
-
-    const bg = new Graphics().rect(0, 0, 1, 1).fill({
+  override build() {
+    this.background = new Graphics().rect(0, 0, 1, 1).fill({
       color: OVERLAY.tint,
       alpha: 0.78,
     });
-    bg.eventMode = "static";
-    this.view.addChildWithLayout(bg, {
-      width: "sw",
-      height: "sh",
-    });
+    this.background.eventMode = "static";
 
     this.titleText = new HTMLText({
       style: {
@@ -82,28 +63,6 @@ export class OverlaySystem extends System<OrbitDrift> {
       },
       resolution: Engine.textResolution,
       anchor: 0.5,
-    });
-
-    this.view.addChildWithLayout(this.titleText, {
-      x: "sw / 2",
-      y: "sh / 2 - 120",
-      onResize: ({ manager, view, vars }) => {
-        const s = manager.isMobile ? 1.3 : 1;
-        view.style.fontSize = (manager.isMobile ? 26 : 32) * s;
-        view.style.wordWrapWidth = Math.max(240, vars.sw - 80);
-        view.style.tagStyles = {
-          win: {
-            fill: OVERLAY.win,
-            fontWeight: "bold",
-            fontSize: (manager.isMobile ? 58 : 72) * s,
-          },
-          lose: {
-            fill: OVERLAY.lose,
-            fontWeight: "bold",
-            fontSize: (manager.isMobile ? 58 : 72) * s,
-          },
-        };
-      },
     });
 
     this.statsText = new HTMLText({
@@ -117,36 +76,58 @@ export class OverlaySystem extends System<OrbitDrift> {
       anchor: 0.5,
     });
 
-    this.view.addChildWithLayout(this.statsText, {
-      x: "sw / 2",
-      y: "sh / 2 + 40",
-      onResize: ({ manager, view }) => {
-        view.style.fontSize = manager.isMobile ? 28 : 22;
-      },
-    });
-
     this.buttonRow = new Container();
+
     this.retryButton = this.makeButton("RETRY", () => this.game.retry());
     this.nextButton = this.makeButton("NEXT LEVEL", () =>
       this.game.nextLevel(),
     );
+
     this.buttonRow.addChild(this.retryButton, this.nextButton);
 
-    this.view.addChildWithLayout(this.buttonRow, {
-      x: "sw / 2",
-      y: "sh / 2 + 180",
-      portrait: { y: "sh / 2 + 200" },
-      onResize: ({ manager }) => {
-        const mobile = manager.isMobile;
-        this.buttonWidth = mobile ? 280 : 240;
-        this.buttonHeight = mobile ? 88 : 72;
-        this.buttonFontSize = mobile ? 36 : 26;
-        for (const redraw of this.buttonResizers) redraw();
-        this.layoutButtons(manager.isPortrait);
-      },
-    });
+    this.view.addChild(
+      this.background,
+      this.titleText,
+      this.statsText,
+      this.buttonRow,
+    );
+  }
 
-    Engine.events.on("engine:game-finished", this.onFinished);
+  override resize(): void {
+    this.background.width = Layout.screen.width;
+    this.background.height = Layout.screen.height;
+
+    this.titleText.x = Layout.screen.center.x;
+    this.titleText.y = Layout.screen.center.y - 120;
+
+    this.titleText.style.fontSize = Layout.isMobile ? 34 : 42;
+    this.titleText.style.wordWrapWidth = 880;
+    this.titleText.style.tagStyles = {
+      win: {
+        fill: OVERLAY.win,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 76 : 94,
+      },
+      lose: {
+        fill: OVERLAY.lose,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 76 : 94,
+      },
+    };
+
+    this.statsText.x = Layout.screen.center.x;
+    this.statsText.y = Layout.screen.center.y + 40;
+    this.statsText.style.fontSize = Layout.isMobile ? 28 : 22;
+
+    this.buttonRow.x = Layout.screen.center.x;
+    this.buttonRow.y = Layout.screen.center.y + (Layout.isMobile ? 200 : 180);
+
+    this.buttonWidth = Layout.isMobile ? 280 : 240;
+    this.buttonHeight = Layout.isMobile ? 88 : 72;
+    this.buttonFontSize = Layout.isMobile ? 36 : 26;
+
+    for (const redraw of this.buttonResizers) redraw(true);
+    this.layoutButtons();
   }
 
   private makeButton(label: string, onTap: () => void): Container {
@@ -168,7 +149,9 @@ export class OverlaySystem extends System<OrbitDrift> {
     button.addChild(bg, text);
 
     let hovered = false;
-    const redraw = () => {
+    const redraw = (resize = false) => {
+      if (resize) hovered = false;
+
       text.style.fontSize = this.buttonFontSize;
       text.x = this.buttonWidth / 2;
       text.y = this.buttonHeight / 2;
@@ -194,13 +177,14 @@ export class OverlaySystem extends System<OrbitDrift> {
     return button;
   }
 
-  private layoutButtons(isPortrait: boolean) {
+  private layoutButtons() {
     const visible = this.buttonRow.children.filter((c) => c.visible);
     const n = visible.length;
     if (n === 0) return;
-    const gap = isPortrait ? 20 : 24;
 
-    if (isPortrait) {
+    const gap = Layout.isPortrait ? 20 : 24;
+
+    if (Layout.isPortrait) {
       let y = -(n * this.buttonHeight + (n - 1) * gap) / 2;
       for (const c of visible) {
         c.x = -this.buttonWidth / 2;
@@ -217,8 +201,15 @@ export class OverlaySystem extends System<OrbitDrift> {
     }
   }
 
-  private onFinished = (data?: FinishData) => {
-    if (!this.built || !data) return;
+  override mount(): void {
+    this.titleText.text = "";
+    this.statsText.text = "";
+  }
+
+  showResult(data?: FinishData) {
+    if (!data) {
+      throw new Error("No win data to finish");
+    }
 
     const tag = data.won ? "win" : "lose";
     const label = REASON_LABEL[data.reason ?? "out-of-bounds"];
@@ -242,6 +233,6 @@ export class OverlaySystem extends System<OrbitDrift> {
     this.retryButton.visible = true;
 
     this.view.visible = true;
-    this.layoutButtons(Engine.layout.isPortrait);
-  };
+    this.layoutButtons();
+  }
 }

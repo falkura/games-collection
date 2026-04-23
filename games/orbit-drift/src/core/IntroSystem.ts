@@ -1,7 +1,6 @@
-import { System } from "@falkura-pet/game-base";
 import { Graphics, HTMLText, Rectangle } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 
 const INTRO = {
   tint: "#050816",
@@ -16,46 +15,14 @@ const INTRO = {
 export class IntroSystem extends System<OrbitDrift> {
   static MODULE_ID = "intro";
 
-  private built = false;
-  private text!: HTMLText;
+  private text: HTMLText;
+  private panel: Graphics;
+  private background: Graphics;
 
-  override start(): void {
-    if (!this.built) {
-      this.build();
-      this.built = true;
-    }
-    this.view.visible = true;
-    this.resize();
-  }
-
-  override reset(): void {
-    if (!this.built) return;
-    this.view.visible = true;
-  }
-
-  private build() {
+  override build() {
     this.view.eventMode = "static";
     this.view.cursor = "pointer";
     this.view.on("pointertap", this.onPlay);
-
-    this.view.layout = {
-      width: "sw",
-      height: "sh",
-      onResize: ({ vars: { sw, sh } }) => {
-        this.view.hitArea = new Rectangle(0, 0, sw, sh);
-      },
-    };
-
-    this.view.addChildWithLayout(
-      new Graphics().rect(0, 0, 1, 1).fill({
-        color: INTRO.tint,
-        alpha: 0.86,
-      }),
-      {
-        width: "sw",
-        height: "sh",
-      },
-    );
 
     this.text = new HTMLText({
       text:
@@ -76,55 +43,65 @@ export class IntroSystem extends System<OrbitDrift> {
       anchor: 0.5,
     });
 
-    this.view.addChildWithLayout(this.text, {
-      x: "sw / 2",
-      y: "sh / 2",
-      zIndex: 2,
-      onResize: ({ manager, view, vars }) => {
-        view.style.fontSize = manager.isMobile ? 46 : 32;
-        view.style.wordWrapWidth = Math.min(
-          vars.sw - 120,
-          manager.isMobile ? 900 : 880,
-        );
-        view.style.tagStyles = {
-          t1: {
-            fill: INTRO.title,
-            fontWeight: "bold",
-            fontSize: manager.isMobile ? 100 : 74,
-          },
-          t2: {
-            fontSize: manager.isMobile ? 46 : 32,
-            fill: INTRO.accent,
-            fontWeight: "bold",
-          },
-          orb: {
-            fill: INTRO.orb,
-            fontWeight: "bold",
-          },
-        };
-      },
+    this.background = new Graphics().rect(0, 0, 1, 1).fill({
+      color: INTRO.tint,
+      alpha: 0.86,
     });
 
-    this.view.addChildWithLayout(new Graphics(), {
-      zIndex: 1,
-      onResize: ({ vars, view }) => {
-        const padding = 100;
-        view
-          .clear()
-          .roundRect(
-            vars.sw / 2 - this.text.width / 2 - padding / 2,
-            vars.sh / 2 - this.text.height / 2 - padding / 2,
-            this.text.width + padding,
-            this.text.height + padding,
-            40,
-          )
-          .fill({ color: INTRO.panel, alpha: 0.96 })
-          .stroke({ color: INTRO.panelStroke, width: 4, alpha: 0.85 });
+    this.panel = new Graphics();
+
+    this.view.addChild(this.background, this.panel, this.text);
+  }
+
+  override resize(): void {
+    this.view.hitArea = new Rectangle(
+      Layout.screen.x,
+      Layout.screen.y,
+      Layout.screen.width,
+      Layout.screen.height,
+    );
+
+    this.background.width = Layout.screen.width;
+    this.background.height = Layout.screen.height;
+
+    this.text.x = Layout.screen.center.x;
+    this.text.y = Layout.screen.center.y;
+
+    this.text.style.fontSize = Layout.isMobile ? 46 : 32;
+    this.text.style.tagStyles = {
+      t1: {
+        fill: INTRO.title,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 100 : 74,
       },
-    });
+      t2: {
+        fill: INTRO.accent,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 46 : 32,
+      },
+      orb: {
+        fill: INTRO.orb,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 46 : 32,
+      },
+    };
+
+    const padding = 70;
+
+    this.panel
+      .clear()
+      .roundRect(
+        Layout.screen.width / 2 - this.text.width / 2 - padding / 2,
+        Layout.screen.height / 2 - this.text.height / 2 - padding / 2,
+        this.text.width + padding,
+        this.text.height + padding,
+        40,
+      )
+      .fill({ color: INTRO.panel, alpha: 0.96 })
+      .stroke({ color: INTRO.panelStroke, width: 4, alpha: 0.85 });
   }
 
   private onPlay = () => {
-    this.game.play();
+    this.game.onPlay();
   };
 }

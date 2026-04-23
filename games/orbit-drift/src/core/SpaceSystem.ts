@@ -1,5 +1,4 @@
-import { System } from "@falkura-pet/game-base";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 import { Graphics, Ticker } from "pixi.js";
 import gsap from "gsap";
 import { OrbitDrift } from "../OrbitDrift";
@@ -41,23 +40,23 @@ export class SpaceSystem extends System<OrbitDrift> {
   currentLevel = 1;
   levelName = "";
 
-  ship!: Ship;
+  ship: Ship;
   planets: Planet[] = [];
   orbs: Orb[] = [];
   walls: Wall[] = [];
   chasers: Chaser[] = [];
   shooters: Shooter[] = [];
   projectiles: Projectile[] = [];
-  private trail!: Trail;
-  private starfieldView!: Graphics;
-  private wallsView!: Graphics;
+  private trail: Trail;
+  private starfieldView: Graphics;
+  private wallsView: Graphics;
 
   active = false;
   collected = 0;
   shots = 0;
   elapsedMs = 0;
 
-  private world!: PhysicsWorld;
+  private world: PhysicsWorld;
   private pendingEnd: FinishReason | null = null;
   private aimTween: gsap.core.Tween | null = null;
   private baseSpeed = 1;
@@ -81,6 +80,8 @@ export class SpaceSystem extends System<OrbitDrift> {
     this.shots = 0;
     this.elapsedMs = 0;
     this.pendingEnd = null;
+
+    this.game.updateHUD();
   }
 
   override reset(): void {
@@ -117,7 +118,10 @@ export class SpaceSystem extends System<OrbitDrift> {
 
   applyImpulse(dx: number, dy: number) {
     this.shots++;
-    this.ship.setVelocity(dx * this.dragImpulseScale, dy * this.dragImpulseScale);
+    this.ship.setVelocity(
+      dx * this.dragImpulseScale,
+      dy * this.dragImpulseScale,
+    );
   }
 
   /**
@@ -177,7 +181,7 @@ export class SpaceSystem extends System<OrbitDrift> {
   }
 
   simulate(sx: number, sy: number, vx: number, vy: number): Vec[] {
-    const { width, height } = Engine.layout.screen;
+    const { width, height } = Layout.screen;
     return simulateTrajectory(
       { x: sx, y: sy },
       { x: vx, y: vy },
@@ -193,7 +197,7 @@ export class SpaceSystem extends System<OrbitDrift> {
   }
 
   private buildLevel() {
-    const { width, height } = Engine.layout.screen;
+    const { width, height } = Layout.screen;
     const data = generateLevel({
       level: this.currentLevel,
       totalLevels: LEVEL.TOTAL,
@@ -249,7 +253,7 @@ export class SpaceSystem extends System<OrbitDrift> {
 
   override resize(): void {
     if (!this.starfieldView || !this.active) return;
-    const { width, height } = Engine.layout.screen;
+    const { width, height } = Layout.screen;
     this.drawStarfield(width, height);
     this.drawWalls();
   }
@@ -269,11 +273,15 @@ export class SpaceSystem extends System<OrbitDrift> {
       Math.min(STARFIELD.MAX_STARS, Math.round(area * STARFIELD.BASE_DENSITY)),
     );
     const random = this.seededRandom(
-      this.currentLevel * 9973 + Math.round(width) * 37 + Math.round(height) * 101,
+      this.currentLevel * 9973 +
+        Math.round(width) * 37 +
+        Math.round(height) * 101,
     );
 
     this.starfieldView.clear();
-    this.starfieldView.rect(0, 0, width, height).fill(STARFIELD.BACKGROUND_COLOR);
+    this.starfieldView
+      .rect(0, 0, width, height)
+      .fill(STARFIELD.BACKGROUND_COLOR);
 
     for (let i = 0; i < starCount; i++) {
       const x = random() * width;
@@ -284,14 +292,20 @@ export class SpaceSystem extends System<OrbitDrift> {
       if (tier < STARFIELD.GIANT_STAR_RATIO) {
         const r = 2.4 + random() * 1.6;
         const glow = 12 + random() * 12;
-        this.starfieldView.circle(x, y, glow).fill({ color: "#9fc4ff", alpha: 0.05 });
+        this.starfieldView
+          .circle(x, y, glow)
+          .fill({ color: "#9fc4ff", alpha: 0.05 });
         this.starfieldView.circle(x, y, r).fill({ color: "#ffffff", alpha });
         this.starfieldView
           .moveTo(x - 8, y)
           .lineTo(x + 8, y)
           .moveTo(x, y - 8)
           .lineTo(x, y + 8)
-          .stroke({ color: "#cfe0ff", width: 1, alpha: STARFIELD.PARALLAX_ALPHA });
+          .stroke({
+            color: "#cfe0ff",
+            width: 1,
+            alpha: STARFIELD.PARALLAX_ALPHA,
+          });
         continue;
       }
 
@@ -386,7 +400,7 @@ export class SpaceSystem extends System<OrbitDrift> {
   }
 
   private updateProjectiles(dt: number) {
-    const { width, height } = Engine.layout.screen;
+    const { width, height } = Layout.screen;
     const margin = PROJECTILE_CFG.OFFSCREEN_MARGIN;
 
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
@@ -441,7 +455,7 @@ export class SpaceSystem extends System<OrbitDrift> {
         return;
       }
     }
-    const { width, height } = Engine.layout.screen;
+    const { width, height } = Layout.screen;
     const m = SHIP_BOUNDS_MARGIN;
     if (
       this.ship.x < -m ||
@@ -457,6 +471,7 @@ export class SpaceSystem extends System<OrbitDrift> {
     for (const o of this.orbs) {
       if (o.tryCollect(this.ship.x, this.ship.y, Ship.RADIUS)) {
         this.collected++;
+        this.game.updateHUD();
       }
     }
   }
@@ -468,6 +483,7 @@ export class SpaceSystem extends System<OrbitDrift> {
     this.game.ticker.speed = 1;
 
     if (won) saveProgress(this.currentLevel);
+
     const data: FinishData = {
       won,
       reason,
@@ -478,6 +494,9 @@ export class SpaceSystem extends System<OrbitDrift> {
       time: this.elapsedMs,
       shots: this.shots,
     };
+
+    this.game.updateHUD();
+
     Engine.finishGame(data);
   }
 }

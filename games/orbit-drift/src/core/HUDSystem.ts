@@ -1,8 +1,7 @@
-import { System } from "@falkura-pet/game-base";
 import { HTMLText } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem, TOTAL_LEVELS } from "./SpaceSystem";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 
 const HUD = {
   text: "#f8fbff",
@@ -20,28 +19,41 @@ function formatTime(ms: number) {
 export class HUDSystem extends System<OrbitDrift> {
   static MODULE_ID = "hud";
 
-  private built = false;
-  private infoText!: HTMLText;
+  private text: HTMLText;
+  private active: boolean;
+  private space: SpaceSystem;
 
   override start(): void {
-    if (!this.built) {
-      this.build();
-      this.built = true;
-    }
-    this.sync();
+    this.active = true;
   }
 
   override reset(): void {
-    if (this.built) this.infoText.text = "";
+    this.active = false;
+    this.text.text = "";
   }
 
-  override tick(): void {
-    if (!this.built) return;
-    this.sync();
+  override finish(data?: any): void {
+    this.active = false;
   }
 
-  private build() {
-    this.infoText = new HTMLText({
+  public update(): void {
+    if (!this.space) return;
+    const total = this.space.orbs.length;
+
+    this.text.text =
+      `<t1>LEVEL ${this.space.currentLevel} / ${TOTAL_LEVELS}</t1><br>` +
+      `<t2>${this.space.levelName.toUpperCase()}</t2><br>` +
+      `<t3>ORBS ${this.space.collected}/${total}   TIME ${formatTime(this.space.elapsedMs)}   SHOTS ${this.space.shots}</t3>`;
+  }
+
+  override tick() {
+    this.active && this.update();
+  }
+
+  override build() {
+    this.space = this.game.systems.get(SpaceSystem);
+
+    this.text = new HTMLText({
       style: {
         fill: HUD.text,
         fontFamily: "monospace",
@@ -52,36 +64,26 @@ export class HUDSystem extends System<OrbitDrift> {
       resolution: Engine.textResolution,
     });
 
-    this.view.addChildWithLayout(this.infoText, {
-      x: 30,
-      y: 20,
-      onResize: ({ manager, view, vars }) => {
-        view.style.wordWrapWidth = vars.sw - 80;
-        view.style.tagStyles = {
-          t1: {
-            fill: HUD.accentWarm,
-            fontWeight: "bold",
-            fontSize: manager.isMobile ? 40 : 22,
-          },
-          t2: {
-            fill: HUD.text,
-            fontWeight: "bold",
-            fontSize: manager.isMobile ? 52 : 28,
-          },
-          t3: { fill: HUD.accent, fontSize: manager.isMobile ? 26 : 18 },
-        };
-      },
-    });
+    this.text.x = 30;
+    this.text.y = 20;
+
+    this.view.addChild(this.text);
   }
 
-  private sync() {
-    const space = this.game.systems.get(SpaceSystem);
-    if (!space) return;
-    const total = space.orbs.length;
-
-    this.infoText.text =
-      `<t1>LEVEL ${space.currentLevel} / ${TOTAL_LEVELS}</t1><br>` +
-      `<t2>${space.levelName.toUpperCase()}</t2><br>` +
-      `<t3>ORBS ${space.collected}/${total}   TIME ${formatTime(space.elapsedMs)}   SHOTS ${space.shots}</t3>`;
+  override resize(): void {
+    this.text.style.wordWrapWidth = Layout.screen.width - 80;
+    this.text.style.tagStyles = {
+      t1: {
+        fill: HUD.accentWarm,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 40 : 22,
+      },
+      t2: {
+        fill: HUD.text,
+        fontWeight: "bold",
+        fontSize: Layout.isMobile ? 52 : 28,
+      },
+      t3: { fill: HUD.accent, fontSize: Layout.isMobile ? 26 : 18 },
+    };
   }
 }

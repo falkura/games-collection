@@ -1,6 +1,5 @@
-import { System } from "@falkura-pet/game-base";
 import { FederatedPointerEvent, Graphics, Point, Rectangle } from "pixi.js";
-import { Engine } from "@falkura-pet/engine";
+import { Engine, Layout, System } from "@falkura-pet/engine";
 import { Ticker } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem } from "./SpaceSystem";
@@ -9,24 +8,15 @@ import { TRAJECTORY_PREVIEW } from "../config";
 export class InputSystem extends System<OrbitDrift> {
   static MODULE_ID = "input";
 
-  private built = false;
   private dragging = false;
   private pointerId: number | null = null;
   private start_ = new Point();
   private end = new Point();
 
-  private preview!: Graphics;
-  private impulseLine!: Graphics;
-
-  override start(): void {
-    if (!this.built) {
-      this.built = true;
-      this.build();
-    }
-  }
+  private preview: Graphics;
+  private impulseLine: Graphics;
 
   override reset(): void {
-    if (!this.built) return;
     this.dragging = false;
     this.pointerId = null;
     this.preview.clear();
@@ -34,9 +24,15 @@ export class InputSystem extends System<OrbitDrift> {
   }
 
   override resize(): void {
-    if (!this.built) return;
-    const { width, height } = Engine.layout.screen;
-    this.view.hitArea = new Rectangle(-800, -800, width + 1600, height + 1600);
+    const { width, height } = Layout.screen;
+    const dragBeyondScreenMargin = 800;
+
+    this.view.hitArea = new Rectangle(
+      -dragBeyondScreenMargin,
+      -dragBeyondScreenMargin,
+      width + dragBeyondScreenMargin * 2,
+      height + dragBeyondScreenMargin * 2,
+    );
   }
 
   override tick(_ticker: Ticker): void {
@@ -46,7 +42,7 @@ export class InputSystem extends System<OrbitDrift> {
     this.drawPreview();
   }
 
-  private build() {
+  override build() {
     this.preview = new Graphics();
     this.preview.zIndex = 5;
     this.impulseLine = new Graphics();
@@ -54,7 +50,6 @@ export class InputSystem extends System<OrbitDrift> {
     this.view.addChild(this.preview, this.impulseLine);
 
     this.view.eventMode = "static";
-    this.resize();
 
     this.view.on("pointerdown", this.onDown);
     this.view.on("pointermove", this.onMove);
@@ -124,7 +119,7 @@ export class InputSystem extends System<OrbitDrift> {
     const space = this.space;
     const ship = space.ship;
     const { dx, dy } = this.clampedDrag();
-    const previewWidth = Engine.layout.isMobile
+    const previewWidth = Layout.isMobile
       ? TRAJECTORY_PREVIEW.WIDTH * 2
       : TRAJECTORY_PREVIEW.WIDTH;
 
