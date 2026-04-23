@@ -1,9 +1,9 @@
 import { Engine, GameController } from "@falkura-pet/engine";
-import { IntroSystem } from "./core/IntroSystem";
-import { SpaceSystem } from "./core/SpaceSystem";
-import { InputSystem } from "./core/InputSystem";
-import { HUDSystem } from "./core/HUDSystem";
-import { OverlaySystem } from "./core/OverlaySystem";
+import { IntroSystem } from "./systems/IntroSystem";
+import { SpaceSystem } from "./systems/SpaceSystem";
+import { InputSystem } from "./systems/InputSystem";
+import { HUDSystem } from "./systems/HUDSystem";
+import { OverlaySystem } from "./systems/OverlaySystem";
 import { LEVEL } from "./config";
 import { saveProgress } from "./progress";
 

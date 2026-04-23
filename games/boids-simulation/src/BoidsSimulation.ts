@@ -1,6 +1,6 @@
 import { Engine, GameController } from "@falkura-pet/engine";
-import { MainSystem } from "./system/MainSystem";
-import { IntroSystem } from "./system/IntroSystem";
+import { MainSystem } from "./systems/MainSystem";
+import { IntroSystem } from "./systems/IntroSystem";
 
 const GAMEPLAY_SYSTEMS = [MainSystem];
 
