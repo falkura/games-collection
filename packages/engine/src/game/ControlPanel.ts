@@ -52,8 +52,7 @@ export class ControlPanel {
 
     game.ticker.add(() => (this.stats.fps = game.ticker.FPS));
 
-    ControlPanel.addGameControls(ControlPanel.engineFolder, game);
-    ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
+    ControlPanel.addGameControls(game);
 
     if (ControlPanel.options.startFolded) {
       game.pane.expanded = false;
@@ -68,7 +67,7 @@ export class ControlPanel {
     ControlPanel.gameSpeedControl.refresh();
   }
 
-  private static addGameControls(parent: FolderApi, game: GameController) {
+  private static addGameControls(game: GameController) {
     ControlPanel.engineFolder = game.pane.addFolder({
       title: "Engine",
       expanded: false,
@@ -82,10 +81,14 @@ export class ControlPanel {
       })
       .on("change", ({ value }) => (game.ticker.speed = value));
 
-    parent.addButton({ title: "Restart" }).on("click", () => {
-      Engine.resetGame();
-      Engine.startGame();
-    });
+    ControlPanel.engineFolder
+      .addButton({ title: "Restart" })
+      .on("click", () => {
+        Engine.resetGame();
+        Engine.startGame();
+      });
+
+    ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
   }
 
   private static addGraphicsButton(parent: FolderApi) {

@@ -2,7 +2,7 @@ import { defineConfig } from "@rspack/cli";
 import path from "path";
 import fs from "fs";
 import { rspack, RspackOptions } from "@rspack/core";
-import config from "../config";
+import CONFIG from "../config";
 
 const gameConfig: IGameConfig = await import(
   path.resolve("assets", "game.json")
@@ -10,18 +10,21 @@ const gameConfig: IGameConfig = await import(
 const outDist = path.resolve("dist");
 const isProd = process.env.NODE_ENV === "production";
 
-const baseUrl = config.url.replace(/\/$/, "");
+const baseUrl = CONFIG.url.replace(/\/$/, "");
 const ogUrl = `${baseUrl}/${gameConfig.route}/`;
+let iconAsset = "icon.png";
 
-// Resolve the hashed icon filename from the assetpack manifest
-const manifest = JSON.parse(
-  fs.readFileSync(path.resolve("dist/assets/manifest.json"), "utf-8"),
-);
-const iconAsset = manifest.bundles[0].assets.find((a: any) =>
-  (a.alias as string[]).includes("icon.png"),
-);
-const iconFile = iconAsset?.src[0] ?? "icon.png";
-const ogImage = `${baseUrl}/${gameConfig.route}/${iconFile}`;
+if (fs.existsSync(path.resolve("dist/assets/manifest.json"))) {
+  // Resolve the hashed icon filename from the assetpack manifest
+  const manifest = JSON.parse(
+    fs.readFileSync(path.resolve("dist/assets/manifest.json"), "utf-8"),
+  );
+  iconAsset = manifest.bundles[0].assets.find((a: any) =>
+    (a.alias as string[]).includes("icon.png"),
+  )?.src[0];
+}
+
+const ogImage = `${baseUrl}/${gameConfig.route}/${iconAsset}`;
 
 const templatePath = path.join(__dirname, "../html/game.index.html");
 const templateHtml = fs.readFileSync(templatePath, "utf-8");

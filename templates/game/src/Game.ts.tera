@@ -4,11 +4,24 @@
 to: src/{{ component_name }}.ts
 ---
 
+import { IntroSystem } from "./systems/IntroSystem";
 import { MainSystem } from "./systems/MainSystem";
-import { GameController } from "@falkura-pet/engine";
+import { Engine, GameController } from "@falkura-pet/engine";
+
+const GAMEPLAY_SYSTEMS = [MainSystem];
 
 export class {{ component_name }} extends GameController {
   override init(): void {
+    this.systems.add(IntroSystem);
     this.systems.add(MainSystem);
+
+    this.systems.disableAll();
+    this.systems.enable(IntroSystem);
+  }
+
+  onPlay() {
+    this.systems.disable(IntroSystem);
+    for (const id of GAMEPLAY_SYSTEMS) this.systems.enable(id);
+    Engine.startGame();
   }
 }
