@@ -1,18 +1,33 @@
 # Engine
 
-Core game engine built on PixiJS. Handles rendering, GSAP animations, asset loading, and game lifecycle.
+Core game engine built on PixiJS. Handles rendering, GSAP, asset loading, game lifecycle, layout, and the Tweakpane debug panel.
 
 > Part of the [Games Collection](../../README.md) monorepo
 
 ```bash
-# No direct commands needed — develop by running any game:
-moon run <game-name>:dev    # engine changes are picked up automatically
+# No direct commands — develop by running any game:
+moon run <game-name>:dev
 ```
 
-## Details
+It is designed to stay **game-agnostic** — no game logic, no game assets. Games consume it as a dependency.
 
-The engine is responsible for everything except game-specific logic: PixiJS rendering, GSAP animations, game loop and lifecycle management (start, finish, reset, resize), asset loading via AssetPack manifests, events handling.
+## What it provides
 
-It is designed to stay **game-agnostic** — no game logic, no game assets. Games and the wrapper consume it as a dependency.
+|                      |                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| **PixiJS app**       | WebGPU-preferred renderer, auto-sized to the window.                                         |
+| **GSAP**             | Ticker synced to PixiJS; `PixiPlugin` registered.                                            |
+| **Asset loading**    | Loads an AssetPack `manifest.json` bundle behind a spinner before the game starts.           |
+| **Lifecycle**        | `startGame` / `finishGame` / `resetGame` cascade through every system and emit typed events. |
+| **Layout**           | Fit-scale + virtual-pixel helpers for both the full screen and the design-resolution rect.   |
+| **Graphics presets** | `High` / `Medium` / `Low` adjust renderer resolution and max FPS at runtime.                 |
+| **Debug panel**      | Tweakpane with FPS, speed slider, restart, and graphics toggle. Collapses to ⚙️.             |
 
-The engine defines `GameInstance` interface. Any package that implements this interface can be plugged into the engine — `game-base` is the default implementations, but it is not the only possible one.
+## Architecture
+
+```
+Engine (singleton)
+└── GameController (abstract, one per game)
+    └── SystemController
+        └── System[] (all gameplay and visuals live here)
+```

@@ -1,7 +1,6 @@
 import {
   Application,
   Assets,
-  ProgressCallback,
   Ticker,
   Size,
   EventEmitter,
@@ -42,9 +41,36 @@ interface UISettings {
   graphics: "Low" | "Medium" | "High";
 }
 
+/** Options passed to {@link Engine.init}. */
+export interface EngineInitOptions {
+  /** Game class to instantiate (must extend {@link GameController}). */
+  gameCtor: new (config: IGameConfig, view: Container) => GameController;
+  /** Contents of `game.json`, passed directly to the game constructor. */
+  gameConfig: IGameConfig;
+  /** Virtual canvas size in landscape orientation. Default: `1920×1080`. */
+  sizeLandscape?: Size;
+  /** Virtual canvas size in portrait orientation. Default: swapped landscape dims. */
+  sizePortrait?: Size;
+  /** Base path for the asset server. Default: `"./assets/"`. */
+  basePath?: string;
+  /** Manifest file name. Default: `"manifest.json"`. */
+  manifest?: string;
+  /** Bundle name to load from the manifest. Default: `"default"`. */
+  defaultBundle?: string;
+  /** Initial graphics quality preset. Default: `"High"`. */
+  graphics?: UISettings["graphics"];
+  /** Whether the Tweakpane panel opens folded. Default: `true`. */
+  controlPanelStartFolded?: boolean;
+}
+
 class EngineClass {
+  /** PixiJS application. */
   public app: Application;
+
+  /** Typed event bus. Emits lifecycle events (`engine:game-started`, `engine:game-finished`, `engine:game-reseted`, `engine:settings-updated`). */
   public events: EventEmitter<EngineEvents>;
+
+  /** Current graphics quality preset. Change via debug panel. */
   public graphics: UISettings["graphics"];
 
   private game: GameController;
@@ -63,6 +89,7 @@ class EngineClass {
 
   // #region lifecycle
 
+  /** Transition from `Init` to `Started`. Cascades `start` through all systems and emits `engine:game-started`. No-op if already started. */
   public startGame() {
     if (this.state === GAME_STATE.Init) {
       this.events.emit("engine:game-started");
@@ -71,6 +98,7 @@ class EngineClass {
     }
   }
 
+  /** Cascade `finish(data)` through all systems and emit `engine:game-finished`. No-op if already finished. */
   public finishGame(data?: any) {
     if (this.state !== GAME_STATE.Finished) {
       this.state = GAME_STATE.Finished;
@@ -81,6 +109,7 @@ class EngineClass {
     }
   }
 
+  /** Reset to `Init` state, cascade `reset` through all systems, and emit `engine:game-reseted`. */
   public resetGame() {
     this.game.reset();
     this.state = GAME_STATE.Init;
@@ -103,18 +132,14 @@ class EngineClass {
 
   // #region initialization
 
-  public async init<T extends GameController>(options: {
-    gameCtor: new (config: IGameConfig, view: Container) => T;
-    gameConfig: IGameConfig;
-    sizeLandscape?: Size;
-    sizePortrait?: Size;
-    onLoadProgress?: ProgressCallback;
-    basePath?: string;
-    manifest?: string;
-    defaultBundle?: string;
-    graphics?: UISettings["graphics"];
-    controlPanelStartFolded?: boolean;
-  }) {
+  /**
+   * Bootstrap the engine and the game. Call once from the game entry file.
+   *
+   * Sequence: creates the PixiJS app, initializes GSAP, shows the load scene,
+   * loads the asset bundle, instantiates the game, then triggers the first resize.
+   * After this resolves, call {@link startGame}.
+   */
+  public async init(options: EngineInitOptions) {
     this.state = GAME_STATE.Init;
     this.graphics = options.graphics || "High";
 
@@ -227,7 +252,6 @@ class EngineClass {
 
   private async loadAssets(
     options: Partial<{
-      onLoadProgress: ProgressCallback;
       basePath: string;
       manifest: string;
       defaultBundle: string;
@@ -241,12 +265,14 @@ class EngineClass {
     const manifest = await Assets.load(this._manifestName);
 
     Assets.addBundle(bundleName, manifest.bundles[0].assets);
-    await Assets.loadBundle(bundleName, options.onLoadProgress);
+    await Assets.loadBundle(bundleName);
   }
 
   // #endregion loading
 
   // #region graphics settings
+
+  /** Apply new settings at runtime. Adjusts renderer resolution and max FPS, then emits `engine:settings-updated`. */
   public changeSettings(opts: Partial<UISettings>) {
     if (opts.graphics) {
       this.graphics = opts.graphics;
@@ -261,6 +287,7 @@ class EngineClass {
     return dpr * GRAPHICS_PRESETS[this.graphics].resolutionScale;
   }
 
+  /** Renderer resolution capped at 1. Pass as `resolution` to `HTMLText` / `BitmapText` for correct sharpness. */
   public get textResolution() {
     return Math.min(this.app.renderer.resolution, 1);
   }

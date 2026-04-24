@@ -3,20 +3,34 @@ import { FolderApi, Pane } from "tweakpane";
 import { GameController } from "./GameController";
 import { Engine } from "../Engine";
 
+/**
+ * Tweakpane debug panel. Initialized automatically by {@link GameController}.
+ *
+ * Shows FPS, game-speed slider, restart and graphics-quality buttons.
+ * Configure via {@link options} before `Engine.init` is called.
+ */
 export class ControlPanel {
   static engineFolder: FolderApi;
   static initialized = false;
   static gameSpeedControl: ReturnType<Pane["addBinding"]>;
+
+  /** Live stats object bound to Tweakpane, mutated each tick. */
   static stats = {
     fps: 0,
     gameSpeed: 1,
   };
 
+  /**
+   * Configure before `Engine.init`.
+   * - `startFolded` — open the pane collapsed (default `true`).
+   * - `foldedTitle` — title shown while folded (default `"⚙️"`).
+   */
   static options = {
     startFolded: true,
     foldedTitle: "⚙️",
   };
 
+  /** @internal */
   public static init(game: GameController) {
     if (ControlPanel.initialized) return;
     ControlPanel.initialized = true;
@@ -38,6 +52,23 @@ export class ControlPanel {
 
     game.ticker.add(() => (this.stats.fps = game.ticker.FPS));
 
+    ControlPanel.addGameControls(ControlPanel.engineFolder, game);
+    ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
+
+    if (ControlPanel.options.startFolded) {
+      game.pane.expanded = false;
+    }
+
+    syncTitle();
+  }
+
+  /** @internal */
+  public static reset() {
+    ControlPanel.stats.gameSpeed = 1;
+    ControlPanel.gameSpeedControl.refresh();
+  }
+
+  private static addGameControls(parent: FolderApi, game: GameController) {
     ControlPanel.engineFolder = game.pane.addFolder({
       title: "Engine",
       expanded: false,
@@ -51,29 +82,13 @@ export class ControlPanel {
       })
       .on("change", ({ value }) => (game.ticker.speed = value));
 
-    ControlPanel.addGameControls(ControlPanel.engineFolder);
-    ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
-
-    if (ControlPanel.options.startFolded) {
-      game.pane.expanded = false;
-    }
-
-    syncTitle();
-  }
-
-  public static reset() {
-    ControlPanel.stats.gameSpeed = 1;
-    ControlPanel.gameSpeedControl.refresh();
-  }
-
-  public static addGameControls(parent: FolderApi) {
     parent.addButton({ title: "Restart" }).on("click", () => {
       Engine.resetGame();
       Engine.startGame();
     });
   }
 
-  public static addGraphicsButton(parent: FolderApi) {
+  private static addGraphicsButton(parent: FolderApi) {
     const nextGraphics = () =>
       Engine.graphics === "High"
         ? "Medium"

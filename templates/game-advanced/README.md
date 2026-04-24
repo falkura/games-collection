@@ -4,7 +4,7 @@ skip: true
 
 # Game Template Advanced
 
-Template with extra functionality.
+Template with extra functionality: UI classes, level management boilerplate, IntroSystem for showing game name and description on first launch, HUDSystem for showing current game progress, OverlaySystem with an ability to show fullscreen overlays.
 
 A [Tera](https://tera.netlify.app/) template used by [Moon codegen](https://moonrepo.dev/docs/guides/codegen) to scaffold new games in the monorepo.
 

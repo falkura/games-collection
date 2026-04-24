@@ -5,68 +5,96 @@ import { SystemController } from "./SystemController";
 import { Pane } from "tweakpane";
 import { ControlPanel } from "./ControlPanel";
 
+/**
+ * Abstract base for every game. Extend and register systems in {@link init}.
+ *
+ * Drive lifecycle through {@link Engine} — never call lifecycle methods directly.
+ */
 export abstract class GameController {
+  /** PixiJS ticker driving system `tick` hooks and the game-speed slider. */
   public readonly ticker: Ticker;
+
+  /** Manages all registered {@link System} instances. */
   public readonly systems: SystemController;
+
+  /** Master GSAP timeline; each system's timeline is nested here. */
   public readonly timeline: GSAPTimeline;
+
+  /** Tweakpane panel used by {@link ControlPanel}. */
   public readonly pane: Pane;
 
-  constructor(
-    public readonly config: IGameConfig,
-    public readonly view: Container,
-  ) {
-    this.pane = new Pane();
+  /** Game metadata from `game.json`. */
+  public readonly config: IGameConfig;
 
+  /** Root display container provided by the engine. */
+  public readonly view: Container;
+
+  constructor(config: IGameConfig, view: Container) {
+    this.config = config;
+    this.view = view;
+
+    this.pane = new Pane();
     this.systems = new SystemController(this);
     this.ticker = new Ticker();
     this.timeline = gsap.timeline({ paused: true });
 
-    this.ticker.add((ticker) => this.systems.tick(ticker));
-
     ControlPanel.init(this);
     this.init();
-    this.build();
+    this.systems.build();
+
+    this.ticker.add((ticker) => this.systems.tick(ticker));
 
     if (__DEV__) {
       globalThis.game = this;
     }
   }
 
+  /** Override to register systems: `this.systems.add(MySystem)`. Called once in the constructor. */
   public init() {
     // override me
   }
 
-  // build all enabled systems
-  private build() {
-    this.systems.build();
-  }
-
+  /**
+   * @internal Called by `Engine.startGame`.
+   * Override to add custom start logic — call `super.start()`.
+   */
   public start() {
     this.systems.start();
     this.ticker.start();
     this.timeline.play();
   }
 
+  /**
+   * @internal Called by `Engine.finishGame`.
+   * Override to add custom finish logic — call `super.finish(data)`.
+   */
   public finish(data: any) {
     this.ticker.stop();
-    this._resetTimelines();
+    this.resetTimelines();
     this.systems.finish(data);
   }
 
+  /**
+   * @internal Called by `Engine.resetGame`.
+   * Override to add custom reset logic — call `super.reset()`.
+   */
   public reset() {
     this.ticker.stop();
     this.ticker.speed = 1;
     ControlPanel.reset();
-
-    this._resetTimelines();
+    this.resetTimelines();
     this.systems.reset();
   }
 
+  /**
+   * @internal Called by the engine on window resize.
+   * Override to add custom resize logic — call `super.resize()`.
+   */
   public resize() {
     this.systems.resize();
   }
 
-  private _resetTimelines() {
+  private resetTimelines() {
     this.timeline
       .getChildren(false)
       .forEach(

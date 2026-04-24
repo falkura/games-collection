@@ -2,17 +2,19 @@ import { Container, Ticker } from "pixi.js";
 import { GameController } from "./GameController";
 import { System } from "./System";
 import gsap from "gsap";
-import { type ModuleConstructor, ModuleManager } from "./ModuleManager";
 
-export class SystemController<
-  TGame extends GameController = GameController,
-> extends ModuleManager<System<TGame>> {
-  protected readonly disabledRegistry: typeof this.list = new Map();
-  protected readonly buildedRegistry: typeof this.list = new Map();
+export interface ModuleConstructor<T> extends Constructor<T> {
+  /** Unique identifier used for registration and lookup. */
+  MODULE_ID: string;
+}
 
-  constructor(private readonly game: TGame) {
-    super();
-  }
+/** Manages all {@link System} instances for a game. Access via `game.systems`. */
+export class SystemController<TGame extends GameController = GameController> {
+  protected readonly list: Map<string, System<TGame>> = new Map();
+  protected readonly disabledRegistry: Map<string, System<TGame>> = new Map();
+  protected readonly buildedRegistry: Map<string, System<TGame>> = new Map();
+
+  constructor(private readonly game: TGame) {}
 
   protected create<T extends ModuleConstructor<System<TGame>>>(
     Ctor: T,
@@ -33,6 +35,51 @@ export class SystemController<
     return instance;
   }
 
+  /** Register a system. Call inside `GameController.init`. */
+  public add<T extends ModuleConstructor<System<TGame>>>(
+    Ctor: T,
+  ): InstanceType<T> {
+    const id = Ctor.MODULE_ID;
+
+    if (!id) {
+      throw new Error(
+        `Module class must declare static MODULE_ID [${Ctor.name}].`,
+      );
+    }
+
+    if (this.list.has(id)) {
+      throw new Error(`Module with id [${id}] already added.`);
+    }
+
+    const instance = this.create(Ctor) as InstanceType<T>;
+
+    this.list.set(id, instance);
+
+    return instance;
+  }
+
+  /** Retrieve a system by class or `MODULE_ID` string. */
+  public get<T extends ModuleConstructor<System<TGame>>>(
+    moduleId: string,
+  ): InstanceType<T>;
+  public get<T extends ModuleConstructor<System<TGame>>>(
+    Ctor: T,
+  ): InstanceType<T>;
+  public get<T extends ModuleConstructor<System<TGame>>>(
+    value: T | string,
+  ): InstanceType<T> {
+    let result;
+
+    if (typeof value === "string") {
+      result = this.list.get(value);
+    } else {
+      result = this.list.get(value.MODULE_ID);
+    }
+
+    return result;
+  }
+
+  /** Remove a system from the active list and display tree. Its hooks stop firing. Can be re-enabled later. */
   public disable<T extends ModuleConstructor<System<TGame>>>(
     Ctor: T,
   ): InstanceType<T>;
@@ -48,7 +95,6 @@ export class SystemController<
 
     this.disabledRegistry.set(MODULE_ID, system);
 
-    system.enabled = false;
     system.unmount();
 
     this.game.view.removeChild(system.view);
@@ -56,6 +102,7 @@ export class SystemController<
     return system as InstanceType<T>;
   }
 
+  /** Re-add a previously disabled system to the active list and display tree. Calls `build` if not yet built. */
   public enable<T extends ModuleConstructor<System<TGame>>>(
     Ctor: T,
   ): InstanceType<T>;
@@ -77,55 +124,52 @@ export class SystemController<
       this.buildedRegistry.set(MODULE_ID, system);
     }
 
-    system.enabled = true;
     system.mount();
     system.resize();
 
     return system as InstanceType<T>;
   }
 
-  public build() {
+  /** Enable all disabled systems. */
+  public enableAll() {
+    this.disabledRegistry.forEach((_, ID) => this.enable(ID));
+  }
+
+  /** Disable all active systems. */
+  public disableAll() {
+    this.list.forEach((_, ID) => this.disable(ID));
+  }
+
+  /** @internal */
+  build() {
     this.list.forEach((system, MODULE_ID) => {
       system.build();
       this.buildedRegistry.set(MODULE_ID, system);
     });
   }
 
-  public enableAll() {
-    this.disabledRegistry.forEach((_, ID) => this.enable(ID));
+  /** @internal */
+  start() {
+    this.list.forEach((s) => s.start());
   }
 
-  public disableAll() {
-    this.list.forEach((_, ID) => this.disable(ID));
+  /** @internal */
+  finish(data?: any) {
+    this.list.forEach((s) => s.finish(data));
   }
 
-  public start() {
-    this.list.forEach((system) => {
-      system.start();
-    });
+  /** @internal */
+  reset() {
+    this.list.forEach((s) => s.reset());
   }
 
-  public finish(data?: any) {
-    this.list.forEach((system) => {
-      system.finish(data);
-    });
+  /** @internal */
+  resize() {
+    this.list.forEach((s) => s.resize());
   }
 
-  public reset() {
-    this.list.forEach((system) => {
-      system.reset();
-    });
-  }
-
-  public resize() {
-    this.list.forEach((system) => {
-      system.resize();
-    });
-  }
-
-  public tick(ticker: Ticker) {
-    this.list.forEach((system) => {
-      system.tick(ticker);
-    });
+  /** @internal */
+  tick(ticker: Ticker) {
+    this.list.forEach((s) => s.tick(ticker));
   }
 }
