@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { rm } from "fs/promises";
-import PATHS from "../paths";
+import config from "../config";
 
 /**
  * Copies all game icons from games/<game-folder>/assets/<icon-path>
@@ -15,17 +15,17 @@ export async function copyGameIcons(gamesMeta: IGamesConfig) {
   await rm(iconDir, { recursive: true, force: true });
   fs.mkdirSync(iconDir, { recursive: true });
 
-  for (const [gamePath, config] of Object.entries(gamesMeta)) {
-    if (!config.icon) {
+  for (const [gamePath, gameConfig] of Object.entries(gamesMeta)) {
+    if (!gameConfig.icon) {
       console.warn(`No icon specified for game: ${gamePath}`);
       continue;
     }
 
     const sourceIconPath = path.join(
-      PATHS.gamesPath,
+      config.gamesPath,
       gamePath,
       "assets",
-      config.icon,
+      gameConfig.icon,
     );
 
     if (!fs.existsSync(sourceIconPath)) {
@@ -33,7 +33,7 @@ export async function copyGameIcons(gamesMeta: IGamesConfig) {
       continue;
     }
 
-    const ext = path.extname(config.icon);
+    const ext = path.extname(gameConfig.icon);
     const destIconPath = path.join(iconDir, `${gamePath}${ext}`);
 
     fs.copyFileSync(sourceIconPath, destIconPath);

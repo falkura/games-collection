@@ -22,7 +22,6 @@ declare global {
   interface IWrapperConfig {
     title: string;
     subtitle: string;
-    url?: string;
   }
 
   type Constructor<T> = new (...args: any[]) => T;

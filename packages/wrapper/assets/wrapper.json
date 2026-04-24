@@ -1,6 +1,5 @@
 {
     "$schema": "../../shared/schemas/wrapper.schema.json",
     "title": "Games Collection",
-    "subtitle": "Hand-crafted monorepo, game engine, wrapper, shared tooling, and Claude Code setup — purpose-built so games on top can be vibe-coded fast.",
-    "url": "https://games-collection-7ga.pages.dev"
+    "subtitle": "Hand-crafted monorepo, game engine, wrapper, shared tooling, and Claude Code setup — purpose-built so games on top can be vibe-coded fast."
 }

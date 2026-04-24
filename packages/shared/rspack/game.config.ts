@@ -2,39 +2,29 @@ import { defineConfig } from "@rspack/cli";
 import path from "path";
 import fs from "fs";
 import { rspack, RspackOptions } from "@rspack/core";
+import config from "../config";
 
-const config: IGameConfig = await import(path.resolve("assets", "game.json"));
+const gameConfig: IGameConfig = await import(
+  path.resolve("assets", "game.json")
+);
 const outDist = path.resolve("dist");
-
 const isProd = process.env.NODE_ENV === "production";
 
-const templatePath = path.join(__dirname, "../html/game.index.html");
-const wrapperJsonPath = path.join(
-  __dirname,
-  "../../wrapper/assets/wrapper.json",
+const baseUrl = config.url.replace(/\/$/, "");
+const ogUrl = `${baseUrl}/${gameConfig.route}/`;
+
+// Resolve the hashed icon filename from the assetpack manifest
+const manifest = JSON.parse(
+  fs.readFileSync(path.resolve("dist/assets/manifest.json"), "utf-8"),
 );
+const iconAsset = manifest.bundles[0].assets.find((a: any) =>
+  (a.alias as string[]).includes("icon.png"),
+);
+const iconFile = iconAsset?.src[0] ?? "icon.png";
+const ogImage = `${baseUrl}/${gameConfig.route}/${iconFile}`;
 
-const wrapperConfig: IWrapperConfig = fs.existsSync(wrapperJsonPath)
-  ? JSON.parse(fs.readFileSync(wrapperJsonPath, "utf-8"))
-  : { title: "", subtitle: "" };
-
-const baseUrl = wrapperConfig.url?.replace(/\/$/, "") ?? "";
-const iconExt = config.icon ? path.extname(config.icon) : ".png";
-const iconFile = `icon${iconExt}`;
-const ogImage = baseUrl ? `${baseUrl}/${config.route}/${iconFile}` : iconFile;
-const ogUrl = baseUrl ? `${baseUrl}/${config.route}/` : "";
-
-const templateContent = fs
-  .readFileSync(templatePath, "utf-8")
-  .replace(/%TITLE%/g, config.title)
-  .replace(/%DESCRIPTION%/g, config.description)
-  .replace(/%OG_IMAGE%/g, ogImage)
-  .replace(/%OG_URL%/g, ogUrl);
-
-const iconSourcePath = path.resolve("assets", config.icon || "icon.png");
-const copyPatterns = fs.existsSync(iconSourcePath)
-  ? [{ from: iconSourcePath, to: iconFile }]
-  : [];
+const templatePath = path.join(__dirname, "../html/game.index.html");
+const templateHtml = fs.readFileSync(templatePath, "utf-8");
 
 export default defineConfig(() => {
   return {
@@ -44,30 +34,21 @@ export default defineConfig(() => {
       path: outDist,
       filename: isProd ? "[name].[contenthash].js" : "[name].js",
       chunkFilename: isProd ? "[name].[contenthash].js" : "[name].js",
-      clean: {
-        keep: "assets",
-      },
+      clean: { keep: "assets" },
     },
     devServer: {
       port: 3000,
-      static: [
-        {
-          directory: outDist,
-          publicPath: "/",
-          watch: true,
-        },
-      ],
+      static: [{ directory: outDist, publicPath: "/", watch: true }],
     },
     plugins: [
-      new rspack.DefinePlugin({
-        __DEV__: !isProd,
-      }),
+      new rspack.DefinePlugin({ __DEV__: !isProd }),
       new rspack.HtmlRspackPlugin({
-        templateContent,
+        templateContent: templateHtml
+          .replace(/%TITLE%/g, gameConfig.title)
+          .replace(/%DESCRIPTION%/g, gameConfig.description)
+          .replace(/%OG_IMAGE%/g, ogImage)
+          .replace(/%OG_URL%/g, ogUrl),
       }),
-      ...(copyPatterns.length
-        ? [new rspack.CopyRspackPlugin({ patterns: copyPatterns })]
-        : []),
     ],
   } satisfies RspackOptions;
 });

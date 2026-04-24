@@ -51,10 +51,6 @@ export interface EngineInitOptions {
   sizeLandscape?: Size;
   /** Virtual canvas size in portrait orientation. Default: swapped landscape dims. */
   sizePortrait?: Size;
-  /** Base path for the asset server. Default: `"./assets/"`. */
-  basePath?: string;
-  /** Manifest file name. Default: `"manifest.json"`. */
-  manifest?: string;
   /** Bundle name to load from the manifest. Default: `"default"`. */
   defaultBundle?: string;
   /** Initial graphics quality preset. Default: `"High"`. */
@@ -78,7 +74,6 @@ class EngineClass {
   private view: Container;
   private state: GAME_STATE;
   private loadScene: LoadScene;
-  private _manifestName: string;
 
   constructor() {
     if (__DEV__) {
@@ -235,34 +230,18 @@ class EngineClass {
     this.loadScene = undefined;
   }
 
-  private async loadManifest(
-    options?: Partial<{
-      basePath: string;
-      manifest: string;
-    }>,
-  ) {
-    this._manifestName = options.manifest || "manifest.json";
-    const basePath = options.basePath || "./assets/";
-
-    await Assets.init({ basePath });
-
-    Assets.add({ src: this._manifestName });
-    await Assets.load(this._manifestName);
-  }
-
   private async loadAssets(
     options: Partial<{
-      basePath: string;
-      manifest: string;
       defaultBundle: string;
     }>,
   ) {
-    if (!this._manifestName) {
-      await this.loadManifest(options);
-    }
+    await Assets.init({ basePath: "./assets/" });
 
+    const manifestName = "manifest.json";
+    Assets.add({ src: manifestName });
+
+    const manifest = await Assets.load(manifestName);
     const bundleName = options.defaultBundle || "default";
-    const manifest = await Assets.load(this._manifestName);
 
     Assets.addBundle(bundleName, manifest.bundles[0].assets);
     await Assets.loadBundle(bundleName);
