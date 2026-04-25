@@ -1,0 +1,41 @@
+:root {
+  --c-bg: #0b1024;
+  --c-panel: #131a3a;
+  --c-panel-border: rgba(255, 255, 255, 0.08);
+  --c-text: #f4f6ff;
+  --c-text-muted: #8893bd;
+
+  --c-accent: #ffd24a;       /* star yellow */
+  --c-accent-2: #ff7eb6;      /* pink */
+  --c-accent-3: #6dd6ff;      /* sky */
+  --c-violet: #8a7dff;
+  --c-mint: #5fffd0;
+
+  --radius-lg: 24px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+
+  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+#uiRoot {
+  font-family: var(--font-ui);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#uiRoot button {
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  touch-action: manipulation;
+}
+
+#uiRoot button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(138, 125, 255, 0.55);
+}

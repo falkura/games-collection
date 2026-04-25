@@ -30,7 +30,7 @@ bun install
 3. **First-launch copy:**
    - `game` → `src/systems/IntroSystem.ts`.
    - `game-react` → `src/ui/App.tsx`.
-4. **Implement gameplay.** Read [`docs/game.md`](../../../docs/game.md) for engine/lifecycle. For React-UI games also read [`docs/game-react.md`](../../../docs/game-react.md).
+4. **Implement gameplay.** Read [`docs/game.md`](../../../docs/game.md) for engine/lifecycle. For React-UI games also read [`docs/game-react.md`](../../../docs/game-react.md). Do **not** read other games under `games/` as reference unless the user explicitly asks you to (e.g. "use connect-4 as a reference"). The docs are the source of truth — copying from sibling games drags in patterns the new game does not need.
 
 ## Step 4 — Verify
 

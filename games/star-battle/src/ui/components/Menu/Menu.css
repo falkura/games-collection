@@ -1,0 +1,271 @@
+.menu {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: var(--c-bg);
+  overflow: auto;
+}
+
+.menu__panel {
+  width: 100%;
+  max-width: 460px;
+  padding: 32px 28px 28px;
+  background: var(--c-panel);
+  border: 1px solid var(--c-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: menu-in 0.35s ease-out;
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu__brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.menu__star {
+  font-size: 40px;
+  color: var(--c-accent);
+  filter: drop-shadow(0 0 12px rgba(255, 210, 74, 0.55));
+  animation: star-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes star-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(255, 210, 74, 0.45)); }
+  50%      { transform: scale(1.08); filter: drop-shadow(0 0 18px rgba(255, 210, 74, 0.7)); }
+}
+
+.menu__title {
+  margin: 0 0 8px;
+  font-size: clamp(32px, 6vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--c-text);
+}
+
+.menu__subtitle {
+  margin: 0 0 24px;
+  color: var(--c-text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.menu__group {
+  text-align: left;
+  margin-bottom: 22px;
+}
+
+.menu__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.menu__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.menu__value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu__value--total {
+  font-size: 14px;
+  color: var(--c-accent);
+  font-weight: 700;
+}
+
+/* --- Slider --- */
+
+.menu__slider-wrap {
+  /* Thumb is 22px wide → radius 11px. The thumb center travels in
+     [radius, width - radius]. Pad the ticks below by the same amount
+     so their space-between extremes line up with thumb extremes. */
+  --thumb-radius: 11px;
+  margin: 6px 0 8px;
+}
+
+.menu__slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background:
+    linear-gradient(
+      to right,
+      var(--c-accent) 0,
+      var(--c-accent) var(--progress, 0%),
+      rgba(255, 255, 255, 0.08) var(--progress, 0%),
+      rgba(255, 255, 255, 0.08) 100%
+    );
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  display: block;
+}
+
+.menu__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--c-accent);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+  transition: transform 0.12s ease;
+}
+
+.menu__slider::-webkit-slider-thumb:active { transform: scale(1.1); cursor: grabbing; }
+
+.menu__slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--c-accent);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+}
+
+.menu__slider::-moz-range-track { background: transparent; }
+
+.menu__ticks {
+  display: flex;
+  justify-content: space-between;
+  /* Inset by thumb radius so the first/last labels' centers (each is a
+     zero-width text node sitting at the flex extremes) align with the
+     thumb's travel extremes. */
+  padding: 0 var(--thumb-radius);
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu__ticks span {
+  /* Zero width with centered text → the visual center of each label sits
+     exactly at the flex distribution point. */
+  width: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.menu__ticks .is-on {
+  color: var(--c-accent);
+  font-weight: 800;
+}
+
+/* --- Segmented stars-per --- */
+
+.menu__seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px;
+  border-radius: var(--radius-md);
+}
+
+.menu__seg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--c-text-muted);
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.menu__seg-btn.is-on {
+  background: var(--c-accent);
+  color: #0b1024;
+}
+
+.menu__seg-btn:not(.is-on):hover { color: var(--c-text); }
+
+.menu__seg-stars {
+  font-size: 14px;
+  letter-spacing: -1px;
+}
+
+.menu__warn {
+  margin: 10px 0 0;
+  height: 16px;
+  font-size: 12px;
+  color: var(--c-accent-2);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  /* Reserve space so the panel doesn't jump when the message appears. */
+}
+
+.menu__warn.is-on { opacity: 1; }
+
+.menu__play {
+  width: 100%;
+  margin-top: 8px;
+  padding: 16px 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0b1024;
+  background: var(--c-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  transition: transform 0.08s ease, filter 0.18s ease;
+}
+
+.menu__play:hover { filter: brightness(1.06); }
+.menu__play:active { transform: translateY(1px); }
+
+.menu__rules {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--c-panel-border);
+  text-align: left;
+}
+
+.menu__rules-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  margin-bottom: 8px;
+}
+
+.menu__rules ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--c-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}

@@ -57,6 +57,8 @@ export interface EngineInitOptions {
   graphics?: UISettings["graphics"];
   /** Whether the Tweakpane panel opens folded. Default: `true`. */
   controlPanelStartFolded?: boolean;
+  /** Hide Tweakpane panel. Default: `false`. */
+  hideDebugPane?: boolean;
 }
 
 class EngineClass {
@@ -153,6 +155,12 @@ class EngineClass {
 
     this.gameConfig = options.gameConfig;
     this.game = new options.gameCtor(options.gameConfig, this.view);
+
+    if (options.hideDebugPane) {
+      this.game.pane.hidden = true;
+
+      document.documentElement.style.setProperty("--tweakpane-reserved", "0px");
+    }
 
     this.view.visible = true;
     this.applyGraphics();
