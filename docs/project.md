@@ -40,7 +40,7 @@ bun run assemble
 | `packages/wrapper/` | Launcher, game picker, final production assembler                                                                                                       | Rspack     |
 | `packages/shared/`  | Shared Rspack/Rslib configs, TypeScript configs, AssetPack configs, JSON schemas, build scripts, global types, HTML/CSS                                 | —          |
 | `games/<name>/`     | Individual games, each with `src/`, `assets/`, and `game.json` config                                                                                   | Rspack     |
-| `templates/`        | Moon generator templates for new games (`game`, `game-advanced`)                                                                                        | —          |
+| `templates/`        | Moon generator templates for new games (`game`, `game-react`)                                                                                           | —          |
 
 ## Architecture summary
 

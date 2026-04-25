@@ -28,6 +28,8 @@ Hooks fire in the order the engine cascades them. Override only the ones you nee
 
 `systems.disable(Ctor)` removes the system's view from the stage, stops its hooks firing, and parks it in a disabled registry. `systems.enable(Ctor)` reverses that — and calls `build()` if the system was disabled on `GameController.init()`. This is how both templates gate the intro screen: all systems disabled except `IntroSystem`, then on tap the game disables intro and enables the gameplay systems before calling `Engine.startGame()`.
 
+**`systems.get()` only finds active (enabled) systems.** A disabled system is not in the active list — `get()` returns `undefined` for it. Always call `systems.enable(Ctor)` before calling `systems.get(Ctor)` to configure the system. Never call `get()` on a system you just disabled or haven't enabled yet.
+
 ## Layout
 
 `Layout` (exported from `@falkura-pet/engine`) is a plain helper updated by the engine on every resize.
@@ -65,7 +67,7 @@ Engine.startGame();
 
 ## Passing data between systems
 
-Systems reach the game via `this.game`; the game reaches other systems via `this.systems.get(OtherSystem)`. Example (cross-reference [`game-advanced` `Game.ts`](../templates/game-advanced/src/Game.ts.tera) for the real shape):
+Systems reach the game via `this.game`; the game reaches other systems via `this.systems.get(OtherSystem)`. Example:
 
 ```ts
 // In MainSystem:
@@ -104,7 +106,7 @@ After modifying a game, bump `version` in `games/<name>/assets/game.json` (semve
 
 - **Patch** (`x.y.Z`) — bug fixes, tweaks, small content/UX changes.
 - **Minor** (`x.Y.0`) — new features, new systems, sizable content additions, anything user-visible.
-- **Major** (`X.0.0`) — only when the user explicitly asks for it. Never bump on your own.
+- **Major** (`X.0.0`) — when the architecture changes or when user asks.
 
 ## Conventions
 
@@ -112,4 +114,5 @@ After modifying a game, bump `version` in `games/<name>/assets/game.json` (semve
 - `__DEV__` is a global boolean — dev-only code paths are stripped in prod.
 - `HTMLText` / `BitmapText` need `resolution: Engine.textResolution` for sharpness.
 - Intro shows once, on game start only. Both templates do this by enabling only `IntroSystem` in `init()` and disabling it in `onPlay()`.
+- The **top-right corner is reserved for the Tweakpane debug panel**. Any DOM/Pixi UI anchored to the top-right must shift left to avoid it. For DOM/React HUDs use `padding-right: var(--tweakpane-reserved)` (CSS var defined in the shared HTML template). For Pixi systems, subtract the same value from your right-edge anchor.
 - Past ~300 lines or more than one reason to change, split it. Guidelines:
