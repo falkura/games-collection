@@ -13,10 +13,16 @@
       "path": "./games/boids-simulation"
     },
     {
+      "path": "./games/connect-4"
+    },
+    {
       "path": "./games/connect-dots"
     },
     {
       "path": "./games/orbit-drift"
+    },
+    {
+      "path": "./games/test-game"
     },
     {
       "path": "./packages/engine"
