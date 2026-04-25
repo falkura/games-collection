@@ -33,13 +33,14 @@ Run `bun run assemble` to assemble application. It will be assembled to `/build`
 
 ## Project Structure
 
-| Directory                                           | Description                                            |
-| --------------------------------------------------- | ------------------------------------------------------ |
-| [`packages/engine/`](./packages/engine/README.md)   | PixiJS Game engine                                     |
-| [`packages/shared/`](./packages/shared/README.md)   | Rspack / TypeScript / AssetPack configs, build scripts |
-| [`packages/wrapper/`](./packages/wrapper/README.md) | Application launcher and game picker                   |
-| [`templates/game/`](./templates/game/README.md)     | Moon generator template for base game                  |
-| `games/<name>/`                                     | Individual games                                       |
+| Directory                                                   | Description                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------ |
+| [`packages/engine/`](./packages/engine/README.md)           | PixiJS Game engine                                     |
+| [`packages/shared/`](./packages/shared/README.md)           | Rspack / TypeScript / AssetPack configs, build scripts |
+| [`packages/wrapper/`](./packages/wrapper/README.md)         | Application launcher and game picker                   |
+| [`templates/game/`](./templates/game/README.md)             | Moon generator template — Pixi-only game               |
+| [`templates/game-react/`](./templates/game-react/README.md) | Moon generator template — Pixi gameplay + React UI     |
+| `games/<name>/`                                             | Individual games                                       |
 
 ## Architecture
 
