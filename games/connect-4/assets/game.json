@@ -2,8 +2,9 @@
   "$schema": "../../../packages/shared/schemas/game.schema.json",
   "title": "CONNECT 4",
   "description": "Drop discs to line up four in a row — vertical, horizontal, or diagonal. Play head-to-head or against the AI.",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "route": "connect-4",
   "icon": "icon.png",
+  "order": 5,
   "enabled": true
 }

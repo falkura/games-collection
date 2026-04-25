@@ -37,7 +37,7 @@
     },
     "order": {
       "type": "number",
-      "description": "Sort order in the wrapper list (lower = earlier). Games without an order sort last, alphabetically by title."
+      "description": "Sort order in the wrapper list (higher = earlier). Games without an order sort last, alphabetically by title."
     }
   },
   "additionalProperties": true

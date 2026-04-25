@@ -8,9 +8,9 @@ document.getElementById("header-title").innerHTML = wrapperConfig.title;
 document.getElementById("header-subtitle").innerHTML = wrapperConfig.subtitle;
 
 const sortedGames = Object.entries(gamesMeta).sort(([, a], [, b]) => {
-  const ao = a.order ?? Number.POSITIVE_INFINITY;
-  const bo = b.order ?? Number.POSITIVE_INFINITY;
-  if (ao !== bo) return ao - bo;
+  const ao = a.order ?? Number.NEGATIVE_INFINITY;
+  const bo = b.order ?? Number.NEGATIVE_INFINITY;
+  if (ao !== bo) return bo - ao;
   return a.title.localeCompare(b.title);
 });
 
