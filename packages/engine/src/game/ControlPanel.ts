@@ -81,17 +81,6 @@ export class ControlPanel {
       })
       .on("change", ({ value }) => (game.ticker.speed = value));
 
-    ControlPanel.engineFolder
-      .addButton({ title: "Restart" })
-      .on("click", () => {
-        Engine.resetGame();
-        Engine.startGame();
-      });
-
-    ControlPanel.addGraphicsButton(ControlPanel.engineFolder);
-  }
-
-  private static addGraphicsButton(parent: FolderApi) {
     const nextGraphics = () =>
       Engine.graphics === "High"
         ? "Medium"
@@ -103,7 +92,7 @@ export class ControlPanel {
       return "Graphics: " + Engine.graphics;
     };
 
-    const graphicsBtn = parent.addButton({
+    const graphicsBtn = ControlPanel.engineFolder.addButton({
       title: getGraphicsTitle(),
     });
 
