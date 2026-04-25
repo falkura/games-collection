@@ -26,7 +26,10 @@ Pick the right tool per direction:
   ```ts
   import { EventEmitter } from "pixi.js";
 
-  export enum Events { StartRequested, ColumnSelected }
+  export enum Events {
+    StartRequested,
+    ColumnSelected,
+  }
   interface EventTypes {
     [Events.StartRequested]: { mode: "ai" | "pvp" };
     [Events.ColumnSelected]: { col: number };
@@ -42,8 +45,14 @@ Pick the right tool per direction:
   const listeners = new Set<() => void>();
   export const gameState = {
     get: () => state,
-    set: (patch) => { state = { ...state, ...patch }; listeners.forEach(l => l()); },
-    subscribe: (l) => { listeners.add(l); return () => listeners.delete(l); },
+    set: (patch) => {
+      state = { ...state, ...patch };
+      listeners.forEach((l) => l());
+    },
+    subscribe: (l) => {
+      listeners.add(l);
+      return () => listeners.delete(l);
+    },
   };
   ```
 
@@ -67,8 +76,12 @@ private onStart({ mode }: { mode: "ai" | "pvp" }) { /* ... */ }
 The Tweakpane debug panel is fixed to the top-right. The shared HTML template defines `--tweakpane-reserved` (CSS var). Any DOM UI anchored to the top-right must shift left:
 
 ```css
-.hud { padding-right: calc(20px + var(--tweakpane-reserved)); }
+.hud {
+  padding-right: calc(20px + var(--tweakpane-reserved));
+}
 ```
+
+Padding should be added only to the top right corner buttons, not to all elements that are anchored to the right.
 
 ## Theme
 

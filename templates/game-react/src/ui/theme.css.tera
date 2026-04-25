@@ -49,8 +49,7 @@ to: src/ui/theme.css
   align-items: center;
   justify-content: center;
   padding: 24px;
-  /* Reserve space for the Tweakpane debug panel anchored to the top-right. */
-  padding-right: calc(24px + var(--tweakpane-reserved));
+  padding-right: 24px;
   background: var(--c-bg);
   text-align: center;
 }

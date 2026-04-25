@@ -114,5 +114,4 @@ After modifying a game, bump `version` in `games/<name>/assets/game.json` (semve
 - `__DEV__` is a global boolean — dev-only code paths are stripped in prod.
 - `HTMLText` / `BitmapText` need `resolution: Engine.textResolution` for sharpness.
 - Intro shows once, on game start only. Both templates do this by enabling only `IntroSystem` in `init()` and disabling it in `onPlay()`.
-- The **top-right corner is reserved for the Tweakpane debug panel**. Any DOM/Pixi UI anchored to the top-right must shift left to avoid it. For DOM/React HUDs use `padding-right: var(--tweakpane-reserved)` (CSS var defined in the shared HTML template). For Pixi systems, subtract the same value from your right-edge anchor.
-- Past ~300 lines or more than one reason to change, split it. Guidelines:
+- Past ~300 lines or more than one reason to change, split it.

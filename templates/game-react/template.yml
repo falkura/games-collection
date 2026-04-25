@@ -2,7 +2,7 @@ $schema: ../../.moon/cache/schemas/template.json
 description: |
   Game template with React-driven UI: PixiJS for gameplay rendering, React DOM
   for menus, HUD, modals. Includes ui/App.tsx, ui/index.tsx, ui/theme.css and
-  uses the shared game-advanced rspack/tsconfig configs.
+  uses the shared game-react rspack/tsconfig configs.
 destination: "/games/[name | kebab_case]"
 title: Game Template (React UI)
 id: game-react
