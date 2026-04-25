@@ -12,16 +12,17 @@ const isProd = process.env.NODE_ENV === "production";
 
 const baseUrl = CONFIG.url.replace(/\/$/, "");
 const ogUrl = `${baseUrl}/${gameConfig.route}/`;
-let iconAsset = "icon.png";
+let iconAsset = "assets/icon.png";
 
 if (fs.existsSync(path.resolve("dist/assets/manifest.json"))) {
   // Resolve the hashed icon filename from the assetpack manifest
   const manifest = JSON.parse(
     fs.readFileSync(path.resolve("dist/assets/manifest.json"), "utf-8"),
   );
-  iconAsset = manifest.bundles[0].assets.find((a: any) =>
+  const src = manifest.bundles[0].assets.find((a: any) =>
     (a.alias as string[]).includes("icon.png"),
   )?.src[0];
+  if (src) iconAsset = `assets/${src}`;
 }
 
 const ogImage = `${baseUrl}/${gameConfig.route}/${iconAsset}`;
