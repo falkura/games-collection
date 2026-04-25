@@ -1,5 +1,5 @@
 {
-  "extends": "@falkura-pet/shared/tsconfig/game.tsconfig.json",
+  "extends": "@falkura-pet/shared/tsconfig/game-react.tsconfig.json",
   "include": ["src/**/*"],
   "references": [
     {

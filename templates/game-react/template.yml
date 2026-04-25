@@ -1,0 +1,14 @@
+$schema: ../../.moon/cache/schemas/template.json
+description: |
+  Game template with React-driven UI: PixiJS for gameplay rendering, React DOM
+  for menus, HUD, modals. Includes ui/App.tsx, ui/index.tsx, ui/theme.css and
+  uses the shared game-advanced rspack/tsconfig configs.
+destination: "/games/[name | kebab_case]"
+title: Game Template (React UI)
+id: game-react
+variables:
+  name:
+    type: "string"
+    default: ""
+    required: true
+    prompt: "Enter a human-readable game name:"

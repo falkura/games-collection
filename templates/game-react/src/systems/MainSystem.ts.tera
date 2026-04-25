@@ -1,0 +1,8 @@
+{% set component_name = name | pascal_case %}
+
+import { System } from "@falkura-pet/engine";
+import { {{ component_name }} } from "../{{ component_name }}";
+
+export class MainSystem extends System<{{ component_name }}> {
+  static MODULE_ID = "main";
+}
