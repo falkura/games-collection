@@ -2,7 +2,7 @@
 
 A monorepo for building and shipping multiple games with minimal overhead. It includes a shared engine and wrapper that handle asset loading, rendering, layout, resizing, lifecycle, dev tools, and build configuration. Creating a new game requires a single command and a few lifecycle methods. Multiple games can be bundled into one deployable app just as easily.
 
-[PROJECT DEPLOY](http://games-collection-7ga.pages.dev/)
+[PROJECT DEPLOY](https://gameskiki.com/)
 
 ## Init
 
@@ -55,3 +55,10 @@ Use `bun run assemble` as the build command, `/build` as the output directory. S
 ```bash
 NODE_ENV=production     # production Rspack build
 ```
+
+### Cloudflare Pages caching
+
+Configure on Cloudflare Pages (Settings → Builds & deployments):
+
+- **Build cache** — enable. Cloudflare preserves `node_modules/` and `.moon/cache/` between runs; Moon then only rebuilds projects whose inputs actually changed.
+- **Build watch paths** — `games/*`, `packages/*`, `.moon/**/*.yml`, `package.json`. Exclude paths:`*.md`

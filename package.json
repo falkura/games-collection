@@ -2,7 +2,7 @@
   "name": "@falkura-pet/games-collection",
   "version": "0.1.0",
   "scripts": {
-    "assemble": "bun i && bunx --bun moon run '#game:build' -f && bunx --bun moon run games-wrapper:build",
+    "assemble": "bun i && bunx --bun moon run '#game:build' && bunx --bun moon run games-wrapper:build",
     "postinstall": "bun add -g @moonrepo/cli"
   },
   "devDependencies": {

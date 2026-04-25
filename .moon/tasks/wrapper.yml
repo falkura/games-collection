@@ -4,20 +4,32 @@ inheritedBy:
 tasks:
   build-assets:
     command: bunx --bun assetpack -c @files(wrapper-assetpack)
+    inputs:
+      - "assets/**/*"
+      - "/packages/shared/assetpack/wrapper.ts"
+      - "/packages/shared/assetpack/base.ts"
+    outputs:
+      - "/build/assets/**/*"
     options:
       internal: true
-      cache: false
   build-sources:
     command: bunx --bun rspack build
     deps:
       - ^:build
+      - ~:build-assets
+    inputs:
+      - "@group(wrapper-sources)"
+      # Cache key must change when any game's dist (which the wrapper copies)
+      # or any game.json (which generateGamesMeta reads) changes.
+      - "/games/*/dist/**/*"
+      - "/games/*/assets/game.json"
+    outputs:
+      - "/build/**/*"
     options:
       internal: true
-      cache: false
   build:
     toolchains: ["bun"]
     deps:
-      - ~:build-assets
       - ~:build-sources
     inputs:
       - "@group(wrapper-sources)"

@@ -57,7 +57,7 @@ bun run assemble
 
 ## Deployment
 
-Hosted on Cloudflare Pages: <http://games-collection-7ga.pages.dev/>
+Hosted on Cloudflare Pages.
 
 - Build command: `bun run assemble`
 - Output directory: `/build`

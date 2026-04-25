@@ -12,11 +12,18 @@ fileGroups:
 
   game-sources:
     - "src/**/*"
-    - "assets/game.json"
+    - "assets/**/*"
+    - "package.json"
+    - "tsconfig.json"
     - "rspack.config.ts"
+    - "moon.yml"
     - "/packages/shared/html/game.index.html"
     - "/packages/shared/rspack/base.config.ts"
     - "/packages/shared/rspack/game.config.ts"
+    - "/packages/shared/rspack/game-react.config.ts"
+    - "/packages/shared/normalize/normalize.css"
+    - "/packages/shared/assetpack/game.ts"
+    - "/packages/shared/assetpack/base.ts"
 
   wrapper-sources:
     - "src/**/*"

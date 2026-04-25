@@ -6,25 +6,31 @@ tasks:
   # Build
   build-assets:
     command: bunx --bun assetpack -c @files(game-assetpack)
+    inputs:
+      - "assets/**/*"
+      - "/packages/shared/assetpack/game.ts"
+      - "/packages/shared/assetpack/base.ts"
+    outputs:
+      - "dist/assets/**/*"
     options:
       internal: true
-      cache: false
   build-sources:
     command: bunx --bun rspack build
     deps:
       - ^:build
+      - ~:build-assets
+    inputs:
+      - "@group(game-sources)"
+    outputs:
+      - "dist"
     options:
       internal: true
-      cache: false
   build:
     toolchains: ["bun"]
     deps:
-      - ~:build-assets
       - ~:build-sources
     inputs:
       - "@group(game-sources)"
-    options:
-      cache: false
 
   # Dev
   dev-assets:

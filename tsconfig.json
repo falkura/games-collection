@@ -34,6 +34,9 @@
       "path": "games/boids-simulation"
     },
     {
+      "path": "games/connect-4"
+    },
+    {
       "path": "games/connect-dots"
     },
     {
