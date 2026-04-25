@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./game.tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": [
+      "@falkura-pet/shared/types/global.d.ts",
+      "react",
+      "react-dom"
+    ]
+  }
+}

@@ -4,6 +4,7 @@ export {};
 
 declare global {
   const root: HTMLDivElement;
+  const uiRoot: HTMLDivElement;
   const canvas: HTMLCanvasElement;
   const __DEV__: boolean;
 

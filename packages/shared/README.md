@@ -28,7 +28,7 @@ shared/
 
 [Rspack](https://rspack.rs/) and [Rslib](https://rslib.rs/) configs for all builds. Base config sets up SWC for TypeScript, LightningCSS for styles, and SVG as source assets. Targets modern browsers (Chrome 87+, Firefox 78+, Safari 14+).
 
-**Games** — extends base config, bundles `src/index.ts` into `dist/`, injects `game.json` title into the HTML template, serves on port 3000 in dev.
+**Games** — extends base config, bundles `src/index.ts` into `dist/`, injects `game.json` title into the HTML template, serves on port 3000 in dev. A second variant, `game-react.config.ts`, layers in TSX support (swc parser + react/automatic runtime) for games that use React for UI — wired in via `templates/game-react/`.
 
 **Wrapper** — extends base config, runs `generateGamesMeta` and `copyGameIcons` scripts before bundling, resolves `@gamesMeta` alias to the generated `meta.json`, copies all game `dist/` folders and public assets into `build/`, serves on port 3001 in dev.
 
@@ -46,8 +46,12 @@ JSON schemas for `game.json` and `wrapper.json`. Used for editor validation.
 
 ### TSConfig
 
-Four configs: `game` (strict mode), `engine` (relaxed — no strict null checks, no implicit any), `wrapper`, and `package` (for library packages). All include the shared `global.d.ts` types.
+Five configs: `game` (strict mode), `game-react` (extends `game`, adds `jsx: react-jsx` and react/react-dom types — for the `game-react` template), `engine` (relaxed — no strict null checks, no implicit any), `wrapper`, and `package` (for library packages). All include the shared `global.d.ts` types.
 
 ### Types
 
-`global.d.ts` declares globals available in all subprojects: `__DEV__` (boolean), `root` (div), `canvas` (canvas element).
+`global.d.ts` declares globals available in all subprojects: `__DEV__` (boolean), `root` (div), `canvas` (canvas element), `uiRoot` (div used as the React mount point in the `game-react` template).
+
+### HTML
+
+`game.index.html` is the per-game template. Provides `<canvas id="canvas">` for Pixi, `<div id="uiRoot">` for the React overlay (full-screen, `pointer-events: none` so children opt back in), and a `--tweakpane-reserved` CSS variable so any UI anchored to the top-right can shift left of the debug panel.
