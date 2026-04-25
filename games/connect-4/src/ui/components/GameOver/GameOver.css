@@ -1,0 +1,96 @@
+.gameover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(11, 16, 36, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: gameover-in 0.18s ease-out;
+}
+
+@keyframes gameover-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.gameover__panel {
+  width: 100%;
+  max-width: 380px;
+  padding: 28px 28px 24px;
+  background: var(--c-panel);
+  border: 1px solid var(--c-panel-border);
+  border-top: 4px solid var(--c-violet);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.gameover__panel--w1 { border-top-color: var(--c-accent); }
+.gameover__panel--w2 { border-top-color: var(--c-accent-2); }
+.gameover__panel--w0 { border-top-color: var(--c-violet); }
+
+.gameover__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0b1024;
+}
+
+.gameover__icon--w1 { background: var(--c-accent); }
+.gameover__icon--w2 { background: var(--c-accent-2); }
+.gameover__icon--w0 { background: var(--c-violet); color: #fff; }
+
+.gameover__title {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.gameover__sub {
+  margin: 0 0 22px;
+  color: var(--c-text-muted);
+  font-size: 14px;
+}
+
+.gameover__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gameover__btn {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-panel-border);
+  background: transparent;
+  color: var(--c-text);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.gameover__btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.gameover__btn--primary {
+  background: linear-gradient(135deg, var(--c-accent-3), #5fffd0);
+  color: #0b1024;
+  border-color: transparent;
+}
+
+.gameover__btn--primary:hover {
+  filter: brightness(1.06);
+  background: linear-gradient(135deg, var(--c-accent-3), #5fffd0);
+}
