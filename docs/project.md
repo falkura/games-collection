@@ -34,58 +34,26 @@ bun run assemble
 - **Moon** orchestrates the workspace; each package/game has a `moon.yml` defining its layer, tags, and dependencies.
 - **Bun** is the package manager (workspaces: `packages/*`, `games/*`).
 
-| Directory             | Purpose                                                                                                                 | Build tool |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `packages/engine/`    | PixiJS engine: Application, layout system, load scene, lifecycle, event emitter, asset loading                          | Rslib      |
-| `packages/game-base/` | `GameBase` abstract class, `System` abstract class, `SystemController`, `ControlPanel` (Tweakpane)                      | Rslib      |
-| `packages/wrapper/`   | Launcher, game picker, final production assembler                                                                       | Rspack     |
-| `packages/shared/`    | Shared Rspack/Rslib configs, TypeScript configs, AssetPack configs, JSON schemas, build scripts, global types, HTML/CSS | —          |
-| `games/<name>/`       | Individual games, each with `src/`, `assets/`, and `game.json` config                                                   | Rspack     |
-| `templates/`          | Moon generator templates for new games                                                                                  | —          |
+| Directory           | Purpose                                                                                                                                                 | Build tool |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `packages/engine/`  | PixiJS engine + game framework: `Engine` singleton, `GameController`, `System`, `SystemController`, `ControlPanel`, `Layout`, load scene, asset loading | Rslib      |
+| `packages/wrapper/` | Launcher, game picker, final production assembler                                                                                                       | Rspack     |
+| `packages/shared/`  | Shared Rspack/Rslib configs, TypeScript configs, AssetPack configs, JSON schemas, build scripts, global types, HTML/CSS                                 | —          |
+| `games/<name>/`     | Individual games, each with `src/`, `assets/`, and `game.json` config                                                                                   | Rspack     |
+| `templates/`        | Moon generator templates for new games (`game`, `game-advanced`)                                                                                        | —          |
 
 ## Architecture summary
 
-- **Engine** (`packages/engine/src/Engine.ts`) — singleton owning the PixiJS `Application`, GSAP setup, `LayoutManager`, root `view`, typed event bus, asset loading, and game lifecycle state. Game-agnostic; holds no assets.
-- **Game Base** (`packages/game-base/`) — Wires up `Ticker`, master GSAP `Timeline`, `view`, Tweakpane `Pane`, `SystemController`.
-- **Systems** (`packages/game-base/src/system/System.ts`) — all gameplay code lives here. Modules with lifecycle hooks and auto-provisioned infrastructure.
-- **Wrapper** (`packages/wrapper/`) — launcher with game picker. During `bun run assemble`, aggregates all game builds, engine output, and a generated `@gamesMeta` module into a single deployable bundle.
-
-## Key conventions
-
-- All workspace packages use the `@falkura-pet/` scope.
-- `__DEV__` is a global boolean for dev-only code paths (disabled in prod).
-- `canvas` and `root` are available as globals (see `packages/shared/types/global.d.ts`) — they come from `packages/shared/html/game.index.html`.
-- Default branch: `master`.
-- No test framework or linter is currently configured.
-- Four TypeScript configs in `packages/shared/tsconfig/`: `game` (strict), `engine` (relaxed — no strict nulls / no-implicit-any), `wrapper`, `package` (libraries).
-
-## Game versioning
-
-After modifying a game, bump `version` in `games/<name>/assets/game.json` (semver) — the wrapper's game picker surfaces it. Rules:
-
-- **Patch** (`x.y.Z`) — bug fixes, tweaks, small content/UX changes.
-- **Minor** (`x.Y.0`) — new features, new systems, sizable content additions, anything user-visible.
-- **Major** (`X.0.0`) — only when the user explicitly asks for it. Never bump on your own.
+- **Engine** (`packages/engine/src/Engine.ts`) — singleton owning the PixiJS `Application`, GSAP setup, `Layout`, root view, typed event bus, asset loading, and game lifecycle state. Game-agnostic; holds no assets.
+- **GameController** (`packages/engine/src/game/GameController.ts`) — abstract base every game extends. Wires up `Ticker`, master GSAP `Timeline`, view, Tweakpane `Pane`, and `SystemController`.
+- **Systems** (`packages/engine/src/game/System.ts`) — all gameplay code lives here. Modules with lifecycle hooks and auto-provisioned `game` / `view` / `timeline`.
+- **Wrapper** (`packages/wrapper/`) — launcher with game picker. During `bun run assemble`, aggregates all game builds, and engine output into a single deployable bundle.
 
 ## Build pipeline
 
 - `bun run assemble` = `bun i && moon run '#game:build' -f && moon run games-wrapper:build`.
 - Games build to `games/<name>/dist/`; wrapper copies all game dists + engine output + icons into `/build`.
-- `packages/shared/scripts/gamesMeta.ts` scans `games/*/assets/game.json`, filters disabled games, writes `meta.json` — consumed via the `@gamesMeta` alias in the wrapper.
 - `packages/shared/scripts/copyGameIcons.ts` copies each game's icon into `packages/wrapper/public/icons/`.
-- Rspack configs live in `packages/shared/rspack/`: `base.config.ts` (shared loaders), `engine.config.ts` (Rslib), `game.config.ts` (port 3000, injects `game.json` + `wrapper.json` into the HTML template's `%TITLE%` / `%DESCRIPTION%` / `%OG_IMAGE%` / `%OG_URL%` placeholders for link previews; copies `assets/icon.*` to the game's dist root as a stable OG image), `wrapper.config.ts` (port 3001, runs meta/icon scripts before bundling and replaces the same placeholders on the wrapper's own HTML).
-
-### Link previews & social meta
-
-- For games: values come from `games/<name>/assets/game.json` (`title`, `description`) plus `packages/wrapper/assets/wrapper.json#url` (absolute base URL).
-- For the wrapper: values come from `packages/wrapper/assets/wrapper.json` (`title`, `subtitle`, `url`).
-- Set the absolute deployment URL in `wrapper.json#url` (e.g. `https://games-collection-7ga.pages.dev`); without it, OG URLs fall back to relative paths and crawlers will likely ignore them.
-- The game rspack config also copies `assets/icon.*` to the game dist root as `icon.<ext>` so the OG image URL resolves to a stable (non-cache-busted) path — separate from hashed icon used at runtime.
-
-### Game ordering in the wrapper
-
-- `game.json#order` (number, optional) controls the position in the wrapper list — lower = earlier.
-- Games without `order` sort last, alphabetically by title.
 
 ## Deployment
 
@@ -97,4 +65,4 @@ Hosted on Cloudflare Pages: <http://games-collection-7ga.pages.dev/>
 
 ## Maintainer
 
-Vladyslav (GitHub: `@falkura-pet`). Primary dev environment: Windows 11 with bash shell.
+Vladyslav (GitHub: `https://github.com/falkura`). Primary dev environment: Windows 11 with bash shell.

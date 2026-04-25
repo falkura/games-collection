@@ -11,7 +11,7 @@ build
 .cache
 .assetpack
 .generated
-.claude
+.claude/settings.local.json
 server/dist
 tsconfig.tsbuildinfo
 .vscode/settings.json

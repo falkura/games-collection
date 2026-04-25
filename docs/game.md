@@ -1,371 +1,115 @@
-# Create Game with GameBase & Engine
+# Building a Game
+
+Method signatures, field types, and lifecycle ordering live as JSDoc on the exported classes in `@falkura-pet/engine` (`Engine`, `GameController`, `System`, `SystemController`, `Layout`).
 
 ## Mental model
 
-1. The game class (that extends `GameBase`) is a registry, cross-system coordination and Tweakpane configurator.
-2. Systems are **game modules** — view and/or game logic + lifecycle hooks.
-3. Engine is lifecycle orchestrator, assets and game loader.
-4. Triggering a restart or end-of-round is done through **`Engine.restartGame()` / `Engine.finishGame(data?)`**.
+Three layers:
 
-## Engine
+1. **`Engine`** (singleton, `@falkura-pet/engine`) — boots Pixi, loads assets, owns the lifecycle state machine, exposes the typed event bus. Game-agnostic. Call `Engine.startGame()` / `Engine.finishGame(data)` / `Engine.resetGame()` to drive transitions — never call the `GameController` lifecycle methods directly.
+2. **Game** — your class extending `GameController`. Registers systems in `init()`, coordinates between them, configures the Tweakpane `pane`, owns the master GSAP `timeline`.
+3. **Systems** — subclasses of `System`. All gameplay, visuals, and per-system state live here. Each has its own `view` (a PixiJS `Container`) and nested `timeline`, auto-injected on creation.
 
-`Engine` is a singleton exported from `@falkura-pet/engine` — the monorepo package in `packages/engine/`. It owns the PixiJS `Application`, the layout system, a single typed event bus, the load scene, and the running game's lifecycle state. It is game-agnostic: no gameplay, no assets, no scenes beyond `loadScene` and the root `view`.
+**Communication direction: systems talk to the game; the game talks to other systems.** One system does not reach directly into another — go through a method on the game class. Keeps the dependency graph flat.
 
-```ts
-import { Engine } from "@falkura-pet/engine";
-```
+## System lifecycle
 
-### Lifecycle
+Hooks fire in the order the engine cascades them. Override only the ones you need. **Don't declare methods with reserved hook names** (`build`, `mount`, `unmount`, `start`, `finish`, `reset`, `resize`, `tick`) unless you mean to override them.
 
-Three public methods drive the running game. Each one cascades through `GameBase` → `SystemController` → every system, and emits an event:
+- `build()` — once, when the system is first enabled after registration. Create display objects and attach listener here.
+- `start()` — on `Engine.startGame()`.
+- `finish(data?)` — on `Engine.finishGame(data)`.
+- `reset()` — on `Engine.resetGame()`; restore pre-start state.
+- `resize()` — on every window resize. Reposition and resize display objects here.
+- `tick(ticker)` — every frame. Prefer GSAP tweens over per-frame logic where possible.
+- `mount()` / `unmount()` — when re-enabled / disabled via `systems.enable(System)/disable(System)`.
 
-- `Engine.startGame()` -> `game.start()` + emit(`engine:game-started`) -> `systems.start()` -> each `system.start()`
-- `Engine.restartGame()` -> `game.reset()` + emit(`engine:game-reseted`) -> `systems.reset()` -> each `system.reset()` then `Engine.startGame()`
-- `Engine.finishGame(data?)` -> `game.finish(data)` + emit(`engine:game-finished`, `data`) -> `systems.finish(data)` -> each `system.finish(data)`
+### Enable / disable pattern
 
-Window resizes cascade the same way: `Engine.onResize` → `layout.resize` → `game.resize` → `systems.resize` → each `system.resize`.
+`systems.disable(Ctor)` removes the system's view from the stage, stops its hooks firing, and parks it in a disabled registry. `systems.enable(Ctor)` reverses that — and calls `build()` if the system was disabled on `GameController.init()`. This is how both templates gate the intro screen: all systems disabled except `IntroSystem`, then on tap the game disables intro and enables the gameplay systems before calling `Engine.startGame()`.
 
-**Trigger lifecycle through the Engine API**, not by calling `GameBase` methods directly.
+## Layout
 
-### Public state
+`Layout` (exported from `@falkura-pet/engine`) is a plain helper updated by the engine on every resize.
 
-| Field               | Type                         | Use                                                |
-| ------------------- | ---------------------------- | -------------------------------------------------- |
-| `Engine.app`        | `Application`                | The raw PixiJS application.                        |
-| `Engine.view`       | `LayoutContainer`            | Root container; systems are added under this.      |
-| `Engine.layout`     | `LayoutManager`              | Responsive layout driver [layout.md](./layout.md). |
-| `Engine.events`     | `EventEmitter<EngineEvents>` | Typed engine event bus                             |
-| `Engine.gameConfig` | `IGameConfig`                | The game's `game.json` contents,                   |
+Useful fields:
 
-## GameBase & Systems
+- `Layout.screen` — full viewport rect (`x`, `y`, `width`, `height`, `center`). Use for backgrounds, edge-anchored HUDs, anything that should reach the real window bounds.
+- `Layout.game` — design-resolution rect (`1920×1080` landscape / `1080×1920` portrait by default). Use for gameplay content that must stay inside the fixed-aspect design rect. Over-fit axes are visible around it.
+- `Layout.isPortrait`, `Layout.isMobile` — orientation and device flags for branching sizes/positions.
 
-`GameBase` (from `@falkura-pet/game-base`) is the default implementation of the engine's `GameInstance` interface. Every game extends it. It wires up a PixiJS `Ticker`, a master GSAP `Timeline`, the root `view` (from `Engine.view`), a Tweakpane `Pane`, and a `SystemController` that hosts the game's systems.
+Design target defaults to `1920×1080` landscape; override per game via `Engine.init({ sizeLandscape, sizePortrait })` in `index.ts` if needed.
 
-### GameBase
+### Viewport pattern
 
-All gameplay lives in **systems** — subclasses of `System` under `games/<name>/src/core/`. For a small game, put all the logic in `MainSystem.ts`. For a larger one, split by concern (`BoardSystem`, `InputSystem`, etc.) and register each in your game class:
+Pick one per system:
 
-```ts
-// games/<name>/src/<GameName>.ts
-import { GameBase } from "@falkura-pet/game-base";
-import { BoardSystem } from "./core/BoardSystem";
-import { InputSystem } from "./core/InputSystem";
+- **Full-screen** — use `Layout.screen.*` directly. Default. Backgrounds, HUDs, full-bleed content.
+- **Square arena** — position a container at `Layout.screen.center` with side `Layout.screenMin` (= `1080` by default in either orientation). Eliminates the orientation branch for grids/puzzles/arenas.
+- **Design rect** — use `Layout.game.*` when the layout breaks if the aspect is stretched. Content outside the rect is letterboxed on over-fit axes.
 
-export class MyGame extends GameBase {
-  protected override init(): void {
-    this.systems.add(BoardSystem);
-    this.systems.add(InputSystem);
-  }
-}
-```
+### Rules
 
-#### `GameBase` lifecycle hooks
+- Raw `Container`/`Graphics` children don't re-layout automatically. Reposition in `System.resize()`.
+- Branch on `Layout.isMobile` for font sizes (mobile needs bigger text — both templates demonstrate this in `resize()`).
 
-The engine calls these through its cascade. Override with `override` so TypeScript catches typos.
+## Game lifecycle
 
-| Hook            | When                                                    | Default                                                                             |
-| --------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `init()`        | Once, in the constructor.                               | Add systems systems.                                                                |
-| `start()`       | On `Engine.startGame` and after reset on `restartGame`. | Starts ticker, plays timeline, starts all systems.                                  |
-| `finish(data?)` | On `Engine.finishGame(data)`.                           | Stops ticker, clears child timelines, finishes all systems.                         |
-| `reset()`       | On `Engine.restartGame`, before `start`.                | Stops ticker, resets ControlPanel, re-enables disabled systems, resets all systems. |
-| `resize()`      | On window resize.                                       | Delegates to `systems.resize()`.                                                    |
-
-### `System` — where gameplay and visual lives
-
-A `System` is a self-contained module with its own view, timeline, and lifecycle hooks. Every system has a static `MODULE_ID` for registration and lookup.
-
-#### Auto-provisioned fields
-
-When `SystemController` adds a system, it injects:
-
-| Field      | Type                 | Notes                                                                                                                                       |
-| ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `game`     | `T extends GameBase` | Typed reference to the owning game. Use `this.game.systems.get(OtherSystem)` to reach other systems.                                        |
-| `view`     | `LayoutContainer`    | Full-screen (`sw × sh`) container already added to `this.game.view`, z-indexed by registration order. Add your display objects as children. |
-| `timeline` | `GSAPTimeline`       | A nested GSAP timeline. Tween against it — the game plays/clears it automatically.                                                          |
-| `enabled`  | `boolean`            | Flipped by `systems.enable/disable`. Disabled systems skip ticks and lifecycle hooks.                                                       |
-
-#### Lifecycle hooks — reserved names
-
-The `SystemController` calls these hooks by name. **Do not declare methods with these names unless you mean to override the hook** — even `private` shadowing silently breaks the lifecycle.
-
-- `start()`
-- `finish(data?)`
-- `reset()`
-- `resize()`
-- `tick(ticker)` — every frame
-
-#### Enabling / disabling systems
-
-`systems.disable(Ctor | MODULE_ID)` removes a system's view from the stage and parks it in a disabled registry — its hooks stop firing. `systems.enable(...)` reverses that. `reset()` re-enables everything before cascading.
-
-#### When a system grows — decompose it
-
-Once a `System` file passes ~300 lines or grows more than one reason to change, split it. A system should orchestrate; real behavior belongs in plain classes it owns.
-
-Pull those concerns into sibling folders next to `core/`.
-
-Guidelines that keep this clean:
-
-- **Entity classes own their view and body.** `new Ship(x, y, world, parent)` attaches to the stage; `ship.destroy()` removes both view and body. The system's `reset()` becomes a loop of `destroy()` calls, not a pile of per-type cleanup.
-- **The system is the orchestrator.** It holds entity arrays, calls `entity.update(dt)` in the right order, checks game-over conditions, and fires `Engine.finishGame()`. No draw code, no physics math, no entity-specific branching.
-
-## Game implementation
-
-- Every game's entry file (`games/<name>/src/index.ts`) runs the same boot sequence.
-- Prefer **systems talk to the game, the game talks to other systems**.
-- When specifying colors in game code, use **hex string representation** - `"#ffffff"`.
-
-### Passing data through the systems
+Drive lifecycle via the engine API:
 
 ```ts
-// In a gameplay system:
-this.game.puzzleSolved({score: 80});
-
-// In the game
-onSolved(data) {
-  const hud = this.systems.get(OverlaySystem);
-  this.systems.enable(OverlaySystem);
-  hud.puzzleSolved(data);
-}
-
-// In the OverlaySystem:
-puzzleSolved({score}) {
-  this.showWin(score);
-}
+Engine.finishGame({ win: true, score });
+Engine.resetGame(); // restart = reset then start
+Engine.startGame();
 ```
 
-### Good practice
+## Passing data between systems
 
-Each game needs intro page, most needs overlay/HUD. You can use `games/connect-dots/` systems for examples of it.
+Systems reach the game via `this.game`; the game reaches other systems via `this.systems.get(OtherSystem)`. Example (cross-reference [`game-advanced` `Game.ts`](../templates/game-advanced/src/Game.ts.tera) for the real shape):
 
-## Game Assets
+```ts
+// In MainSystem:
+this.game.updateHUD({ levelNumber: 2, levelCount: 5, ... });
 
-Each game has its own `assets/` folder. Anything you drop into `assets/` ends up in the built bundle. All assets loads automatically by engine.
+// In Game:
+updateHUD(data: IHUDData) {
+  this.systems.get(HUDSystem).update(data);
+}
 
-### Accessing at runtime
+// In HUDSystem:
+update(data: IHUDData) { this.textField.text = ...; }
+```
 
-`Engine.loadAssets()` loads the manifest bundle during the boot sequence, so by the time `initGame()` runs everything is cached. Keys are paths relative to the `assets/` folder. Read with PixiJS `Assets.get(key)`. Type-cast with a generic on `Assets.get<T>` to get autocompletion:
+## Assets
+
+Each game's `assets/` folder is bundled automatically. `Engine` loads the manifest during boot, so by the time `build()` runs everything is cached.
 
 ```
 games/<name>/assets/
-  game.json              // autogenerated
-  icon.png               // autogenerated
+  game.json          // generated
+  icon.png           // generated
   sprites/player.png
 ```
 
 ```ts
 import { Assets } from "pixi.js";
-const playerTexture = Assets.get("sprites/player.png");
+const texture = Assets.get<Texture>("sprites/player.png");
 ```
 
-## Events
+Keys are paths relative to `assets/`.
 
-`Engine.events` is a single typed `EventEmitter<EngineEvents>` shared by the engine, the game, and the wrapper. The engine emits lifecycle events automatically — you can listen from any system, the ControlPanel, or wrapper UI.
+## Game versioning
 
-```ts
-import { Engine } from "@falkura-pet/engine";
+After modifying a game, bump `version` in `games/<name>/assets/game.json` (semver) — the wrapper's game picker surfaces it. Rules:
 
-Engine.events.on("engine:game-finished", (data) => {
-  // show the win/lose overlay
-});
-```
+- **Patch** (`x.y.Z`) — bug fixes, tweaks, small content/UX changes.
+- **Minor** (`x.Y.0`) — new features, new systems, sizable content additions, anything user-visible.
+- **Major** (`X.0.0`) — only when the user explicitly asks for it. Never bump on your own.
 
-### Event catalogue
+## Conventions
 
-| Event                  | Payload      | Emitted by                                                 |
-| ---------------------- | ------------ | ---------------------------------------------------------- |
-| `engine:game-started`  | —            | `Engine.startGame()` before `game.start()` cascade.        |
-| `engine:game-finished` | `data?: any` | `Engine.finishGame(data)` after the cascade.               |
-| `engine:game-reseted`  | —            | `Engine.resetGame()` (called internally by `restartGame`). |
-
-### Firing engine events the right way
-
-Drive lifecycle transitions **through the public engine API**, not by hand:
-
-```ts
-Engine.restartGame();
-Engine.finishGame({ score, moves });
-```
-
-Listeners everywhere rely on the events.
-
-### Passing data to the finish event
-
-`Engine.finishGame(data)` forwards `data` on the event. A typical win/lose flow:
-
-```ts
-// In a gameplay system:
-Engine.finishGame({ won: true, score: this.score, level: this.level });
-
-// In the HUD system:
-Engine.events.on("engine:game-finished", (data) => {
-  if (data.won) this.showWinOverlay(data);
-  else this.showLoseOverlay(data);
-});
-```
-
-### Cleaning up listeners
-
-Listeners attached in `start()` fire again on every `Engine.restartGame()` — stack them naively and you'll wire duplicate handlers. Patterns that work: **`built` flag** — subscribe once in `start()` guarded by a boolean; reset state in `reset()`.
-
-## Layout
-
-The layout system is a custom responsive layer on top of PixiJS — **not** `@pixi/layout`. Source lives in `packages/engine/src/layout/`. Two pieces do the work: `LayoutManager` (singleton on `Engine.layout`) and `LayoutContainer` (a `Container` subclass you place in the scene graph).
-
-Games are authored in **virtual pixels**. You declare sizes and positions in expressions like `"sw/2"` or `"sh-100"`, and the layout system re-evaluates them on every resize and orientation flip.
-
-### `LayoutContainer`
-
-A `Container` subclass that accepts a **layout config** and re-evaluates it on resize and on being added to the stage. You build your whole UI out of these.
-
-### Config keys
-
-| Key        | Type                          | Notes                                                           |
-| ---------- | ----------------------------- | --------------------------------------------------------------- |
-| `x`, `y`   | `string \| number`            | Evaluated as an expression (see below) against the layout vars. |
-| `width`    | `string \| number`            | Evaluated; also written to `view` if one is attached.           |
-| `height`   | `string \| number`            | Same as `width`.                                                |
-| `zIndex`   | `number`                      | Standard PixiJS zIndex — parent has `sortableChildren = true`.  |
-| `view`     | `Container`                   | Optional inner child. `width`/`height` are forwarded to it.     |
-| `onResize` | `({ manager, vars }) => void` | Custom callback, runs after built-in handlers.                  |
-| `portrait` | `Partial<LayoutConfig>`       | Overrides applied when `LayoutManager.isPortrait` is true.      |
-
-### Layout expressions
-
-Strings are evaluated as math expressions with these variables:
-
-| Var    | Meaning                                                       |
-| ------ | ------------------------------------------------------------- |
-| `sw`   | Screen width (virtual).                                       |
-| `sh`   | Screen height (virtual).                                      |
-| `smax` | `Math.max(sw, sh)`.                                           |
-| `gx`   | Game rect X (game offset inside screen on the over-fit axis). |
-| `gy`   | Game rect Y.                                                  |
-| `gw`   | Game rect width.                                              |
-| `gh`   | Game rect height.                                             |
-
-Anything valid in a JS math expression works: `"sw/2"`, `"sh - 100"`, `"gx + gw"`, `"smax * 0.8"`, `"(sw - 800) / 2"`. Numeric literals (`200`) pass through unchanged.
-
-### Where this fits
-
-- `Engine.view` — the root `LayoutContainer` (`sw × sh`) that hosts the active game.
-- Every `System` gets its own full-screen `LayoutContainer` at `this.view`, z-indexed by registration order.
-- Add your display objects as children of `this.view` inside each system.
-- For a child that should respond to orientation changes or layout vars, make it a `LayoutContainer` too.
-
-### Screen vs game rect — which do I use?
-
-- **`screen`** covers the full viewport. Use it for full-bleed backgrounds, edge-anchored HUDs, and anything that should reach the actual window bounds.
-- **`game`** is your declared virtual play area. Use it for gameplay content that must stay inside the design-intent rect regardless of aspect ratio. Content outside the game rect is visible on over-fit axes (letterboxing in reverse) — great for decorative HUD, bad for anything critical.
-
-### Choosing a gameplay viewport
-
-Pick one of these patterns per system and stick to it.
-
-### 1. Full-screen (`sw × sh`)
-
-Default — `this.view` is already `sw × sh`. Use when gameplay is aspect-agnostic: procedural spaces, full-bleed HUDs, backgrounds that should reach the real edges.
-
-```ts
-const { width, height } = Engine.layout.screen;
-// place stuff with `width`/`height`
-```
-
-### 2. Square viewport (`smin × smin`)
-
-Use when gameplay is **square or orientation-agnostic** — grids, puzzles, arenas. One container, same shape in both orientations, no per-orientation branching:
-
-```ts
-const stage = new LayoutContainer({
-  x: "sw/2 - smin/2",
-  y: "sh/2 - smin/2",
-  width: "smin",
-  height: "smin",
-});
-this.view.addChild(stage);
-// Work in 0..smin local coords inside stage — it stays centered and square.
-```
-
-With the default engine config (`1920×1080` landscape / `1080×1920` portrait), `smin = 1080` in either orientation. Building gameplay against a fixed `1080×1080` reference and dropping it into this container eliminates the orientation branch for the gameplay area. HUD and background live outside the square at `sw × sh`.
-
-### 3. Game rect (`gw × gh` = `1920×1080`)
-
-Use when the layout is **authored for a specific aspect ratio** and breaks if stretched. Work in `Engine.layout.game` coords; the layout scales the rect to fit and letterboxes on over-fit axes. Good for cutscenes, fixed-camera 16:9 games; bad for puzzles where you want the HUD to reach the screen edges.
-
-### Tips
-
-- **Prefer `LayoutContainer` over `System.resize()` math** when the thing you're positioning doesn't need per-frame logic. Layout expressions are cheaper to read and maintain.
-- **Use `onResize` on a `LayoutContainer`** for one-offs like changing a `Text` fontSize by orientation — keeps the state out of a full `System.resize()` override.
-- **Never hardcode `1920` / `1080`** in gameplay code. Derive bounds from `Engine.layout.screen`, `Engine.layout.game`, or your local container's `width/height`. Hardcoded numbers break the moment the virtual size changes.
-- **Full-bleed backgrounds use `screen.width/height`**, not `game.*`, so they reach the real edges on over-fit axes.
-
-### Examples
-
-```ts
-import { LayoutContainer, Engine } from "@falkura-pet/engine";
-import { Graphics } from "pixi.js";
-
-class MySystem extends System<MyGame> {
-  private build() {
-    // Multiple different texts can be packed into HTMLText
-    this.text = new HTMLText({
-      text:
-        "<t1>BOIDS SIMULATION</t1><br><br>" + "<t2>TAP ANYWHERE TO START</t2>",
-      resolution: Engine.textResolution, // this line is required for correct representation of text
-      anchor: 0.5,
-    });
-
-    this.view.addChildWithLayout(this.text, {
-      x: 30, // 30 px from left
-      y: "sh - 80", // 80 px frpm screen bottom
-      width: "sw - 60",
-      height: 60,
-      portrait: {
-        y: "sh - 120",
-        height: 100,
-      },
-      zIndex: 2,
-      onResize({ manager, view }) {
-        view.style.fontSize = manager.isMobile ? 46 : 32;
-        view.style.tagStyles = {
-          t1: {
-            fill: C.title,
-            fontWeight: "bold",
-            fontSize: manager.isMobile ? 100 : 74,
-          },
-          t2: {
-            fontSize: manager.isMobile ? 46 : 32,
-            fill: C.accent,
-            fontWeight: "bold",
-          },
-        };
-      },
-    });
-  }
-}
-```
-
-There's no flexbox — compose rows with explicit math.
-
-```ts
-const makeButton = (label: string, index: number, total: number) => {
-  const w = 180,
-    gap = 20;
-  const rowWidth = total * w + (total - 1) * gap;
-  return new LayoutContainer({
-    x: `sw/2 - ${rowWidth / 2} + ${index * (w + gap)}`,
-    y: "sh - 100",
-    width: w,
-    height: 60,
-    portrait: { y: `sh - ${100 + index * 80}` }, // stack vertically in portrait
-  });
-};
-```
-
-### Gotchas
-
-- **Don't nest huge expressions** — prefer doing the math in `onResize` for anything complex. Expressions are parsed each resize.
-- **Child `Container`s aren't re-evaluated** — only `LayoutContainer`s are. Raw `Container`/`Graphics` children stay at whatever coordinates you gave them; update them in `System.resize()`.
-- **Portrait config is a partial overlay** — you don't need to repeat unchanged keys.
+- Colors in game code use hex strings: `"#ffffff"`.
+- `__DEV__` is a global boolean — dev-only code paths are stripped in prod.
+- `HTMLText` / `BitmapText` need `resolution: Engine.textResolution` for sharpness.
+- Intro shows once, on game start only. Both templates do this by enabling only `IntroSystem` in `init()` and disabling it in `onPlay()`.
+- Past ~300 lines or more than one reason to change, split it. Guidelines:
