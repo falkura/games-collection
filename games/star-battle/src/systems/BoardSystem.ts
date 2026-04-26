@@ -44,6 +44,7 @@ export class BoardSystem extends System<StarBattle> {
   private boardLayer: Container;
   private boardShadowLayer: Graphics;
   private cellsLayer: Graphics;
+  private highlightLayer: Graphics;
   private bordersLayer: Graphics;
   private gridLayer: Graphics;
   private marksLayer: Container;
@@ -57,6 +58,12 @@ export class BoardSystem extends System<StarBattle> {
   private displayMarks: Mark[][] = [];
   /** Conflict cells from the last showConflicts call — used to colour conflict stars. */
   private conflictCells: Set<string> = new Set();
+  /** Marks snapshot from the last showConflicts call — needed for resize redraw. */
+  private lastConflictMarks: Mark[][] = [];
+  /** Starless region ids from the last showStarlessRegions call — needed for resize. */
+  private lastStarlessIds: Set<number> = new Set();
+  /** Pending delay timer for starless highlight. */
+  private starlessTimer: ReturnType<typeof setTimeout> | null = null;
 
   private cellSize = 0;
   private boardX = 0;
@@ -86,6 +93,10 @@ export class BoardSystem extends System<StarBattle> {
     this.bordersLayer = new Graphics();
     this.bordersLayer.eventMode = "none";
     this.boardLayer.addChild(this.bordersLayer);
+    
+    this.highlightLayer = new Graphics();
+    this.highlightLayer.eventMode = "none";
+    this.boardLayer.addChild(this.highlightLayer);
 
     this.conflictLayer = new Graphics();
     this.conflictLayer.eventMode = "none";
@@ -208,21 +219,202 @@ export class BoardSystem extends System<StarBattle> {
   /** Highlight conflicting cells. Stars get a red star graphic; non-star cells get a red overlay. */
   showConflicts(cells: Set<string>, marks: Mark[][] = []) {
     this.conflictCells = cells;
+    this.lastConflictMarks = marks;
+    this.redrawConflicts();
+  }
+
+  private redrawConflicts() {
     this.conflictLayer.clear();
     gsap.killTweensOf(this.conflictLayer.scale);
     this.conflictLayer.alpha = 1;
     this.conflictLayer.scale.set(1);
-    if (cells.size === 0) return;
+    if (this.conflictCells.size === 0) return;
     const cs = this.cellSize;
-    for (const k of cells) {
+    for (const k of this.conflictCells) {
       const [rs, ccs] = k.split(",");
       const r = Number(rs);
       const c = Number(ccs);
       // Star cells are shown as red stars — no overlay needed.
-      if (marks[r][c] === 2) continue;
+      if (this.lastConflictMarks[r]?.[c] === 2) continue;
       const cx = c * cs + cs / 2;
       const cy = r * cs + cs / 2;
       this.drawConflictSquare(cx, cy, cs);
+    }
+  }
+
+  /**
+   * Highlight regions that are fully auto-crossed but have no star yet.
+   * Pass an empty set to clear. Highlight appears after a 2-second delay.
+   */
+  showStarlessRegions(starlessIds: Set<number>) {
+    // Cancel any pending timer.
+    if (this.starlessTimer !== null) {
+      clearTimeout(this.starlessTimer);
+      this.starlessTimer = null;
+    }
+
+    // Always update stored ids so resize has the latest state.
+    this.lastStarlessIds = starlessIds;
+
+    // Clear immediately when no starless regions.
+    if (starlessIds.size === 0) {
+      gsap.killTweensOf(this.highlightLayer);
+      this.highlightLayer.clear();
+      this.highlightLayer.alpha = 1;
+      return;
+    }
+
+    // Delay the actual draw by 2 seconds.
+    this.starlessTimer = setTimeout(() => {
+      this.starlessTimer = null;
+      this.redrawStarlessRegions();
+    }, 2000);
+  }
+
+  private redrawStarlessRegions() {
+    gsap.killTweensOf(this.highlightLayer);
+    this.highlightLayer.clear();
+    this.highlightLayer.alpha = 0;
+
+    if (this.lastStarlessIds.size === 0) return;
+
+    const regions = this.game.getRegions();
+    const cs = this.cellSize;
+    const borderW = Math.max(2.5, cs * 0.07);
+    const r2 = Math.max(4, cs * 0.13); // corner radius for the path
+
+    // White tint fill — plain rect per cell.
+    for (let r = 0; r < this.size; r++) {
+      for (let c = 0; c < this.size; c++) {
+        if (!this.lastStarlessIds.has(regions[r][c])) continue;
+        this.highlightLayer
+          .rect(c * cs, r * cs, cs, cs)
+          .fill({ color: 0xffffff, alpha: 0.22 });
+      }
+    }
+
+    // Per-region: build one continuous exterior path with rounded corners.
+    for (const gId of this.lastStarlessIds) {
+      this.drawRegionOutlinePath(gId, regions, cs, borderW, r2);
+    }
+
+    // Fade in then pulse.
+    gsap.to(this.highlightLayer, {
+      alpha: 1,
+      duration: 0.4,
+      ease: "power2.out",
+      onComplete: () => {
+        gsap.to(this.highlightLayer, {
+          alpha: 0.35,
+          duration: 0.7,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
+      },
+    });
+  }
+
+  /**
+   * Walk the exterior boundary of a region as a single closed path.
+   * Edges are collected from the grid; corners are rounded via quadraticCurveTo.
+   */
+  private drawRegionOutlinePath(
+    gId: number,
+    regions: number[][],
+    cs: number,
+    borderW: number,
+    r2: number,
+  ) {
+    // Collect directed exterior half-edges: [x1,y1 -> x2,y2] in pixel space.
+    // Convention: walking clockwise around the region, so interior is on the left.
+    // Each grid edge is a segment from a corner to adjacent corner.
+    type Edge = [number, number, number, number]; // x1 y1 x2 y2
+    const edges: Edge[] = [];
+    const n = this.size;
+
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        if (regions[r][c] !== gId) continue;
+        const x = c * cs, y = r * cs;
+        // top edge (exterior if r=0 or cell above is different region) → left-to-right
+        if (r === 0 || regions[r - 1][c] !== gId)
+          edges.push([x, y, x + cs, y]);
+        // right edge → top-to-bottom
+        if (c === n - 1 || regions[r][c + 1] !== gId)
+          edges.push([x + cs, y, x + cs, y + cs]);
+        // bottom edge → right-to-left
+        if (r === n - 1 || regions[r + 1][c] !== gId)
+          edges.push([x + cs, y + cs, x, y + cs]);
+        // left edge → bottom-to-top
+        if (c === 0 || regions[r][c - 1] !== gId)
+          edges.push([x, y + cs, x, y]);
+      }
+    }
+
+    if (edges.length === 0) return;
+
+    // Chain edges into one or more closed loops by linking end-to-start.
+    const key = (x: number, y: number) => `${x},${y}`;
+    const edgeMap = new Map<string, Edge[]>();
+    for (const e of edges) {
+      const k = key(e[0], e[1]);
+      if (!edgeMap.has(k)) edgeMap.set(k, []);
+      edgeMap.get(k)!.push(e);
+    }
+
+    const used = new Set<Edge>();
+    const loops: Array<Array<[number, number]>> = [];
+
+    for (const startEdge of edges) {
+      if (used.has(startEdge)) continue;
+      const loop: Array<[number, number]> = [];
+      let cur = startEdge;
+      while (!used.has(cur)) {
+        used.add(cur);
+        loop.push([cur[0], cur[1]]);
+        const nexts = edgeMap.get(key(cur[2], cur[3]));
+        if (!nexts) break;
+        const next = nexts.find((e) => !used.has(e));
+        if (!next) break;
+        cur = next;
+      }
+      if (loop.length > 0) loops.push(loop);
+    }
+
+    // Draw each loop as a rounded path.
+    for (const pts of loops) {
+      const n2 = pts.length;
+      if (n2 < 2) continue;
+
+      // Helper: point along segment p→q at distance r2 from p.
+      const lerp = (
+        [ax, ay]: [number, number],
+        [bx, by]: [number, number],
+        t: number,
+      ): [number, number] => [ax + (bx - ax) * t, ay + (by - ay) * t];
+      const dist = ([ax, ay]: [number, number], [bx, by]: [number, number]) =>
+        Math.sqrt((bx - ax) ** 2 + (by - ay) ** 2);
+
+      // Start half-way into the first segment so we can use quadraticCurveTo at each corner.
+      const firstSeg = dist(pts[0], pts[1 % n2]);
+      const tStart = Math.min(0.5, r2 / Math.max(firstSeg, 1));
+      const startPt = lerp(pts[0], pts[1 % n2], tStart);
+      this.highlightLayer.moveTo(startPt[0], startPt[1]);
+
+      for (let i = 1; i <= n2; i++) {
+        const corner = pts[i % n2];
+        const next = pts[(i + 1) % n2];
+        const segLen = dist(corner, next);
+        const t = Math.min(0.5, r2 / Math.max(segLen, 1));
+        const endPt = lerp(corner, next, t);
+        // Line to just before the corner, then curve around it.
+        this.highlightLayer.lineTo(corner[0], corner[1]);
+        this.highlightLayer.quadraticCurveTo(corner[0], corner[1], endPt[0], endPt[1]);
+      }
+
+      this.highlightLayer.closePath();
+      this.highlightLayer.stroke({ color: 0x000000, width: borderW, alpha: 0.85, join: "round" });
     }
   }
 
@@ -244,12 +436,22 @@ export class BoardSystem extends System<StarBattle> {
     // Dark border.
     this.conflictLayer
       .roundRect(cx - half, cy - half, half * 2, half * 2, radius)
-      .stroke({ color: PALETTE_STAR_CONFLICT_BORDER, width: borderW, alpha: 0.9 });
+      .stroke({
+        color: PALETTE_STAR_CONFLICT_BORDER,
+        width: borderW,
+        alpha: 0.9,
+      });
 
     // Upper-left highlight tint — mirrors the star's sheen.
     const hHalf = half * 0.55;
     this.conflictLayer
-      .roundRect(cx - half * 0.85, cy - half * 0.85, hHalf * 2, hHalf * 2, radius * 0.7)
+      .roundRect(
+        cx - half * 0.85,
+        cy - half * 0.85,
+        hHalf * 2,
+        hHalf * 2,
+        radius * 0.7,
+      )
       .fill({ color: PALETTE_STAR_CONFLICT_HIGHLIGHT, alpha: 0.35 });
   }
 
@@ -285,11 +487,23 @@ export class BoardSystem extends System<StarBattle> {
     this.layout();
     this.drawAll();
     this.repositionMarks();
+    this.redrawConflicts();
+    this.redrawStarlessRegions();
   }
 
   override reset() {
     this.clearMarkSprites();
     this.conflictLayer.clear();
+    gsap.killTweensOf(this.highlightLayer);
+    this.highlightLayer.clear();
+    this.highlightLayer.alpha = 1;
+    this.conflictCells = new Set();
+    this.lastConflictMarks = [];
+    if (this.starlessTimer !== null) {
+      clearTimeout(this.starlessTimer);
+      this.starlessTimer = null;
+    }
+    this.lastStarlessIds = new Set();
     this.displayMarks = Array.from(
       { length: this.size },
       () => Array(this.size).fill(0) as Mark[],

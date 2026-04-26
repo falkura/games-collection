@@ -87,6 +87,7 @@ export class StarBattle extends GameController {
     board.loadPuzzle(this.puzzle.size);
     board.setInteractive(true);
     board.showConflicts(new Set());
+    board.showStarlessRegions(new Set());
     gameState.set({
       screen: "playing",
       stars: 0,
@@ -130,6 +131,9 @@ export class StarBattle extends GameController {
     const next: Mark = isAutoCross ? 2 : current === 0 ? 1 : current === 1 ? 2 : 0;
     this.marks[row][col] = next;
 
+    // Hide the starless-region highlight immediately on any tap.
+    this.systems.get(BoardSystem).showStarlessRegions(new Set());
+
     this.refreshBoard();
 
     if (isSolved(this.marks, this.puzzle.regions, this.puzzle.starsPer)) {
@@ -157,6 +161,7 @@ export class StarBattle extends GameController {
     const conflicts = findConflicts(this.marks, regions, starsPer);
     board.setMarks(display, conflicts);
     board.showConflicts(conflicts, this.marks);
+    board.showStarlessRegions(this.computeStarlessRegions(display, regions));
 
     gameState.set({ stars: this.countStars() });
   }
@@ -189,6 +194,7 @@ export class StarBattle extends GameController {
     board.loadPuzzle(this.puzzle.size);
     board.setInteractive(true);
     board.showConflicts(new Set());
+    board.showStarlessRegions(new Set());
 
     gameState.set({
       screen: "playing",
@@ -200,6 +206,25 @@ export class StarBattle extends GameController {
       paused: false,
     });
     board.setHidden(false);
+  }
+
+  /** Returns region ids that have no star, but only when the board is fully covered (no empty cells in display). */
+  private computeStarlessRegions(display: Mark[][], regions: number[][]): Set<number> {
+    const n = display.length;
+    // Only activate when every cell is a cross or star (nothing empty).
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++)
+        if (display[r][c] === 0) return new Set();
+
+    const hasStarInRegion = new Set<number>();
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++)
+        if (display[r][c] === 2) hasStarInRegion.add(regions[r][c]);
+
+    const starless = new Set<number>();
+    for (let g = 0; g < n; g++)
+      if (!hasStarInRegion.has(g)) starless.add(g);
+    return starless;
   }
 
   private countStars(): number {
