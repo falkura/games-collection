@@ -155,7 +155,7 @@
      zero-width text node sitting at the flex extremes) align with the
      thumb's travel extremes. */
   padding: 0 var(--thumb-radius);
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 11px;
   font-weight: 600;
   color: var(--c-text-muted);
@@ -163,9 +163,6 @@
 }
 
 .menu__ticks span {
-  /* Zero width with centered text → the visual center of each label sits
-     exactly at the flex distribution point. */
-  width: 0;
   text-align: center;
   white-space: nowrap;
   overflow: visible;

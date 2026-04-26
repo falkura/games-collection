@@ -1,8 +1,9 @@
 import { Container, Graphics, FederatedPointerEvent, Rectangle } from "pixi.js";
 import gsap from "gsap";
-import { Layout, System } from "@falkura-pet/engine";
+import { Layout } from "@falkura-pet/engine";
 import { StarBattle } from "../StarBattle";
 import { events, Events, Mark } from "../events";
+import { System } from "./System";
 
 const PALETTE_BG = "#0b1024";
 const PALETTE_GRID_LINE = "#1f2647";

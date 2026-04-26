@@ -9,6 +9,8 @@ import {
   generatePuzzle,
   isSolved,
 } from "./logic/puzzle";
+import { SystemController } from "./systems/SystemController";
+import { Container } from "pixi.js";
 
 export class StarBattle extends GameController {
   private puzzle: Puzzle | null = null;
@@ -17,7 +19,12 @@ export class StarBattle extends GameController {
   private elapsed = 0;
   private timerActive = false;
 
-  override init(): void {
+  systems: SystemController;
+
+  constructor(config: IGameConfig, view: Container) {
+    super(config, view);
+    this.systems = new SystemController(this);
+
     this.systems.add(BoardSystem);
     this.systems.disableAll();
 
@@ -36,6 +43,29 @@ export class StarBattle extends GameController {
         gameState.set({ elapsed: next });
       }
     });
+
+    this.systems.build();
+    this.ticker.add((ticker) => this.systems.tick(ticker));
+  }
+
+  public start() {
+    super.start();
+    this.systems.start();
+  }
+
+  public finish(data: any) {
+    super.finish(data);
+    this.systems.finish(data);
+  }
+
+  public reset() {
+    super.reset();
+    this.systems.reset();
+  }
+
+  public resize() {
+    super.resize();
+    this.systems.resize();
   }
 
   getRegions(): number[][] {
@@ -124,7 +154,10 @@ export class StarBattle extends GameController {
       this.systems.enable(BoardSystem);
       Engine.startGame();
     }
-    this.puzzle = generatePuzzle(this.puzzleConfig.size, this.puzzleConfig.starsPer);
+    this.puzzle = generatePuzzle(
+      this.puzzleConfig.size,
+      this.puzzleConfig.starsPer,
+    );
     this.marks = emptyMarks(this.puzzle.size);
     this.elapsed = 0;
     this.timerActive = true;
