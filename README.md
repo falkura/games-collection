@@ -31,6 +31,8 @@ Wrapper can be developed with `moon run games-wrapper:dev`. It will be served at
 
 Run `bun run assemble` to assemble application. It will be assembled to `/build` folder in the project root.
 
+After build you can run `bun run preview` to preview project build locally.
+
 ## Project Structure
 
 | Directory                                                   | Description                                            |
