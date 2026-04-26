@@ -9,7 +9,9 @@ import { Engine } from "@falkura-pet/engine";
 import config from "../assets/game.json";
 import { {{ component_name }} } from "./{{ component_name }}";
 
-Engine.init({
+await Engine.init({
   gameConfig: config,
   gameCtor: {{ component_name }},
 });
+
+Engine.startGame();

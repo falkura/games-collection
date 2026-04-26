@@ -5,10 +5,7 @@ to: src/{{ component_name }}.ts
 ---
 
 import { GameController } from "@falkura-pet/engine";
-import { MainSystem } from "./systems/MainSystem";
 
 export class {{ component_name }} extends GameController {
-  override init(): void {
-    this.systems.add(MainSystem);
-  }
+
 }
