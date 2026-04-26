@@ -123,7 +123,11 @@ export class StarBattle extends GameController {
     if (!this.puzzle) return;
     if (gameState.get().paused) return;
     const current = this.marks[row][col];
-    const next: Mark = current === 0 ? 1 : current === 1 ? 2 : 0;
+    const { regions, starsPer } = this.puzzle;
+    const autoCells = computeAutoCrosses(this.marks, regions, starsPer);
+    const isAutoCross = current === 0 && autoCells.has(`${row},${col}`);
+    // Auto-cross cells skip manual cross and go straight to star.
+    const next: Mark = isAutoCross ? 2 : current === 0 ? 1 : current === 1 ? 2 : 0;
     this.marks[row][col] = next;
 
     this.refreshBoard();
