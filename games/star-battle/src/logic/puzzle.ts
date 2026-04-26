@@ -247,18 +247,97 @@ export function findConflicts(
     }
   }
 
-  const flagOverflow = (groups: Array<Array<[number, number]>>) => {
-    for (const g of groups) {
-      if (g.length > starsPer) {
-        for (const [r, c] of g) conflicts.add(key(r, c));
+  // Row overflow: flag the entire row.
+  for (let r = 0; r < n; r++) {
+    if (rowStars[r].length > starsPer) {
+      for (let c = 0; c < n; c++) conflicts.add(key(r, c));
+    }
+  }
+  // Column overflow: flag the entire column.
+  for (let c = 0; c < n; c++) {
+    if (colStars[c].length > starsPer) {
+      for (let r = 0; r < n; r++) conflicts.add(key(r, c));
+    }
+  }
+  // Region overflow: flag every cell in the offending region.
+  for (let g = 0; g < n; g++) {
+    if (regionStars[g].length > starsPer) {
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          if (regions[r][c] === g) conflicts.add(key(r, c));
+        }
       }
     }
-  };
-  flagOverflow(rowStars);
-  flagOverflow(colStars);
-  flagOverflow(regionStars);
+  }
 
   return conflicts;
+}
+
+/**
+ * Compute the cells that should be auto-crossed based on currently placed
+ * stars: every cell in the same row/col/region (when that group has reached
+ * its star quota) and every cell adjacent (8-neighbor) to any star. Cells
+ * already containing a star are NOT included.
+ */
+export function computeAutoCrosses(
+  marks: Mark[][],
+  regions: number[][],
+  starsPer: number,
+): Set<string> {
+  const n = marks.length;
+  const out = new Set<string>();
+  const key = (r: number, c: number) => `${r},${c}`;
+
+  const rowCount = new Array(n).fill(0);
+  const colCount = new Array(n).fill(0);
+  const regionCount = new Array(n).fill(0);
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (marks[r][c] !== 2) continue;
+      rowCount[r]++;
+      colCount[c]++;
+      regionCount[regions[r][c]]++;
+    }
+  }
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (marks[r][c] !== 2) continue;
+      // Adjacent cells.
+      for (const [dr, dc] of NEIGHBORS_8) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (inBounds(n, nr, nc) && marks[nr][nc] !== 2) out.add(key(nr, nc));
+      }
+    }
+  }
+  // Whole row/col/region when quota reached.
+  for (let r = 0; r < n; r++) {
+    if (rowCount[r] >= starsPer) {
+      for (let c = 0; c < n; c++) {
+        if (marks[r][c] !== 2) out.add(key(r, c));
+      }
+    }
+  }
+  for (let c = 0; c < n; c++) {
+    if (colCount[c] >= starsPer) {
+      for (let r = 0; r < n; r++) {
+        if (marks[r][c] !== 2) out.add(key(r, c));
+      }
+    }
+  }
+  for (let g = 0; g < n; g++) {
+    if (regionCount[g] >= starsPer) {
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          if (regions[r][c] === g && marks[r][c] !== 2) out.add(key(r, c));
+        }
+      }
+    }
+  }
+
+  return out;
 }
 
 /** Win condition: every row, col, and region has exactly K stars, no conflicts. */

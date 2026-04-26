@@ -8,9 +8,13 @@ import { System } from "./System";
 const PALETTE_BG = "#0b1024";
 const PALETTE_GRID_LINE = "#1f2647";
 const PALETTE_REGION_BORDER = "#f4f6ff";
-const PALETTE_DOT = "#8893bd";
-const PALETTE_STAR = "#ffd24a";
-const PALETTE_STAR_GLOW = "#ffeb8a";
+const PALETTE_CROSS = "#0a0d1f";
+const PALETTE_CROSS_SHADOW = "#000000";
+const PALETTE_STAR_FILL = "#fbfbf4";
+const PALETTE_STAR_BORDER = "#3a2a05";
+const PALETTE_STAR_HIGHLIGHT = "#ffffff";
+const PALETTE_STAR_SHADOW = "#000000";
+const PALETTE_BOARD_SHADOW = "#000000";
 const PALETTE_CONFLICT = "#ff1840";
 const PALETTE_CONFLICT_GLOW = "#ff5b6e";
 
@@ -35,15 +39,18 @@ export class BoardSystem extends System<StarBattle> {
 
   private background: Graphics;
   private boardLayer: Container;
+  private boardShadowLayer: Graphics;
   private cellsLayer: Graphics;
   private bordersLayer: Graphics;
   private gridLayer: Graphics;
   private marksLayer: Container;
   private conflictLayer: Graphics;
 
-  /** Display objects per cell: container with star + dot. */
-  private cellSprites: Array<Array<{ star: Graphics; dot: Graphics } | null>> =
+  /** Display objects per cell. */
+  private cellSprites: Array<Array<{ star: Graphics; cross: Graphics } | null>> =
     [];
+  /** Currently displayed marks (user + auto-crosses). */
+  private displayMarks: Mark[][] = [];
 
   private cellSize = 0;
   private boardX = 0;
@@ -57,6 +64,10 @@ export class BoardSystem extends System<StarBattle> {
 
     this.boardLayer = new Container();
     this.view.addChild(this.boardLayer);
+
+    this.boardShadowLayer = new Graphics();
+    this.boardShadowLayer.eventMode = "none";
+    this.boardLayer.addChild(this.boardShadowLayer);
 
     this.cellsLayer = new Graphics();
     this.cellsLayer.eventMode = "none";
@@ -88,7 +99,10 @@ export class BoardSystem extends System<StarBattle> {
     this.size = size;
     this.clearMarkSprites();
     this.cellSprites = Array.from({ length: size }, () =>
-      Array<{ star: Graphics; dot: Graphics } | null>(size).fill(null),
+      Array<{ star: Graphics; cross: Graphics } | null>(size).fill(null),
+    );
+    this.displayMarks = Array.from({ length: size }, () =>
+      Array(size).fill(0) as Mark[],
     );
     this.layout();
     this.drawAll();
@@ -109,62 +123,69 @@ export class BoardSystem extends System<StarBattle> {
     });
   }
 
-  /** Animate setting a mark at (row, col). */
-  setMark(row: number, col: number, mark: Mark): Promise<void> {
-    if (!this.cellSprites[row]) return Promise.resolve();
+  /** Sync displayed marks with the given grid; animate added/removed cells. */
+  setMarks(marks: Mark[][]) {
+    if (!this.cellSprites.length) return;
+    for (let r = 0; r < this.size; r++) {
+      for (let c = 0; c < this.size; c++) {
+        const next = marks[r][c];
+        if (this.displayMarks[r][c] !== next) {
+          this.applyMark(r, c, next);
+          this.displayMarks[r][c] = next;
+        }
+      }
+    }
+  }
+
+  private applyMark(row: number, col: number, mark: Mark) {
     const existing = this.cellSprites[row][col];
     if (existing) {
       gsap.killTweensOf(existing.star.scale);
-      gsap.killTweensOf(existing.dot.scale);
+      gsap.killTweensOf(existing.cross.scale);
       gsap.killTweensOf(existing.star);
-      gsap.killTweensOf(existing.dot);
+      gsap.killTweensOf(existing.cross);
       existing.star.destroy();
-      existing.dot.destroy();
+      existing.cross.destroy();
       this.cellSprites[row][col] = null;
     }
-    if (mark === 0) return Promise.resolve();
+    if (mark === 0) return;
 
     const cx = col * this.cellSize + this.cellSize / 2;
     const cy = row * this.cellSize + this.cellSize / 2;
     const target = this.markScale();
 
     const star = this.makeStar();
-    const dot = this.makeDot();
+    const cross = this.makeCross();
     star.position.set(cx, cy);
-    dot.position.set(cx, cy);
-    this.marksLayer.addChild(dot, star);
-    this.cellSprites[row][col] = { star, dot };
+    cross.position.set(cx, cy);
+    this.marksLayer.addChild(cross, star);
+    this.cellSprites[row][col] = { star, cross };
 
     if (mark === 2) {
-      dot.visible = false;
+      cross.visible = false;
       star.scale.set(0);
       star.alpha = 0;
-      return new Promise<void>((resolve) => {
-        gsap.to(star.scale, {
-          x: target,
-          y: target,
-          duration: 0.32,
-          ease: "back.out(2.4)",
-          onComplete: () => resolve(),
-        });
-        gsap.to(star, { alpha: 1, duration: 0.18, ease: "power2.out" });
-      });
-    }
-
-    // mark === 1 (dot)
-    star.visible = false;
-    dot.scale.set(0);
-    dot.alpha = 0;
-    return new Promise<void>((resolve) => {
-      gsap.to(dot.scale, {
+      gsap.to(star.scale, {
         x: target,
         y: target,
-        duration: 0.18,
-        ease: "back.out(2)",
-        onComplete: () => resolve(),
+        duration: 0.32,
+        ease: "back.out(2.4)",
       });
-      gsap.to(dot, { alpha: 1, duration: 0.12, ease: "power2.out" });
+      gsap.to(star, { alpha: 1, duration: 0.18, ease: "power2.out" });
+      return;
+    }
+
+    // mark === 1 (cross)
+    star.visible = false;
+    cross.scale.set(0);
+    cross.alpha = 0;
+    gsap.to(cross.scale, {
+      x: target,
+      y: target,
+      duration: 0.18,
+      ease: "back.out(2)",
     });
+    gsap.to(cross, { alpha: 1, duration: 0.12, ease: "power2.out" });
   }
 
   /** Scale factor to fit a 100-unit mark sprite into the current cell. */
@@ -252,6 +273,9 @@ export class BoardSystem extends System<StarBattle> {
   override reset() {
     this.clearMarkSprites();
     this.conflictLayer.clear();
+    this.displayMarks = Array.from({ length: this.size }, () =>
+      Array(this.size).fill(0) as Mark[],
+    );
   }
 
   private layout() {
@@ -290,6 +314,15 @@ export class BoardSystem extends System<StarBattle> {
     const regions = this.game.getRegions();
     const cs = this.cellSize;
     const len = cs * this.size;
+
+    // Soft drop shadow under the whole board.
+    this.boardShadowLayer.clear();
+    this.boardShadowLayer
+      .roundRect(-4, 4, len + 14, len + 18, 18)
+      .fill({ color: PALETTE_BOARD_SHADOW, alpha: 0.18 });
+    this.boardShadowLayer
+      .roundRect(-6, 8, len + 18, len + 22, 20)
+      .fill({ color: PALETTE_BOARD_SHADOW, alpha: 0.12 });
 
     // Region fills.
     this.cellsLayer.clear();
@@ -360,12 +393,12 @@ export class BoardSystem extends System<StarBattle> {
         const cx = c * cs + cs / 2;
         const cy = r * cs + cs / 2;
         sp.star.position.set(cx, cy);
-        sp.dot.position.set(cx, cy);
+        sp.cross.position.set(cx, cy);
         // Kill in-flight scale tweens — resize wins.
         gsap.killTweensOf(sp.star.scale);
-        gsap.killTweensOf(sp.dot.scale);
+        gsap.killTweensOf(sp.cross.scale);
         sp.star.scale.set(sp.star.visible ? scale : 0);
-        sp.dot.scale.set(sp.dot.visible ? scale : 0);
+        sp.cross.scale.set(sp.cross.visible ? scale : 0);
       }
     }
   }
@@ -375,31 +408,82 @@ export class BoardSystem extends System<StarBattle> {
     this.cellSprites = [];
   }
 
-  private makeStar(): Graphics {
-    const g = new Graphics();
+  /** Build a soft "sticker" star path: rounded points via cubic-bezier corners. */
+  private starStickerPath(g: Graphics, outer: number, inner: number) {
+    // Compute the 10 star vertices, then connect with quadratic curves so
+    // every corner (both points and valleys) is rounded.
     const points = 5;
-    const outer = 36;
-    const inner = 16;
-    const path: number[] = [];
+    const verts: Array<[number, number]> = [];
     for (let i = 0; i < points * 2; i++) {
       const angle = (Math.PI / points) * i - Math.PI / 2;
       const r = i % 2 === 0 ? outer : inner;
-      path.push(Math.cos(angle) * r, Math.sin(angle) * r);
+      verts.push([Math.cos(angle) * r, Math.sin(angle) * r]);
     }
-    g.poly(path).fill({ color: PALETTE_STAR_GLOW });
-    const inner2: number[] = [];
-    for (let i = 0; i < points * 2; i++) {
-      const angle = (Math.PI / points) * i - Math.PI / 2;
-      const r = (i % 2 === 0 ? outer : inner) * 0.78;
-      inner2.push(Math.cos(angle) * r, Math.sin(angle) * r);
+    const lerp = (a: [number, number], b: [number, number], t: number): [number, number] => [
+      a[0] + (b[0] - a[0]) * t,
+      a[1] + (b[1] - a[1]) * t,
+    ];
+    // Round amount: how far along each edge to start/stop the corner curve.
+    const round = 0.32;
+    const n = verts.length;
+    const start = lerp(verts[0], verts[1], round);
+    g.moveTo(start[0], start[1]);
+    for (let i = 0; i < n; i++) {
+      const cur = verts[i];
+      const next = verts[(i + 1) % n];
+      const after = verts[(i + 2) % n];
+      const lineEnd = lerp(cur, next, 1 - round);
+      const curveEnd = lerp(next, after, round);
+      g.lineTo(lineEnd[0], lineEnd[1]);
+      g.quadraticCurveTo(next[0], next[1], curveEnd[0], curveEnd[1]);
     }
-    g.poly(inner2).fill({ color: PALETTE_STAR });
+    g.closePath();
+  }
+
+  private makeStar(): Graphics {
+    const g = new Graphics();
+    const outer = 36;
+    const inner = 18;
+
+    // Drop shadow — same shape, offset & translucent dark.
+    g.translateTransform(2.5, 3);
+    this.starStickerPath(g, outer, inner);
+    g.fill({ color: PALETTE_STAR_SHADOW, alpha: 0.35 });
+    g.translateTransform(-2.5, -3);
+
+    // Sticker body with thick dark border.
+    this.starStickerPath(g, outer, inner);
+    g.fill({ color: PALETTE_STAR_FILL });
+    this.starStickerPath(g, outer, inner);
+    g.stroke({ color: PALETTE_STAR_BORDER, width: 3, alpha: 0.9 });
+
+    // Soft highlight in the upper-left for sticker sheen.
+    g.translateTransform(-7, -8);
+    this.starStickerPath(g, outer * 0.55, inner * 0.55);
+    g.fill({ color: PALETTE_STAR_HIGHLIGHT, alpha: 0.45 });
+    g.translateTransform(7, 8);
+
     return g;
   }
 
-  private makeDot(): Graphics {
+  private makeCross(): Graphics {
     const g = new Graphics();
-    g.circle(0, 0, 10).fill({ color: PALETTE_DOT, alpha: 0.85 });
+    const arm = 18;
+    const w = 7;
+    const draw = (color: string, alpha: number) => {
+      g.moveTo(-arm, -arm)
+        .lineTo(arm, arm)
+        .stroke({ color, width: w, alpha, cap: "round" });
+      g.moveTo(arm, -arm)
+        .lineTo(-arm, arm)
+        .stroke({ color, width: w, alpha, cap: "round" });
+    };
+    // Drop shadow.
+    g.translateTransform(1.5, 2);
+    draw(PALETTE_CROSS_SHADOW, 0.35);
+    g.translateTransform(-1.5, -2);
+    // Cross.
+    draw(PALETTE_CROSS, 0.95);
     return g;
   }
 

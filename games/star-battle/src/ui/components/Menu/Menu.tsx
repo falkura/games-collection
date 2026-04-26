@@ -6,6 +6,11 @@ import "./Menu.css";
 const MIN_SIZE = 5;
 const MAX_SIZE = 10;
 const WARN_HIDE_MS = 2200;
+// On touch devices the warning is easy to miss while a finger covers the
+// segmented control, so we leave it pinned until the user changes a setting.
+const isTouchDevice = () =>
+  typeof window !== "undefined" &&
+  (window.matchMedia?.("(hover: none)").matches ?? false);
 
 export function Menu() {
   const [size, setSize] = useState(6);
@@ -20,7 +25,9 @@ export function Menu() {
       setSize(8);
       setWarnVisible(true);
       if (warnTimer.current) clearTimeout(warnTimer.current);
-      warnTimer.current = setTimeout(() => setWarnVisible(false), WARN_HIDE_MS);
+      if (!isTouchDevice()) {
+        warnTimer.current = setTimeout(() => setWarnVisible(false), WARN_HIDE_MS);
+      }
     }
   }, [starsPer, size]);
 

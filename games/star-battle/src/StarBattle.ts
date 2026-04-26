@@ -4,6 +4,7 @@ import { events, Events, Mark, PuzzleConfig } from "./events";
 import { gameState } from "./state";
 import {
   Puzzle,
+  computeAutoCrosses,
   emptyMarks,
   findConflicts,
   generatePuzzle,
@@ -124,21 +125,36 @@ export class StarBattle extends GameController {
     const current = this.marks[row][col];
     const next: Mark = current === 0 ? 1 : current === 1 ? 2 : 0;
     this.marks[row][col] = next;
-    void this.systems.get(BoardSystem).setMark(row, col, next);
 
-    const conflicts = findConflicts(
-      this.marks,
-      this.puzzle.regions,
-      this.puzzle.starsPer,
-    );
-    this.systems.get(BoardSystem).showConflicts(conflicts);
-
-    const stars = this.countStars();
-    gameState.set({ stars });
+    this.refreshBoard();
 
     if (isSolved(this.marks, this.puzzle.regions, this.puzzle.starsPer)) {
       void this.handleWin();
     }
+  }
+
+  /** Push the current user marks + computed auto-crosses to the board. */
+  private refreshBoard() {
+    if (!this.puzzle) return;
+    const board = this.systems.get(BoardSystem);
+    const { regions, starsPer } = this.puzzle;
+
+    // Auto-crosses are added on top of user marks where the user hasn't
+    // placed anything (don't overwrite a user's manual cross or a star).
+    const autoCells = computeAutoCrosses(this.marks, regions, starsPer);
+    const display: Mark[][] = this.marks.map((row) => row.slice() as Mark[]);
+    for (const k of autoCells) {
+      const [rs, cs] = k.split(",");
+      const r = Number(rs);
+      const c = Number(cs);
+      if (display[r][c] === 0) display[r][c] = 1;
+    }
+    board.setMarks(display);
+
+    const conflicts = findConflicts(this.marks, regions, starsPer);
+    board.showConflicts(conflicts);
+
+    gameState.set({ stars: this.countStars() });
   }
 
   private async handleWin() {
