@@ -1,7 +1,8 @@
 import { HTMLText } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem, TOTAL_LEVELS } from "./SpaceSystem";
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Engine, Layout } from "@falkura-pet/engine";
+import { System } from "./System";
 
 const HUD = {
   text: "#f8fbff",

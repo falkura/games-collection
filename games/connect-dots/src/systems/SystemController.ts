@@ -140,6 +140,8 @@ export class SystemController<TGame extends GameController = GameController> {
   /** @internal */
   build() {
     this.list.forEach((system, MODULE_ID) => {
+      if (this.buildedRegistry.has(MODULE_ID)) return;
+
       system.build();
       this.buildedRegistry.set(MODULE_ID, system);
     });

@@ -1,9 +1,10 @@
 import { FederatedPointerEvent, Graphics, Point, Rectangle } from "pixi.js";
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Engine, Layout } from "@falkura-pet/engine";
 import { Ticker } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { SpaceSystem } from "./SpaceSystem";
 import { TRAJECTORY_PREVIEW } from "../config";
+import { System } from "./System";
 
 export class InputSystem extends System<OrbitDrift> {
   static MODULE_ID = "input";

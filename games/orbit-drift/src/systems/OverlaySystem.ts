@@ -1,8 +1,9 @@
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Engine, Layout } from "@falkura-pet/engine";
 import { Container, Graphics, HTMLText, Text } from "pixi.js";
 import { OrbitDrift } from "../OrbitDrift";
 import { TOTAL_LEVELS } from "./SpaceSystem";
 import type { FinishData, FinishReason } from "../types";
+import { System } from "./System";
 
 const OVERLAY = {
   text: "#f8fbff",
@@ -199,11 +200,6 @@ export class OverlaySystem extends System<OrbitDrift> {
         x += this.buttonWidth + gap;
       }
     }
-  }
-
-  override mount(): void {
-    this.titleText.text = "";
-    this.statsText.text = "";
   }
 
   showResult(data?: FinishData) {

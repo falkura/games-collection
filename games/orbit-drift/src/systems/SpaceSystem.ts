@@ -1,4 +1,4 @@
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Engine, Layout } from "@falkura-pet/engine";
 import { Graphics, Ticker } from "pixi.js";
 import gsap from "gsap";
 import { OrbitDrift } from "../OrbitDrift";
@@ -24,6 +24,7 @@ import { Chaser } from "../entities/Chaser";
 import { Shooter } from "../entities/Shooter";
 import { Projectile } from "../entities/Projectile";
 import { Trail } from "../entities/Trail";
+import { System } from "./System";
 
 export const TOTAL_LEVELS = LEVEL.TOTAL;
 export type { FinishData } from "../types";
