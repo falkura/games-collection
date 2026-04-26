@@ -90,6 +90,8 @@ class EngineClass {
   public startGame() {
     if (this.state === GAME_STATE.Init) {
       this.events.emit("engine:game-started");
+      this.game.ticker.start();
+      this.game.timeline.play();
       this.game.start();
       this.state = GAME_STATE.Started;
     }
@@ -99,6 +101,8 @@ class EngineClass {
   public finishGame(data?: any) {
     if (this.state !== GAME_STATE.Finished) {
       this.state = GAME_STATE.Finished;
+      this.game.ticker.stop();
+      this.resetTimelines();
       this.game.finish(data);
       this.events.emit("engine:game-finished", data);
 
@@ -108,9 +112,22 @@ class EngineClass {
 
   /** Reset to `Init` state, cascade `reset` through all systems, and emit `engine:game-reseted`. */
   public resetGame() {
+    this.game.ticker.stop();
+    this.game.ticker.speed = 1;
+    ControlPanel.reset();
+    this.resetTimelines();
     this.game.reset();
     this.state = GAME_STATE.Init;
     this.events.emit("engine:game-reseted");
+  }
+
+  private resetTimelines() {
+    this.game.timeline
+      .getChildren(false)
+      .forEach(
+        (tl: GSAPTween | GSAPTimeline) =>
+          tl instanceof gsap.core.Timeline && tl.clear(),
+      );
   }
 
   private resize(

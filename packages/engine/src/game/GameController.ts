@@ -5,15 +5,15 @@ import { Pane } from "tweakpane";
 import { ControlPanel } from "./ControlPanel";
 
 /**
- * Abstract base for every game. Extend and register systems in {@link init}.
+ * Abstract base for every game.
  *
  * Drive lifecycle through {@link Engine} — never call lifecycle methods directly.
  */
 export abstract class GameController {
-  /** PixiJS ticker driving system `tick` hooks and the game-speed slider. */
+  /** PixiJS ticker. */
   public readonly ticker: Ticker;
 
-  /** Master GSAP timeline; each system's timeline is nested here. */
+  /** Master GSAP timeline. */
   public readonly timeline: GSAPTimeline;
 
   /** Tweakpane panel used by {@link ControlPanel}. */
@@ -41,48 +41,22 @@ export abstract class GameController {
   }
 
   /**
-   * @internal Called by `Engine.startGame`.
-   * Override to add custom start logic — call `super.start()`.
+   * Called by `Engine.startGame`.
    */
-  public start() {
-    this.ticker.start();
-    this.timeline.play();
-  }
+  public start() {}
 
   /**
-   * @internal Called by `Engine.finishGame`.
-   * Override to add custom finish logic — call `super.finish(data)`.
+   * Called by `Engine.finishGame(data)`.
    */
-  public finish(data: any) {
-    this.ticker.stop();
-    this.resetTimelines();
-  }
+  public finish(data: any) {}
 
   /**
-   * @internal Called by `Engine.resetGame`.
-   * Override to add custom reset logic — call `super.reset()`.
+   * Called by `Engine.resetGame`.
    */
-  public reset() {
-    this.ticker.stop();
-    this.ticker.speed = 1;
-    ControlPanel.reset();
-    this.resetTimelines();
-  }
+  public reset() {}
 
   /**
-   * @internal Called by the engine on window resize.
-   * Override to add custom resize logic — call `super.resize()`.
+   * Called by the engine on window resize.
    */
-  public resize() {
-    // override me
-  }
-
-  protected resetTimelines() {
-    this.timeline
-      .getChildren(false)
-      .forEach(
-        (tl: GSAPTween | GSAPTimeline) =>
-          tl instanceof gsap.core.Timeline && tl.clear(),
-      );
-  }
+  public resize() {}
 }
