@@ -12,8 +12,7 @@ export interface Puzzle {
 
 /** Whether the (size, starsPer) combo is solvable. K=2 needs N≥8 (N=7 is infeasible by row-adjacency). */
 export function isCombinationFeasible(size: number, starsPer: 1 | 2): boolean {
-  if (starsPer === 1) return size >= 4;
-  return size >= 8;
+  return !(starsPer === 2 && size < 8);
 }
 
 const NEIGHBORS_8: ReadonlyArray<readonly [number, number]> = [
