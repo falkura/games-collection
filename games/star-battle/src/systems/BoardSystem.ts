@@ -214,41 +214,43 @@ export class BoardSystem extends System<StarBattle> {
     this.conflictLayer.scale.set(1);
     if (cells.size === 0) return;
     const cs = this.cellSize;
-    const r2 = cs * 0.16;
-    const ringW = Math.max(5, Math.floor(cs * 0.09));
     for (const k of cells) {
       const [rs, ccs] = k.split(",");
       const r = Number(rs);
       const c = Number(ccs);
       // Star cells are shown as red stars — no overlay needed.
       if (marks[r][c] === 2) continue;
-      const x = c * cs + ringW / 2;
-      const y = r * cs + ringW / 2;
-      const w = cs - ringW;
-      const h = cs - ringW;
-      // Outer glow halo.
-      this.conflictLayer
-        .roundRect(x - 3, y - 3, w + 6, h + 6, r2 + 3)
-        .fill({ color: PALETTE_CONFLICT_GLOW, alpha: 0.35 });
-      // Strong red fill.
-      this.conflictLayer
-        .roundRect(x, y, w, h, r2)
-        .fill({ color: PALETTE_CONFLICT, alpha: 0.55 });
-      // Hard bright ring.
-      this.conflictLayer
-        .roundRect(x, y, w, h, r2)
-        .stroke({ color: PALETTE_CONFLICT, width: ringW, alpha: 1 });
-      // Inner white edge for contrast.
-      this.conflictLayer
-        .roundRect(
-          x + ringW / 2 + 1,
-          y + ringW / 2 + 1,
-          w - ringW - 2,
-          h - ringW - 2,
-          Math.max(0, r2 - ringW / 2),
-        )
-        .stroke({ color: 0xffffff, width: 1.5, alpha: 0.55 });
+      const cx = c * cs + cs / 2;
+      const cy = r * cs + cs / 2;
+      this.drawConflictSquare(cx, cy, cs);
     }
+  }
+
+  private drawConflictSquare(cx: number, cy: number, cs: number) {
+    const half = cs * 0.34;
+    const radius = cs * 0.12;
+    const borderW = Math.max(2.5, cs * 0.055);
+
+    // Drop shadow — same offset as the star.
+    this.conflictLayer
+      .roundRect(cx - half + 2.5, cy - half + 3, half * 2, half * 2, radius)
+      .fill({ color: PALETTE_STAR_SHADOW, alpha: 0.35 });
+
+    // Red body.
+    this.conflictLayer
+      .roundRect(cx - half, cy - half, half * 2, half * 2, radius)
+      .fill({ color: PALETTE_STAR_CONFLICT_FILL });
+
+    // Dark border.
+    this.conflictLayer
+      .roundRect(cx - half, cy - half, half * 2, half * 2, radius)
+      .stroke({ color: PALETTE_STAR_CONFLICT_BORDER, width: borderW, alpha: 0.9 });
+
+    // Upper-left highlight tint — mirrors the star's sheen.
+    const hHalf = half * 0.55;
+    this.conflictLayer
+      .roundRect(cx - half * 0.85, cy - half * 0.85, hHalf * 2, hHalf * 2, radius * 0.7)
+      .fill({ color: PALETTE_STAR_CONFLICT_HIGHLIGHT, alpha: 0.35 });
   }
 
   /** Win celebration: gentle bounce + sweep. */
