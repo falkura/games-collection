@@ -2,7 +2,7 @@
   "$schema": "../../../packages/shared/schemas/game.schema.json",
   "title": "STAR BATTLE",
   "description": "Logic puzzle: place stars in every row, column and colored region — but no two may touch.",
-  "version": "0.5.12",
+  "version": "1.0.0",
   "route": "star-battle",
   "order": 6,
   "icon": "icon.png",

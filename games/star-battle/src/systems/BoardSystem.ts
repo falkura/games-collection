@@ -14,7 +14,6 @@ const PALETTE_STAR_FILL = "#fbfbf4";
 const PALETTE_STAR_BORDER = "#3a2a05";
 const PALETTE_STAR_HIGHLIGHT = "#ffffff";
 const PALETTE_STAR_SHADOW = "#000000";
-const PALETTE_BOARD_SHADOW = "#000000";
 const PALETTE_CONFLICT = "#ff1840";
 const PALETTE_CONFLICT_GLOW = "#ff5b6e";
 const PALETTE_STAR_CONFLICT_FILL = "#ff2a4a";
@@ -42,7 +41,6 @@ export class BoardSystem extends System<StarBattle> {
 
   private background: Graphics;
   private boardLayer: Container;
-  private boardShadowLayer: Graphics;
   private cellsLayer: Graphics;
   private highlightLayer: Graphics;
   private bordersLayer: Graphics;
@@ -77,10 +75,6 @@ export class BoardSystem extends System<StarBattle> {
 
     this.boardLayer = new Container();
     this.view.addChild(this.boardLayer);
-
-    this.boardShadowLayer = new Graphics();
-    this.boardShadowLayer.eventMode = "none";
-    this.boardLayer.addChild(this.boardShadowLayer);
 
     this.cellsLayer = new Graphics();
     this.cellsLayer.eventMode = "none";
@@ -419,7 +413,7 @@ export class BoardSystem extends System<StarBattle> {
   }
 
   private drawConflictSquare(cx: number, cy: number, cs: number) {
-    const half = cs * 0.34;
+    const half = cs * 0.45;
     const radius = cs * 0.12;
     const borderW = Math.max(2.5, cs * 0.055);
 
@@ -431,7 +425,7 @@ export class BoardSystem extends System<StarBattle> {
     // Red body.
     this.conflictLayer
       .roundRect(cx - half, cy - half, half * 2, half * 2, radius)
-      .fill({ color: PALETTE_STAR_CONFLICT_FILL });
+      .fill({ color: PALETTE_STAR_CONFLICT_FILL, alpha: 0.9, });
 
     // Dark border.
     this.conflictLayer
@@ -498,11 +492,6 @@ export class BoardSystem extends System<StarBattle> {
     this.highlightLayer.clear();
     this.highlightLayer.alpha = 1;
     this.conflictCells = new Set();
-    this.lastConflictMarks = [];
-    if (this.starlessTimer !== null) {
-      clearTimeout(this.starlessTimer);
-      this.starlessTimer = null;
-    }
     this.lastStarlessIds = new Set();
     this.displayMarks = Array.from(
       { length: this.size },
@@ -546,15 +535,6 @@ export class BoardSystem extends System<StarBattle> {
     const regions = this.game.getRegions();
     const cs = this.cellSize;
     const len = cs * this.size;
-
-    // Soft drop shadow under the whole board.
-    this.boardShadowLayer.clear();
-    this.boardShadowLayer
-      .roundRect(-4, 4, len + 14, len + 18, 18)
-      .fill({ color: PALETTE_BOARD_SHADOW, alpha: 0.18 });
-    this.boardShadowLayer
-      .roundRect(-6, 8, len + 18, len + 22, 20)
-      .fill({ color: PALETTE_BOARD_SHADOW, alpha: 0.12 });
 
     // Region fills.
     this.cellsLayer.clear();
