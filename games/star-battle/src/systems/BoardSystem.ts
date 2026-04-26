@@ -17,6 +17,9 @@ const PALETTE_STAR_SHADOW = "#000000";
 const PALETTE_BOARD_SHADOW = "#000000";
 const PALETTE_CONFLICT = "#ff1840";
 const PALETTE_CONFLICT_GLOW = "#ff5b6e";
+const PALETTE_STAR_CONFLICT_FILL = "#ff2a4a";
+const PALETTE_STAR_CONFLICT_BORDER = "#7a0010";
+const PALETTE_STAR_CONFLICT_HIGHLIGHT = "#ff8899";
 
 /** Vibrant region palette — cycled if a puzzle has more regions. */
 const REGION_COLORS = [
@@ -47,10 +50,13 @@ export class BoardSystem extends System<StarBattle> {
   private conflictLayer: Graphics;
 
   /** Display objects per cell. */
-  private cellSprites: Array<Array<{ star: Graphics; cross: Graphics } | null>> =
-    [];
+  private cellSprites: Array<
+    Array<{ star: Graphics; cross: Graphics } | null>
+  > = [];
   /** Currently displayed marks (user + auto-crosses). */
   private displayMarks: Mark[][] = [];
+  /** Conflict cells from the last showConflicts call — used to colour conflict stars. */
+  private conflictCells: Set<string> = new Set();
 
   private cellSize = 0;
   private boardX = 0;
@@ -101,8 +107,9 @@ export class BoardSystem extends System<StarBattle> {
     this.cellSprites = Array.from({ length: size }, () =>
       Array<{ star: Graphics; cross: Graphics } | null>(size).fill(null),
     );
-    this.displayMarks = Array.from({ length: size }, () =>
-      Array(size).fill(0) as Mark[],
+    this.displayMarks = Array.from(
+      { length: size },
+      () => Array(size).fill(0) as Mark[],
     );
     this.layout();
     this.drawAll();
@@ -124,20 +131,25 @@ export class BoardSystem extends System<StarBattle> {
   }
 
   /** Sync displayed marks with the given grid; animate added/removed cells. */
-  setMarks(marks: Mark[][]) {
+  setMarks(marks: Mark[][], conflicts: Set<string> = new Set()) {
     if (!this.cellSprites.length) return;
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size; c++) {
         const next = marks[r][c];
-        if (this.displayMarks[r][c] !== next) {
-          this.applyMark(r, c, next);
+        const key = `${r},${c}`;
+        const inConflict = next === 2 && conflicts.has(key);
+        // Rebuild if mark changed OR if the star's conflict state changed.
+        const prev = this.displayMarks[r][c];
+        const wasConflict = prev === 2 && this.conflictCells.has(key);
+        if (prev !== next || (next === 2 && inConflict !== wasConflict)) {
+          this.applyMark(r, c, next, inConflict);
           this.displayMarks[r][c] = next;
         }
       }
     }
   }
 
-  private applyMark(row: number, col: number, mark: Mark) {
+  private applyMark(row: number, col: number, mark: Mark, conflict = false) {
     const existing = this.cellSprites[row][col];
     if (existing) {
       gsap.killTweensOf(existing.star.scale);
@@ -154,7 +166,7 @@ export class BoardSystem extends System<StarBattle> {
     const cy = row * this.cellSize + this.cellSize / 2;
     const target = this.markScale();
 
-    const star = this.makeStar();
+    const star = this.makeStar(conflict);
     const cross = this.makeCross();
     star.position.set(cx, cy);
     cross.position.set(cx, cy);
@@ -193,8 +205,9 @@ export class BoardSystem extends System<StarBattle> {
     return this.cellSize / 100;
   }
 
-  /** Highlight conflicting cells with a strong red overlay + ring; persists until cleared. */
-  showConflicts(cells: Set<string>) {
+  /** Highlight conflicting cells. Stars get a red star graphic; non-star cells get a red overlay. */
+  showConflicts(cells: Set<string>, marks: Mark[][] = []) {
+    this.conflictCells = cells;
     this.conflictLayer.clear();
     gsap.killTweensOf(this.conflictLayer.scale);
     this.conflictLayer.alpha = 1;
@@ -207,6 +220,8 @@ export class BoardSystem extends System<StarBattle> {
       const [rs, ccs] = k.split(",");
       const r = Number(rs);
       const c = Number(ccs);
+      // Star cells are shown as red stars — no overlay needed.
+      if (marks[r][c] === 2) continue;
       const x = c * cs + ringW / 2;
       const y = r * cs + ringW / 2;
       const w = cs - ringW;
@@ -273,8 +288,9 @@ export class BoardSystem extends System<StarBattle> {
   override reset() {
     this.clearMarkSprites();
     this.conflictLayer.clear();
-    this.displayMarks = Array.from({ length: this.size }, () =>
-      Array(this.size).fill(0) as Mark[],
+    this.displayMarks = Array.from(
+      { length: this.size },
+      () => Array(this.size).fill(0) as Mark[],
     );
   }
 
@@ -419,10 +435,11 @@ export class BoardSystem extends System<StarBattle> {
       const r = i % 2 === 0 ? outer : inner;
       verts.push([Math.cos(angle) * r, Math.sin(angle) * r]);
     }
-    const lerp = (a: [number, number], b: [number, number], t: number): [number, number] => [
-      a[0] + (b[0] - a[0]) * t,
-      a[1] + (b[1] - a[1]) * t,
-    ];
+    const lerp = (
+      a: [number, number],
+      b: [number, number],
+      t: number,
+    ): [number, number] => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
     // Round amount: how far along each edge to start/stop the corner curve.
     const round = 0.32;
     const n = verts.length;
@@ -440,10 +457,17 @@ export class BoardSystem extends System<StarBattle> {
     g.closePath();
   }
 
-  private makeStar(): Graphics {
+  private makeStar(conflict = false): Graphics {
     const g = new Graphics();
     const outer = 36;
     const inner = 18;
+    const fill = conflict ? PALETTE_STAR_CONFLICT_FILL : PALETTE_STAR_FILL;
+    const border = conflict
+      ? PALETTE_STAR_CONFLICT_BORDER
+      : PALETTE_STAR_BORDER;
+    const highlight = conflict
+      ? PALETTE_STAR_CONFLICT_HIGHLIGHT
+      : PALETTE_STAR_HIGHLIGHT;
 
     // Drop shadow — same shape, offset & translucent dark.
     g.translateTransform(2.5, 3);
@@ -453,14 +477,14 @@ export class BoardSystem extends System<StarBattle> {
 
     // Sticker body with thick dark border.
     this.starStickerPath(g, outer, inner);
-    g.fill({ color: PALETTE_STAR_FILL });
+    g.fill({ color: fill });
     this.starStickerPath(g, outer, inner);
-    g.stroke({ color: PALETTE_STAR_BORDER, width: 3, alpha: 0.9 });
+    g.stroke({ color: border, width: 3, alpha: 0.9 });
 
     // Soft highlight in the upper-left for sticker sheen.
     g.translateTransform(-7, -8);
     this.starStickerPath(g, outer * 0.55, inner * 0.55);
-    g.fill({ color: PALETTE_STAR_HIGHLIGHT, alpha: 0.45 });
+    g.fill({ color: highlight, alpha: 0.45 });
     g.translateTransform(7, 8);
 
     return g;

@@ -153,18 +153,21 @@ export class StarBattle extends GameController {
       const c = Number(cs);
       if (display[r][c] === 0) display[r][c] = 1;
     }
-    board.setMarks(display);
 
     const conflicts = findConflicts(this.marks, regions, starsPer);
-    board.showConflicts(conflicts);
+    board.setMarks(display, conflicts);
+    board.showConflicts(conflicts, this.marks);
 
     gameState.set({ stars: this.countStars() });
   }
 
   private async handleWin() {
     this.timerActive = false;
-    this.systems.get(BoardSystem).setInteractive(false);
-    await this.systems.get(BoardSystem).playWinAnimation();
+    const board = this.systems.get(BoardSystem);
+    board.setInteractive(false);
+    // Wait for the last star's appear animation to finish before celebrating.
+    await new Promise<void>((resolve) => setTimeout(resolve, 350));
+    await board.playWinAnimation();
     gameState.set({ screen: "ended" });
   }
 
