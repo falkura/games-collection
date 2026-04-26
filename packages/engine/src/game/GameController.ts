@@ -1,7 +1,6 @@
 import "pixi.js/math-extras";
 import { Container, Ticker } from "pixi.js";
 import gsap from "gsap";
-import { SystemController } from "./SystemController";
 import { Pane } from "tweakpane";
 import { ControlPanel } from "./ControlPanel";
 
@@ -13,9 +12,6 @@ import { ControlPanel } from "./ControlPanel";
 export abstract class GameController {
   /** PixiJS ticker driving system `tick` hooks and the game-speed slider. */
   public readonly ticker: Ticker;
-
-  /** Manages all registered {@link System} instances. */
-  public readonly systems: SystemController;
 
   /** Master GSAP timeline; each system's timeline is nested here. */
   public readonly timeline: GSAPTimeline;
@@ -34,24 +30,14 @@ export abstract class GameController {
     this.view = view;
 
     this.pane = new Pane();
-    this.systems = new SystemController(this);
     this.ticker = new Ticker();
     this.timeline = gsap.timeline({ paused: true });
 
     ControlPanel.init(this);
-    this.init();
-    this.systems.build();
-
-    this.ticker.add((ticker) => this.systems.tick(ticker));
 
     if (__DEV__) {
       globalThis.game = this;
     }
-  }
-
-  /** Override to register systems: `this.systems.add(MySystem)`. Called once in the constructor. */
-  public init() {
-    // override me
   }
 
   /**
@@ -59,7 +45,6 @@ export abstract class GameController {
    * Override to add custom start logic — call `super.start()`.
    */
   public start() {
-    this.systems.start();
     this.ticker.start();
     this.timeline.play();
   }
@@ -71,7 +56,6 @@ export abstract class GameController {
   public finish(data: any) {
     this.ticker.stop();
     this.resetTimelines();
-    this.systems.finish(data);
   }
 
   /**
@@ -83,7 +67,6 @@ export abstract class GameController {
     this.ticker.speed = 1;
     ControlPanel.reset();
     this.resetTimelines();
-    this.systems.reset();
   }
 
   /**
@@ -91,10 +74,10 @@ export abstract class GameController {
    * Override to add custom resize logic — call `super.resize()`.
    */
   public resize() {
-    this.systems.resize();
+    // override me
   }
 
-  private resetTimelines() {
+  protected resetTimelines() {
     this.timeline
       .getChildren(false)
       .forEach(
