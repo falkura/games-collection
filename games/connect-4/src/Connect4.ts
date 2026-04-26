@@ -12,6 +12,8 @@ import {
   isFull,
 } from "./logic/board";
 import { pickAIMove, pickEasyMove } from "./logic/ai";
+import { SystemController } from "./systems/SystemController";
+import { Container } from "pixi.js";
 
 const AI_MOVE_DELAY_MS = 350;
 
@@ -28,7 +30,12 @@ export class Connect4 extends GameController {
   private win: WinInfo | null = null;
   private busy = false;
 
-  override init(): void {
+  systems: SystemController;
+
+  constructor(config: IGameConfig, view: Container) {
+    super(config, view);
+    this.systems = new SystemController(this);
+
     this.systems.add(BoardSystem);
     this.systems.disableAll();
 
@@ -36,6 +43,29 @@ export class Connect4 extends GameController {
     events.on(Events.ColumnSelected, this.onColumnSelected, this);
     events.on(Events.RestartRequested, this.onRestartRequested, this);
     events.on(Events.MenuRequested, this.onMenuRequested, this);
+
+    this.systems.build();
+    this.ticker.add((ticker) => this.systems.tick(ticker));
+  }
+
+  public start() {
+    super.start();
+    this.systems.start();
+  }
+
+  public finish(data: any) {
+    super.finish(data);
+    this.systems.finish(data);
+  }
+
+  public reset() {
+    super.reset();
+    this.systems.reset();
+  }
+
+  public resize() {
+    super.resize();
+    this.systems.resize();
   }
 
   getBoard(): Board {

@@ -1,9 +1,10 @@
 import { Container, Graphics, FederatedPointerEvent, Rectangle } from "pixi.js";
 import gsap from "gsap";
-import { Layout, System } from "@falkura-pet/engine";
+import { Layout } from "@falkura-pet/engine";
 import { Connect4 } from "../Connect4";
 import { Board, COLS, ROWS, dropRow } from "../logic/board";
 import { events, Events } from "../events";
+import { System } from "./System";
 
 const PALETTE = {
   bg: "#0b1024",
