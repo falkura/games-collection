@@ -191,7 +191,46 @@ function carveRegions(n: number, k: number, stars: number[][]): number[][] | nul
     }
   }
 
+  // Reject if any region is not 4-connected.
+  if (!allRegionsConnected(regions, n, numRegions)) return null;
+
   return regions;
+}
+
+function allRegionsConnected(regions: number[][], n: number, numRegions: number): boolean {
+  for (let g = 0; g < numRegions; g++) {
+    // Find first cell of region g.
+    let startR = -1, startC = -1;
+    outer: for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        if (regions[r][c] === g) { startR = r; startC = c; break outer; }
+      }
+    }
+    if (startR === -1) return false; // region missing entirely
+
+    // BFS from seed; count reachable cells.
+    let reachable = 0;
+    let total = 0;
+    const visited = Array.from({ length: n }, () => new Uint8Array(n));
+    const queue: Array<[number, number]> = [[startR, startC]];
+    visited[startR][startC] = 1;
+    while (queue.length > 0) {
+      const [r, c] = queue.pop()!;
+      reachable++;
+      for (const [dr, dc] of NEIGHBORS_4) {
+        const nr = r + dr, nc = c + dc;
+        if (inBounds(n, nr, nc) && regions[nr][nc] === g && !visited[nr][nc]) {
+          visited[nr][nc] = 1;
+          queue.push([nr, nc]);
+        }
+      }
+    }
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++)
+        if (regions[r][c] === g) total++;
+    if (reachable !== total) return false;
+  }
+  return true;
 }
 
 export function generatePuzzle(size: number, starsPer: 1 | 2): Puzzle {
