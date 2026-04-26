@@ -5,11 +5,18 @@ import { OverlaySystem } from "./systems/OverlaySystem";
 import { getLevels } from "./levels";
 import { saveLevelIndex } from "./progress";
 import { Engine, GameController } from "@falkura-pet/engine";
+import { SystemController } from "./systems/SystemController";
+import { Container } from "pixi.js";
 
 const GAMEPLAY_SYSTEMS = [MainSystem, HUDSystem];
 
 export class ConnectDots extends GameController {
-  override init(): void {
+  systems: SystemController;
+
+  constructor(config: IGameConfig, view: Container) {
+    super(config, view);
+    this.systems = new SystemController(this);
+
     this.systems.add(IntroSystem);
     this.systems.add(MainSystem);
     this.systems.add(HUDSystem);
@@ -19,11 +26,30 @@ export class ConnectDots extends GameController {
     this.systems.enable(IntroSystem);
 
     this.addGameControls();
+
+    this.systems.build();
+    this.ticker.add((ticker) => this.systems.tick(ticker));
   }
 
-  override reset(): void {
+  public start() {
+    super.start();
+    this.systems.start();
+  }
+
+  public finish(data: any) {
+    super.finish(data);
+    this.systems.finish(data);
+  }
+
+  public reset() {
     super.reset();
+    this.systems.reset();
     this.systems.disable(OverlaySystem);
+  }
+
+  public resize() {
+    super.resize();
+    this.systems.resize();
   }
 
   onPlay() {

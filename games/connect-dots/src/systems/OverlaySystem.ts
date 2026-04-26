@@ -1,6 +1,7 @@
 import { Container, Graphics, HTMLText, Text } from "pixi.js";
 import { ConnectDots } from "../ConnectDots";
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Engine, Layout } from "@falkura-pet/engine";
+import { System } from "./System";
 
 const OVERLAY = {
   text: "#f8fafc",
@@ -54,8 +55,6 @@ export class OverlaySystem extends System<ConnectDots> {
 
     this.view.addChild(this.background, this.text, this.buttonRow);
   }
-
-  override mount(): void {}
 
   private makeButton(label: string, onTap: () => void): Container {
     const button = new Container();

@@ -1,4 +1,4 @@
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Layout } from "@falkura-pet/engine";
 import {
   Container,
   FederatedPointerEvent,
@@ -11,6 +11,7 @@ import { ConnectDots } from "../ConnectDots";
 import { getLevels } from "../levels";
 import { loadLevelIndex, saveLevelIndex } from "../progress";
 import type { Cell, Level } from "../types";
+import { System } from "./System";
 
 const BG = {
   page: "#08111f",
