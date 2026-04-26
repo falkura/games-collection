@@ -50,13 +50,14 @@ The architecture also includes **build** and **assembly** scripts, asset process
 
 ## Deployment
 
+Hosted on Cloudflare Pages.
+
 Use `bun run assemble` as the build command, `/build` as the output directory. Set the following environment variables:
 
 ```bash
 NODE_ENV=production     # production Rspack build
+BUN_VERSION=1.3.5       # enable Bun
 ```
-
-### Cloudflare Pages caching
 
 Configure on Cloudflare Pages (Settings → Builds & deployments):
 

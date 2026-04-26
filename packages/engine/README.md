@@ -13,21 +13,13 @@ It is designed to stay **game-agnostic** — no game logic, no game assets. Game
 
 ## What it provides
 
-|                      |                                                                                              |
-| -------------------- | -------------------------------------------------------------------------------------------- |
-| **PixiJS app**       | WebGPU-preferred renderer, auto-sized to the window.                                         |
-| **GSAP**             | Ticker synced to PixiJS; `PixiPlugin` registered.                                            |
-| **Asset loading**    | Loads an AssetPack `manifest.json` bundle behind a spinner before the game starts.           |
-| **Lifecycle**        | `startGame` / `finishGame` / `resetGame` cascade through every system and emit typed events. |
-| **Layout**           | Fit-scale + virtual-pixel helpers for both the full screen and the design-resolution rect.   |
-| **Graphics presets** | `High` / `Medium` / `Low` adjust renderer resolution and max FPS at runtime.                 |
-| **Debug panel**      | Tweakpane with FPS, speed slider, restart, and graphics toggle. Collapses to ⚙️.             |
-
-## Architecture
-
-```
-Engine (singleton)
-└── GameController (abstract, one per game)
-    └── SystemController
-        └── System[] (all gameplay and visuals live here)
-```
+|                      |                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| **PixiJS app**       | WebGPU-preferred renderer, auto-sized to the window.                                       |
+| **GSAP**             | Ticker synced to PixiJS; `PixiPlugin` registered.                                          |
+| **Lifecycle**        | `startGame` / `finishGame` / `resetGame` cascade to game and emit typed events.            |
+| **GameController**   | Abstract base for game with `start`, `reset`, `finish` and `resize` lifecycle methods.     |
+| **Asset loading**    | Loads an AssetPack `manifest.json` bundle behind a spinner before the game starts.         |
+| **Layout**           | Fit-scale + virtual-pixel helpers for both the full screen and the design-resolution rect. |
+| **Graphics presets** | `High` / `Medium` / `Low` adjust renderer resolution and max FPS at runtime.               |
+| **Debug panel**      | Tweakpane with FPS, speed slider, restart, and graphics toggle. Collapses to ⚙️.           |
