@@ -95,10 +95,6 @@
 /* --- Slider --- */
 
 .menu__slider-wrap {
-  /* Thumb is 22px wide → radius 11px. The thumb center travels in
-     [radius, width - radius]. Pad the ticks below by the same amount
-     so their space-between extremes line up with thumb extremes. */
-  --thumb-radius: 11px;
   margin: 6px 0 8px;
 }
 
@@ -151,10 +147,7 @@
 .menu__ticks {
   display: flex;
   justify-content: space-between;
-  /* Inset by thumb radius so the first/last labels' centers (each is a
-     zero-width text node sitting at the flex extremes) align with the
-     thumb's travel extremes. */
-  padding: 0 var(--thumb-radius);
+  padding: 0 5px 0 8px;
   margin-top: 10px;
   font-size: 11px;
   font-weight: 600;
