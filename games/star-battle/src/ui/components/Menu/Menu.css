@@ -205,6 +205,8 @@
 }
 
 .menu__warn {
+  will-change: opacity;
+  transform: translateZ(0);
   margin: 10px 0 0;
   height: 16px;
   font-size: 12px;
