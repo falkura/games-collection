@@ -2,7 +2,7 @@
   "$schema": "../../../packages/shared/schemas/game.schema.json",
   "title": "BOIDS SIMULATION",
   "description": "A boids simulation is a simple algorithm that creates realistic flocking behavior (like birds, fish, or crowds) using a few local rules.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "route": "boids-simulation",
   "order": -1,
   "icon": "icon.png",

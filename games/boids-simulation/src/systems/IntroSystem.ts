@@ -1,6 +1,7 @@
 import { Graphics, HTMLText, Rectangle } from "pixi.js";
 import { BoidsSimulation } from "../BoidsSimulation";
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Engine, Layout } from "@falkura-pet/engine";
+import { System } from "./System";
 
 const C = {
   tint: "#030510",

@@ -1,9 +1,10 @@
 import { Graphics, Point, Ticker } from "pixi.js";
-import { Engine, Layout, System } from "@falkura-pet/engine";
+import { Layout } from "@falkura-pet/engine";
 import { BoidsSimulation } from "../BoidsSimulation";
 import { BladeApi } from "tweakpane";
 import { Boid } from "../Boid";
 import { SpatialGrid } from "../SpatialGrid";
+import { System } from "./System";
 
 const DEFAULTS = {
   count: 800,
