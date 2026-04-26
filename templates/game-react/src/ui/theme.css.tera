@@ -5,5 +5,5 @@ to: src/ui/theme.css
 /* Game global styles and theme can be placed here. */
 
 .app {
-  color: #c5f6f6;
+  color: #ffffff;
 }

@@ -10,7 +10,7 @@ You are scaffolding a new game in the `games-collection` monorepo. Work in short
 ## Step 1 — Pick the template
 
 - **`game-react`** — needs DOM UI (menus, HUD, scoreboards, modals, mode/difficulty pickers).
-- **`game`** — everything else (single-screen experiences, sims, generative toys, anything where the canvas is the whole UX).
+- **`game`** — everything else (single-screen experiences, sims, generative toys, anything where the canvas is the whole UX and/or tweakpane the whole controls).
 
 If unsure, ask the user.
 
@@ -27,11 +27,3 @@ bun install
 
 1. **`games/<name>/README.md`** — replace the placeholder with one short paragraph on what the game does and how it plays.
 2. **`games/<name>/assets/game.json`** `description` — launcher card copy. Describe what the **player** does.
-3. **First-launch copy:**
-   - `game` → `src/systems/IntroSystem.ts`.
-   - `game-react` → `src/ui/App.tsx`.
-4. **Implement gameplay.** Read [`docs/game.md`](../../../docs/game.md) for engine/lifecycle. For React-UI games also read [`docs/game-react.md`](../../../docs/game-react.md). Do **not** read other games under `games/` as reference unless the user explicitly asks you to (e.g. "use connect-4 as a reference"). The docs are the source of truth — copying from sibling games drags in patterns the new game does not need.
-
-## Step 4 — Verify
-
-`moon run <name>:build` must succeed with zero TypeScript errors before calling the scaffold done.
