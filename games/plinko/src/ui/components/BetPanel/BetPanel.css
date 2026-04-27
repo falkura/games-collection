@@ -1,0 +1,172 @@
+.bet-panel {
+  background: var(--plinko-panel);
+  border: 1px solid var(--plinko-border);
+  border-radius: var(--plinko-radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bet-panel__row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bet-panel__row--split {
+  flex-direction: row;
+  gap: 10px;
+}
+
+.bet-panel__field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bet-panel__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--plinko-text-dim);
+}
+
+.bet-panel__bet {
+  display: flex;
+  gap: 6px;
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.bet-panel__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 8px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--plinko-text);
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+.bet-panel__input::-webkit-outer-spin-button,
+.bet-panel__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.bet-panel__btn-mini {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--plinko-panel);
+  color: var(--plinko-text);
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid var(--plinko-border);
+}
+.bet-panel__btn-mini:hover {
+  background: var(--plinko-border);
+}
+
+.bet-panel__seg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.bet-panel__seg-btn {
+  padding: 8px 0;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--plinko-text-dim);
+  text-align: center;
+}
+
+.bet-panel__seg-btn--on {
+  color: #0b0b14;
+}
+.bet-panel__seg-btn--low.bet-panel__seg-btn--on {
+  background: linear-gradient(180deg, #60a5fa, #1d4ed8);
+}
+.bet-panel__seg-btn--medium.bet-panel__seg-btn--on {
+  background: linear-gradient(180deg, #4ade80, #15803d);
+}
+.bet-panel__seg-btn--high.bet-panel__seg-btn--on {
+  background: linear-gradient(180deg, #c084fc, #6b21a8);
+}
+.bet-panel__seg-btn--expert.bet-panel__seg-btn--on {
+  background: linear-gradient(180deg, #fb923c, #c2410c);
+}
+
+.bet-panel__select {
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--plinko-text);
+  outline: none;
+}
+
+.bet-panel__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--plinko-text-dim);
+}
+.bet-panel__toggle-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--plinko-text-dim);
+  transition: background 0.2s;
+}
+.bet-panel__toggle--on {
+  color: var(--plinko-accent);
+  border-color: var(--plinko-accent);
+}
+.bet-panel__toggle--on .bet-panel__toggle-dot {
+  background: var(--plinko-accent);
+  box-shadow: 0 0 8px var(--plinko-accent);
+}
+
+.bet-panel__bet-btn {
+  margin-top: 4px;
+  padding: 14px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #4ade80, #16a34a);
+  color: #0b0b14;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: transform 0.1s, filter 0.2s;
+}
+.bet-panel__bet-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.bet-panel__bet-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.bet-panel__bet-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

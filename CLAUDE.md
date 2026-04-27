@@ -3,6 +3,7 @@
 - You need to show short tokenomics table after each game creation / modification command (part - tokens). For reading part - decompose what you've read and how much tokens consumed each subsection.
 - **DO NOT USE ANY REFERENCES.** When implementing or modifying a game, do not read other games `games/<name>/` directories for patterns or inspiration, only when user explicitly asks for it.
 - **DO NOT READ** `dist/`, `build/` and `node_modules/` folders if not neaded explicitly.
+- **DO NOT READ** `templates/` folder for game creation, all needed files will be added to `games/<name>/` folder.
 
 ## Project
 

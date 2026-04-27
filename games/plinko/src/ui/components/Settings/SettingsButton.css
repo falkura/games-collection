@@ -1,0 +1,15 @@
+.settings-button {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--plinko-panel);
+  border: 1px solid var(--plinko-border);
+  border-radius: 10px;
+  color: var(--plinko-text);
+  transition: background 0.2s, transform 0.2s;
+}
+.settings-button:hover {
+  background: var(--plinko-panel-2);
+  transform: rotate(30deg);
+}

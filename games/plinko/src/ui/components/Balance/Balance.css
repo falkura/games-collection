@@ -1,0 +1,33 @@
+.balance {
+  background: var(--plinko-panel);
+  border: 1px solid var(--plinko-border);
+  border-radius: var(--plinko-radius);
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+
+.balance__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--plinko-text-dim);
+}
+
+.balance__amount {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.balance--up {
+  border-color: var(--plinko-accent);
+  background: color-mix(in srgb, var(--plinko-accent) 12%, var(--plinko-panel));
+}
+.balance--down {
+  border-color: var(--plinko-danger);
+}

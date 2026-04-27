@@ -22,6 +22,9 @@
       "path": "./games/orbit-drift"
     },
     {
+      "path": "./games/plinko"
+    },
+    {
       "path": "./games/star-battle"
     },
     {

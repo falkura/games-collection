@@ -1,0 +1,97 @@
+:root {
+  --plinko-bg: #0e0f1a;
+  --plinko-panel: #161827;
+  --plinko-panel-2: #1f2235;
+  --plinko-border: #2a2e45;
+  --plinko-text: #e7eaf5;
+  --plinko-text-dim: #8a90ad;
+  --plinko-accent: #4ade80;
+  --plinko-accent-2: #22d3ee;
+  --plinko-danger: #f87171;
+  --plinko-radius: 12px;
+}
+
+html,
+body {
+  background: var(--plinko-bg);
+}
+
+#uiRoot {
+  pointer-events: none;
+}
+
+#uiRoot .plinko-ui {
+  pointer-events: none;
+  color: var(--plinko-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.plinko-ui * {
+  box-sizing: border-box;
+}
+
+.plinko-ui button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+.plinko-ui input {
+  font-family: inherit;
+  color: inherit;
+}
+
+.plinko-ui__top {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: calc(12px + var(--tweakpane-reserved, 0px));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.plinko-ui__bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.plinko-ui__history {
+  position: fixed;
+  top: 64px;
+  right: calc(12px + var(--tweakpane-reserved, 0px));
+  width: 92px;
+  max-height: calc(100vh - 64px - 360px);
+  pointer-events: auto;
+  z-index: 4;
+}
+
+@media (min-width: 900px) {
+  .plinko-ui__history {
+    top: 80px;
+    width: 220px;
+    max-height: calc(100vh - 80px - 240px);
+  }
+  .plinko-ui__bottom {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 720px;
+  }
+}

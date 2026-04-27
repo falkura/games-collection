@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../packages/shared/schemas/game.schema.json",
+  "title": "PLINKO",
+  "description": "Stake-style Plinko: drop balls through pegs into bins, with bet, difficulty, rows, autoplay and history.",
+  "version": "0.0.1",
+  "route": "plinko",
+  "icon": "icon.png",
+  "enabled": true
+}
