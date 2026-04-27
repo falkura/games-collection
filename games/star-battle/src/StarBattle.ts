@@ -208,22 +208,23 @@ export class StarBattle extends GameController {
     board.setHidden(false);
   }
 
-  /** Returns region ids that have no star, but only when the board is fully covered (no empty cells in display). */
+  /** Returns region ids that haven't reached their star quota, but only when the board is fully covered (no empty cells in display). */
   private computeStarlessRegions(display: Mark[][], regions: number[][]): Set<number> {
+    if (!this.puzzle) return new Set();
     const n = display.length;
     // Only activate when every cell is a cross or star (nothing empty).
     for (let r = 0; r < n; r++)
       for (let c = 0; c < n; c++)
         if (display[r][c] === 0) return new Set();
 
-    const hasStarInRegion = new Set<number>();
+    const regionStarCount = new Array(n).fill(0);
     for (let r = 0; r < n; r++)
       for (let c = 0; c < n; c++)
-        if (display[r][c] === 2) hasStarInRegion.add(regions[r][c]);
+        if (display[r][c] === 2) regionStarCount[regions[r][c]]++;
 
     const starless = new Set<number>();
     for (let g = 0; g < n; g++)
-      if (!hasStarInRegion.has(g)) starless.add(g);
+      if (regionStarCount[g] < this.puzzle.starsPer) starless.add(g);
     return starless;
   }
 
