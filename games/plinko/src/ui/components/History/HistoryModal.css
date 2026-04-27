@@ -60,6 +60,25 @@
   overflow-y: auto;
   padding: 10px 14px 16px;
   flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--plinko-border) transparent;
+}
+
+.history-modal__body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-modal__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-modal__body::-webkit-scrollbar-thumb {
+  background: var(--plinko-border);
+  border-radius: 3px;
+}
+
+.history-modal__body::-webkit-scrollbar-thumb:hover {
+  background: var(--plinko-accent);
 }
 
 .history-modal__empty {
