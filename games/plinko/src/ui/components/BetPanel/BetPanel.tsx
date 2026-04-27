@@ -247,7 +247,9 @@ export function BetPanel() {
           onClick={() => { Audio.play(turbo ? "turboOff" : "turboOn"); setTurbo(!turbo); }}
           title="Turbo: 2× speed"
         >
-          ⚡
+          <svg width="14" height="18" viewBox="0 0 14 18" fill="none" aria-hidden="true">
+            <path d="M8 1L1 10h5.5L6 17l7-9H7.5L8 1Z" fill="currentColor" stroke="currentColor" strokeWidth="0.5" strokeLinejoin="round"/>
+          </svg>
         </button>
       </div>
 

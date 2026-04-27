@@ -132,6 +132,8 @@
   font-variant-numeric: tabular-nums;
   min-width: 48px;
   text-align: center;
+  position: relative;
+  top: 2px;
 }
 
 .history-modal__mult {
