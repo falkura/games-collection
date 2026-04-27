@@ -14,10 +14,19 @@ export function SettingsMenu() {
     <>
       <div className="settings-menu__backdrop" onClick={() => setOpen(false)} />
       <div className="settings-menu">
-        <div className="settings-menu__title">Settings</div>
+        <div className="settings-menu__header">
+          <span className="settings-menu__title">Settings</span>
+          <button
+            type="button"
+            className="settings-menu__close"
+            onClick={() => setOpen(false)}
+          >
+            ✕
+          </button>
+        </div>
 
         <div className="settings-menu__row">
-          <label className="settings-menu__label">Volume</label>
+          <label className="settings-menu__label">🔊 Volume</label>
           <input
             className="settings-menu__slider"
             type="range"
@@ -34,17 +43,6 @@ export function SettingsMenu() {
           </span>
         </div>
 
-        <div className="settings-menu__row">
-          <label className="settings-menu__label">Animations</label>
-          <button
-            type="button"
-            className={`settings-menu__toggle ${settings.animations ? "settings-menu__toggle--on" : ""}`}
-            onClick={() => setSettings({ animations: !settings.animations })}
-          >
-            {settings.animations ? "On" : "Off"}
-          </button>
-        </div>
-
         <button
           type="button"
           className="settings-menu__info-btn"
@@ -53,7 +51,7 @@ export function SettingsMenu() {
             setInfoOpen(true);
           }}
         >
-          Game Info & Rules
+          📋 Game Info &amp; Rules
         </button>
       </div>
     </>

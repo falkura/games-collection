@@ -39,8 +39,8 @@ export function InfoModal() {
               spread.
             </li>
             <li>
-              <b>Autoplay</b> — Drops a ball every 0.7s until you turn it off
-              or run out of balance.
+              <b>Autoplay</b> — Drops a ball every 0.7s until you turn it off or
+              run out of balance.
             </li>
             <li>
               <b>1/2</b> and <b>2×</b> quickly halve or double your bet.

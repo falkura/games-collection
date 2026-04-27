@@ -1,47 +1,70 @@
 .settings-menu__backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.5);
   pointer-events: auto;
   z-index: 10;
-  animation: fade-in 0.2s ease-out;
+  animation: sm-fade 0.15s ease-out;
 }
 
 .settings-menu {
   position: fixed;
-  top: 60px;
+  top: 62px;
   right: calc(12px + var(--tweakpane-reserved, 0px));
-  width: min(320px, calc(100vw - 24px));
+  width: min(300px, calc(100vw - 24px));
   background: var(--plinko-panel);
   border: 1px solid var(--plinko-border);
   border-radius: var(--plinko-radius);
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   pointer-events: auto;
   z-index: 11;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
-  animation: settings-pop 0.18s ease-out;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+  animation: sm-pop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.settings-menu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .settings-menu__title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--plinko-text-dim);
+}
+
+.settings-menu__close {
+  font-size: 13px;
+  color: var(--plinko-text-dim);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+}
+.settings-menu__close:hover {
+  color: var(--plinko-text);
 }
 
 .settings-menu__row {
   display: flex;
   align-items: center;
   gap: 10px;
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+  border-radius: 10px;
+  padding: 10px 12px;
 }
 
 .settings-menu__label {
-  flex: 0 0 90px;
-  font-size: 14px;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .settings-menu__slider {
@@ -50,51 +73,46 @@
 }
 
 .settings-menu__value {
-  flex: 0 0 40px;
+  flex: 0 0 36px;
   text-align: right;
   font-variant-numeric: tabular-nums;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--plinko-text-dim);
-}
-
-.settings-menu__toggle {
-  background: var(--plinko-panel-2);
-  border: 1px solid var(--plinko-border);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  color: var(--plinko-text-dim);
-}
-.settings-menu__toggle--on {
-  background: color-mix(in srgb, var(--plinko-accent) 20%, var(--plinko-panel-2));
-  color: var(--plinko-accent);
-  border-color: var(--plinko-accent);
 }
 
 .settings-menu__info-btn {
-  margin-top: 4px;
   background: var(--plinko-panel-2);
   border: 1px solid var(--plinko-border);
   border-radius: 10px;
-  padding: 12px;
+  padding: 12px 14px;
   color: var(--plinko-text);
   font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 .settings-menu__info-btn:hover {
   background: var(--plinko-border);
+  border-color: var(--plinko-text-dim);
 }
 
-@keyframes settings-pop {
+@keyframes sm-pop {
   from {
     opacity: 0;
-    transform: translateY(-6px) scale(0.97);
+    transform: translateY(-8px) scale(0.95);
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes sm-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePlinkoStore } from "../../../store/store";
 import { plinkoEvents } from "../../../store/events";
 import {
@@ -16,6 +16,7 @@ export function BetPanel() {
     difficulty,
     rows,
     autoplay,
+    autoplayCount,
     pendingDrops,
     setBet,
     halveBet,
@@ -23,11 +24,18 @@ export function BetPanel() {
     setDifficulty,
     setRows,
     setAutoplay,
+    setAutoplayCount,
+    decAutoplayCount,
   } = usePlinkoStore();
 
   const autoTimer = useRef<number | null>(null);
+  const [betInput, setBetInput] = useState(bet.toFixed(2));
 
-  // Autoplay: drop a ball every 700ms while we have funds.
+  // Keep betInput in sync when bet changes externally (halveBet / doubleBet)
+  useEffect(() => {
+    setBetInput(bet.toFixed(2));
+  }, [bet]);
+
   useEffect(() => {
     if (!autoplay) {
       if (autoTimer.current !== null) {
@@ -43,6 +51,9 @@ export function BetPanel() {
         return;
       }
       plinkoEvents.emit("plinko:drop-request");
+      if (s.autoplayCount > 0) {
+        s.decAutoplayCount();
+      }
     };
     tick();
     autoTimer.current = window.setInterval(tick, 700);
@@ -53,50 +64,74 @@ export function BetPanel() {
 
   const canBet = balance >= bet && pendingDrops < 20;
 
+  const commitBet = (raw: string) => {
+    const v = parseFloat(raw);
+    if (!isNaN(v) && v > 0) setBet(v);
+    setBetInput(bet.toFixed(2));
+  };
+
   return (
     <div className="bet-panel">
+      {/* Row 1: Bet amount + quick buttons */}
       <div className="bet-panel__row">
         <label className="bet-panel__label">Bet Amount</label>
-        <div className="bet-panel__bet">
-          <input
-            type="number"
-            className="bet-panel__input"
-            min={0.01}
-            step={0.01}
-            value={bet}
-            onChange={(e) => setBet(parseFloat(e.target.value) || 0.01)}
-          />
-          <button className="bet-panel__btn-mini" onClick={halveBet} type="button">
+        <div className="bet-panel__bet-row">
+          <div className="bet-panel__input-wrap">
+            <span className="bet-panel__currency">$</span>
+            <input
+              type="number"
+              className="bet-panel__input"
+              min={0.01}
+              step={0.01}
+              value={betInput}
+              onChange={(e) => setBetInput(e.target.value)}
+              onBlur={(e) => commitBet(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && commitBet(betInput)}
+            />
+          </div>
+          <button
+            className="bet-panel__btn-mini"
+            onClick={() => {
+              halveBet();
+            }}
+            type="button"
+          >
             ½
           </button>
-          <button className="bet-panel__btn-mini" onClick={doubleBet} type="button">
+          <button
+            className="bet-panel__btn-mini"
+            onClick={() => {
+              doubleBet();
+            }}
+            type="button"
+          >
             2×
           </button>
         </div>
       </div>
 
+      {/* Row 2: Difficulty + Rows side by side */}
       <div className="bet-panel__row bet-panel__row--split">
         <div className="bet-panel__field">
           <label className="bet-panel__label">Difficulty</label>
           <div className="bet-panel__seg">
-            {DIFFICULTIES.map((d) => (
-              <button
-                key={d}
-                type="button"
-                className={`bet-panel__seg-btn ${
-                  d === difficulty ? "bet-panel__seg-btn--on" : ""
-                } bet-panel__seg-btn--${d.toLowerCase()}`}
-                onClick={() => setDifficulty(d as Difficulty)}
-              >
-                {d}
-              </button>
-            ))}
+            {DIFFICULTIES.map((d) => {
+              const active = d === difficulty;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  className={`bet-panel__seg-btn bet-panel__seg-btn--${d.toLowerCase()} ${active ? "bet-panel__seg-btn--on" : ""}`}
+                  onClick={() => setDifficulty(d as Difficulty)}
+                >
+                  {d}
+                </button>
+              );
+            })}
           </div>
         </div>
-      </div>
 
-      <div className="bet-panel__row bet-panel__row--split">
-        <div className="bet-panel__field">
+        <div className="bet-panel__field bet-panel__field--narrow">
           <label className="bet-panel__label">Rows</label>
           <select
             className="bet-panel__select"
@@ -110,23 +145,43 @@ export function BetPanel() {
             ))}
           </select>
         </div>
-        <div className="bet-panel__field">
-          <label className="bet-panel__label">Autoplay</label>
+      </div>
+
+      {/* Row 3: Autoplay */}
+      <div className="bet-panel__row">
+        <label className="bet-panel__label">Autoplay</label>
+        <div className="bet-panel__autoplay-row">
+          <div className="bet-panel__input-wrap bet-panel__input-wrap--count">
+            <input
+              type="number"
+              className="bet-panel__input bet-panel__input--count"
+              min={0}
+              step={1}
+              placeholder="∞"
+              value={autoplayCount === 0 ? "" : autoplayCount}
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                setAutoplayCount(isNaN(v) ? 0 : v);
+              }}
+              disabled={autoplay}
+            />
+          </div>
           <button
             type="button"
-            className={`bet-panel__toggle ${autoplay ? "bet-panel__toggle--on" : ""}`}
+            className={`bet-panel__autoplay-btn ${autoplay ? "bet-panel__autoplay-btn--on" : ""}`}
             onClick={() => setAutoplay(!autoplay)}
           >
-            <span className="bet-panel__toggle-dot" />
-            <span>{autoplay ? "On" : "Off"}</span>
+            <span className="bet-panel__autoplay-dot" />
+            {autoplay ? "Stop" : "Auto"}
           </button>
         </div>
       </div>
 
+      {/* Bet button */}
       <button
         type="button"
         className="bet-panel__bet-btn"
-        disabled={!canBet}
+        disabled={!canBet || autoplay}
         onClick={() => plinkoEvents.emit("plinko:drop-request")}
       >
         Bet ${bet.toFixed(2)}

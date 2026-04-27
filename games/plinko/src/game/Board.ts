@@ -1,4 +1,4 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Text } from "pixi.js";
 import gsap from "gsap";
 import { Rows } from "../server/payouts";
 
@@ -19,7 +19,7 @@ export interface BoardLayout {
 
 export class Board extends Container {
   public layout: BoardLayout;
-  public bins: Graphics[] = [];
+  public bins: Container[] = [];
 
   private pegLayer: Graphics;
   private binLayer: Container;
@@ -44,26 +44,23 @@ export class Board extends Container {
     this.gradient = opts.gradient;
 
     const { rows, width, height } = opts;
-    // Top peg row has 3 pegs; row r has r+3 pegs (rows ranges 8..16). Total
-    // peg rows = rows. Bin row = rows + 3 bins. We use a vertical layout that
-    // keeps the board centered horizontally and fills available height.
-    const lastRowPegs = rows + 2; // pegs in last peg row
+    const lastRowPegs = rows + 2;
     const binCount = rows + 1;
 
-    // Peg/ball sizes scale down for higher row counts so things fit.
-    const pegRadius = Math.max(3, Math.min(7, 90 / rows));
-    const ballRadius = Math.max(5, Math.min(11, 140 / rows));
+    const pegRadius = Math.max(4, Math.min(8, 100 / rows));
+    const ballRadius = Math.max(6, Math.min(12, 150 / rows));
 
-    // Reserve bin row at the bottom.
-    const binHeight = Math.min(60, height * 0.07);
-    const topPad = ballRadius * 4;
-    const pegAreaHeight = height - binHeight - topPad - 8;
-    const rowSpacingY = pegAreaHeight / rows;
-    // colSpacingX is governed by available width relative to bottom row.
+    // Bins are square: side = colSpacingX. Reserve their height at bottom.
+    // We first compute colSpacingX from available width, then derive binHeight = colSpacingX.
     const colSpacingX = Math.min(
       (width - pegRadius * 4) / (lastRowPegs - 1),
-      rowSpacingY * 1.05,
+      48,
     );
+    const binHeight = colSpacingX; // square bins
+    const topPad = ballRadius * 4;
+    const binGap = colSpacingX * 0.15; // gap between peg area bottom and bins
+    const pegAreaHeight = height - binHeight - topPad - binGap;
+    const rowSpacingY = pegAreaHeight / rows;
 
     const pegs: BoardLayout["pegs"] = [];
     const centerX = width / 2;
@@ -79,10 +76,9 @@ export class Board extends Container {
       }
     }
 
-    const bottomY = topY + (rows - 1) * rowSpacingY;
-    const binRowY = bottomY + rowSpacingY;
+    const lastPegRowY = topY + (rows - 1) * rowSpacingY;
+    const binRowY = lastPegRowY + rowSpacingY * 0.8 + binGap;
     const binCenters: { x: number; y: number }[] = [];
-    const binWidth = colSpacingX;
     const binsRowWidth = (binCount - 1) * colSpacingX;
     const binsStartX = centerX - binsRowWidth / 2;
     for (let b = 0; b < binCount; b++) {
@@ -100,7 +96,7 @@ export class Board extends Container {
       colSpacingX,
       pegs,
       binCenters,
-      binWidth,
+      binWidth: colSpacingX,
       binHeight,
     };
 
@@ -111,35 +107,66 @@ export class Board extends Container {
     const g = this.pegLayer;
     g.clear();
     for (const p of this.layout.pegs) {
-      g.circle(p.x, p.y, this.layout.pegRadius).fill({ color: 0xffffff });
+      g.circle(p.x, p.y, this.layout.pegRadius)
+        .fill({ color: 0xffffff })
+        .circle(p.x, p.y, this.layout.pegRadius * 1.6)
+        .fill({ color: 0xffffff, alpha: 0.08 });
     }
   }
 
-  /**
-   * Bins are rebuilt by the Game with multipliers so the labels can update
-   * without rebuilding peg geometry.
-   */
-  public renderBins(multipliers: number[], onCreated: (bins: Graphics[]) => void) {
+  public renderBins(
+    multipliers: number[],
+    onCreated: (bins: Container[]) => void,
+  ) {
     this.binLayer.removeChildren().forEach((c) => c.destroy());
     this.bins = [];
+
     const { binCenters, binWidth, binHeight } = this.layout;
+    const gap = 3;
+    const side = binWidth - gap;
+    const radius = Math.min(8, side * 0.18);
     const center = (binCenters.length - 1) / 2;
+
     for (let i = 0; i < binCenters.length; i++) {
       const dist = Math.abs(i - center) / center;
       const color = lerpColor(this.gradient.center, this.gradient.edge, dist);
-      const bin = new Graphics();
-      bin.roundRect(
-        -binWidth / 2 + 2,
-        0,
-        binWidth - 4,
-        binHeight,
-        Math.min(8, binHeight / 3),
-      ).fill({ color });
-      bin.x = binCenters[i].x;
-      bin.y = binCenters[i].y;
-      this.binLayer.addChild(bin);
-      this.bins.push(bin);
+
+      const container = new Container();
+      container.x = binCenters[i].x;
+      container.y = binCenters[i].y;
+
+      // Background rect
+      const bg = new Graphics();
+      bg.roundRect(-side / 2, 0, side, binHeight, radius).fill({ color });
+      container.addChild(bg);
+
+      // Multiplier label — sized to fill the bin
+      const fontSize = Math.max(10, Math.min(side * 0.42, binHeight * 0.5));
+      const label = new Text({
+        text: formatMultiplier(multipliers[i]),
+        style: {
+          fontFamily: "system-ui, Arial, sans-serif",
+          fontSize,
+          fontWeight: "900",
+          fill: "#ffffff",
+          dropShadow: {
+            color: "#000000",
+            blur: 4,
+            distance: 1,
+            alpha: 0.6,
+          },
+          align: "center",
+        },
+      });
+      label.anchor.set(0.5, 0.5);
+      label.x = 0;
+      label.y = binHeight / 2;
+      container.addChild(label);
+
+      this.binLayer.addChild(container);
+      this.bins.push(container);
     }
+
     onCreated(this.bins);
   }
 
@@ -149,14 +176,20 @@ export class Board extends Container {
     gsap.killTweensOf(bin);
     const baseY = this.layout.binCenters[index].y;
     gsap.to(bin, {
-      y: baseY + this.layout.binHeight * 0.45,
-      duration: 0.08,
+      y: baseY + this.layout.binHeight * 0.4,
+      duration: 0.07,
       ease: "power2.out",
       onComplete: () => {
-        gsap.to(bin, { y: baseY, duration: 0.25, ease: "back.out(2)" });
+        gsap.to(bin, { y: baseY, duration: 0.3, ease: "back.out(2.5)" });
       },
     });
   }
+}
+
+function formatMultiplier(v: number): string {
+  if (v >= 100) return `${Math.round(v)}x`;
+  if (v >= 10) return `${v % 1 === 0 ? v : v.toFixed(1)}x`;
+  return `${v}x`;
 }
 
 function lerpColor(a: string, b: string, t: number): number {

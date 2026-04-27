@@ -14,7 +14,6 @@ export interface HistoryEntry {
 
 interface Settings {
   volume: number;
-  animations: boolean;
 }
 
 interface PlinkoState {
@@ -23,6 +22,8 @@ interface PlinkoState {
   difficulty: Difficulty;
   rows: Rows;
   autoplay: boolean;
+  /** 0 = infinite, >0 = remaining drops */
+  autoplayCount: number;
   pendingDrops: number;
   history: HistoryEntry[];
   settings: Settings;
@@ -35,6 +36,8 @@ interface PlinkoState {
   setDifficulty: (d: Difficulty) => void;
   setRows: (r: Rows) => void;
   setAutoplay: (v: boolean) => void;
+  setAutoplayCount: (v: number) => void;
+  decAutoplayCount: () => void;
   addBalance: (v: number) => void;
   subBalance: (v: number) => void;
   pushHistory: (e: HistoryEntry) => void;
@@ -53,20 +56,27 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
   difficulty: "Medium",
   rows: 12,
   autoplay: false,
+  autoplayCount: 0,
   pendingDrops: 0,
   history: [],
-  settings: { volume: 0.6, animations: true },
+  settings: { volume: 0.6 },
   infoOpen: false,
   settingsOpen: false,
 
   setBet: (v) => set({ bet: Math.max(0.01, +v.toFixed(2)) }),
   halveBet: () =>
     set((s) => ({ bet: Math.max(0.01, +(s.bet / 2).toFixed(2)) })),
-  doubleBet: () =>
-    set((s) => ({ bet: +(s.bet * 2).toFixed(2) })),
+  doubleBet: () => set((s) => ({ bet: +(s.bet * 2).toFixed(2) })),
   setDifficulty: (d) => set({ difficulty: d }),
   setRows: (r) => set({ rows: r }),
   setAutoplay: (v) => set({ autoplay: v }),
+  setAutoplayCount: (v) => set({ autoplayCount: Math.max(0, v) }),
+  decAutoplayCount: () =>
+    set((s) => {
+      if (s.autoplayCount <= 0) return {};
+      const next = s.autoplayCount - 1;
+      return { autoplayCount: next, autoplay: next > 0 };
+    }),
   addBalance: (v) => set((s) => ({ balance: +(s.balance + v).toFixed(2) })),
   subBalance: (v) => set((s) => ({ balance: +(s.balance - v).toFixed(2) })),
   pushHistory: (e) =>
