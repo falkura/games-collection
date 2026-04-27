@@ -98,54 +98,80 @@ interface Hop {
 /**
  * Build kinematically-derived hops from waypoints.
  *
- * For each hop from A → B:
- *   - Vertical: ball leaves A with upward velocity vy0 (bounce from previous impact),
- *     follows y = A.y - vy0*t + 0.5*g*t² until it reaches B.y.
- *   - The peak happens at t_peak = vy0/g, height = A.y - vy0²/(2g).
- *   - vy0 is derived from the previous fall speed × restitution coefficient.
- *   - Horizontal: linear from A.x to B.x across total hop time.
+ * Randomness injected at three levels:
+ *  1. Per-hop speed variance — vyImpact scaled by random factor.
+ *  2. High-bounce events — rare extra upward kick.
+ *  3. Peg-skip — ball arcs over a waypoint, landing two pegs down.
  */
 function buildHops(waypoints: Waypoint[], layout: BoardLayout): Hop[] {
   const g = BALL_CONFIG.gravity;
   const e = BALL_CONFIG.restitution;
   const hops: Hop[] = [];
 
-  // Ball starts at waypoints[0] (first peg) with zero vertical speed
-  // (it spawned directly there). Initial vertical launch = slight upward nudge
-  // from a "just landed" state — derive from 1 row-height free-fall.
   let vyImpact = Math.sqrt(2 * g * layout.rowSpacingY * 0.4);
+  let justSkipped = false;
 
-  for (let i = 0; i < waypoints.length - 1; i++) {
+  let i = 0;
+  while (i < waypoints.length - 1) {
     const from = waypoints[i];
-    const to = waypoints[i + 1];
-    const isLast = i === waypoints.length - 2;
+    const rowsLeft = waypoints.length - 1 - i;
+    const isLast = rowsLeft === 1;
 
-    // Upward velocity after bouncing off this peg
-    const vy0 = vyImpact * e;
-    const dy = to.y - from.y; // positive = downward
+    // Decide whether to skip the very next waypoint
+    const canSkip =
+      !isLast &&
+      !justSkipped &&
+      rowsLeft > BALL_CONFIG.skipMinRowsLeft &&
+      Math.random() < BALL_CONFIG.skipChance;
 
-    // Time to travel dy vertically: from.y - vy0*t + 0.5*g*t² = to.y
-    // => 0.5*g*t² - vy0*t - dy = 0  (dy may be small for final bin drop)
-    // Always use kinematic solution; if disc < 0 clamp to pure fall.
+    const toIdx = canSkip ? i + 2 : i + 1;
+    const to = waypoints[toIdx];
+    justSkipped = canSkip;
+
+    // Speed variance per hop
+    const speedScale =
+      1 + (Math.random() * 2 - 1) * BALL_CONFIG.speedVariance;
+
+    // Occasional high-bounce boost
+    const boost =
+      !isLast && Math.random() < BALL_CONFIG.highBoostChance
+        ? BALL_CONFIG.highBoostMultiplier
+        : 1.0;
+
+    const vy0 = vyImpact * e * speedScale * boost;
+    const dy = to.y - from.y;
+
     const disc = vy0 * vy0 + 2 * g * dy;
-    const totalTime = disc >= 0
-      ? (vy0 + Math.sqrt(disc)) / g
-      : Math.sqrt(2 * Math.abs(dy) / g);
+    const totalTime =
+      disc >= 0
+        ? (vy0 + Math.sqrt(disc)) / g
+        : Math.sqrt(2 * Math.abs(dy) / g);
 
     const tPeak = Math.min(vy0 / g, totalTime * 0.95);
     const riseTime = Math.max(0.01, tPeak);
     const fallTime = Math.max(0.04, totalTime - riseTime);
 
-    // Peak position — parabolic apex
     const peakY = from.y - vy0 * tPeak + 0.5 * g * tPeak * tPeak;
-    // Lateral: linear interpolation; wobble only on non-last hops
-    const wobble = isLast ? 0 : (Math.random() - 0.5) * layout.colSpacingX * BALL_CONFIG.wobbleFraction;
-    const peakX = from.x + (to.x - from.x) * (riseTime / totalTime) + wobble;
+    const wobble = isLast
+      ? 0
+      : (Math.random() - 0.5) * layout.colSpacingX * BALL_CONFIG.wobbleFraction;
+    const peakX =
+      from.x + (to.x - from.x) * (riseTime / totalTime) + wobble;
 
-    hops.push({ peakX, peakY, toX: to.x, toY: to.y, riseTime, fallTime, isLast });
+    hops.push({
+      peakX,
+      peakY,
+      toX: to.x,
+      toY: to.y,
+      riseTime,
+      fallTime,
+      isLast: toIdx === waypoints.length - 1,
+    });
 
-    // Speed at impact with next peg (for next hop's bounce)
+    // Carry forward impact speed for the next peg
     vyImpact = Math.sqrt(Math.max(0, vy0 * vy0 + 2 * g * dy));
+
+    i = toIdx;
   }
 
   return hops;

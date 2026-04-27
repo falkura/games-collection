@@ -40,4 +40,25 @@ export const BALL_CONFIG = {
 
   /** Milliseconds between autoplay drops. */
   autoplayIntervalMs: 400,
+
+  /**
+   * Per-hop speed variance: each hop's launch speed is scaled by a random
+   * factor in [1 - speedVariance, 1 + speedVariance].
+   */
+  speedVariance: 0.35,
+
+  /**
+   * Probability that a hop gets an extra upward energy boost (high bounce).
+   * When triggered, vyImpact is multiplied by boostMultiplier.
+   */
+  highBoostChance: 0.18,
+  highBoostMultiplier: 1.55,
+
+  /**
+   * Probability that a ball skips a peg entirely (flies over it) when there
+   * are at least skipMinRowsLeft rows remaining and the ball hasn't just skipped.
+   * The skipped peg's waypoint is dropped; the ball arcs directly to the next.
+   */
+  skipChance: 0.22,
+  skipMinRowsLeft: 3,
 };
