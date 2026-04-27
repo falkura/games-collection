@@ -64,7 +64,7 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
   turbo: false,
   pendingDrops: 0,
   history: [],
-  settings: { volume: 0.6 },
+  settings: { volume: 0.5 },
   infoOpen: false,
   settingsOpen: false,
   historyOpen: false,

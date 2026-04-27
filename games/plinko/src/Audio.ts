@@ -24,6 +24,12 @@ const SoundList = {
 const defaultAudio = "audio/click.mp3";
 
 class AudioManager {
+  setVolume(v: number) {
+    // Perceptual loudness: square the linear slider value so the
+    // midpoint (0.5) maps to ~25% amplitude, matching how ears perceive volume.
+    sound.volumeAll = v * v;
+  }
+
   play(name: keyof typeof SoundList) {
     let audioName = SoundList[name];
 
