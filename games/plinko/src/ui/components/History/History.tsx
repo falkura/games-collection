@@ -1,4 +1,5 @@
 import { usePlinkoStore } from "../../../store/store";
+import { getBinColor } from "../../../server/payouts";
 import "./History.css";
 
 const MAX_VISIBLE = 4;
@@ -11,14 +12,22 @@ export function History() {
     <div className="history">
       <div className="history__title">Last</div>
       <ul className="history__list">
-        {visible.map((h, i) => (
-          <li
-            key={h.id}
-            className={`history__item ${h.win ? "history__item--win" : "history__item--lose"} ${i === 0 ? "history__item--new" : ""}`}
-          >
-            <span className="history__mult">{h.multiplier}×</span>
-          </li>
-        ))}
+        {visible.map((h, i) => {
+          const color = getBinColor(h.difficulty, h.rows, h.bin);
+          return (
+            <li
+              key={h.id}
+              className={`history__item ${i === 0 ? "history__item--new" : ""}`}
+              style={{
+                background: `${color}28`,
+                color,
+                borderColor: `${color}60`,
+              }}
+            >
+              <span className="history__mult">{h.multiplier}×</span>
+            </li>
+          );
+        })}
         {visible.length === 0 && <li className="history__empty">—</li>}
       </ul>
     </div>

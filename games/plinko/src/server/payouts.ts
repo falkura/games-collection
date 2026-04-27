@@ -117,8 +117,23 @@ export const DIFFICULTY_GRADIENT: Record<
   Difficulty,
   { edge: string; center: string }
 > = {
-  Low: { edge: "#1d4ed8", center: "#60a5fa" },
-  Medium: { edge: "#15803d", center: "#4ade80" },
-  High: { edge: "#6b21a8", center: "#c084fc" },
-  Expert: { edge: "#c2410c", center: "#fb923c" },
+  Low: { edge: "#163aa0", center: "#60a5fa" },
+  Medium: { edge: "#06762f", center: "#4ade80" },
+  High: { edge: "#7119b8", center: "#c084fc" },
+  Expert: { edge: "#c20c0c", center: "#fb923c" },
 };
+
+/** Returns the CSS hex color of a bin — mirrors Board's lerpColor logic exactly. */
+export function getBinColor(difficulty: Difficulty, rows: Rows, binIndex: number): string {
+  const { edge, center } = DIFFICULTY_GRADIENT[difficulty];
+  const binCount = rows + 1;
+  const c = (binCount - 1) / 2;
+  const dist = Math.abs(binIndex - c) / c;
+
+  const ah = parseInt(center.slice(1), 16);
+  const bh = parseInt(edge.slice(1), 16);
+  const r = Math.round(((ah >> 16) & 0xff) + (((bh >> 16) & 0xff) - ((ah >> 16) & 0xff)) * dist);
+  const g = Math.round(((ah >> 8) & 0xff) + (((bh >> 8) & 0xff) - ((ah >> 8) & 0xff)) * dist);
+  const b = Math.round((ah & 0xff) + ((bh & 0xff) - (ah & 0xff)) * dist);
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+}
