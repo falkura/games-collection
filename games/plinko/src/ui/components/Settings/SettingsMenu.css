@@ -72,7 +72,6 @@
 .settings-menu__label svg,
 .settings-menu__info-btn svg {
   position: relative;
-  top: 0.5px;
 }
 
 .settings-menu__slider {
