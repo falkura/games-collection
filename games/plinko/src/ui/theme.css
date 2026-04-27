@@ -53,6 +53,20 @@ body {
   color: inherit;
 }
 
+/* ── Game title ── */
+.plinko-ui__title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-left: 16px;
+  background: linear-gradient(135deg, #e7eaf5 30%, #8a90ad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  user-select: none;
+}
+
 /* ── Top bar: balance left, settings right ── */
 .plinko-ui__top {
   position: fixed;

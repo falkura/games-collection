@@ -8,7 +8,7 @@ export function App() {
   return (
     <div className="plinko-ui">
       <header className="plinko-ui__top">
-        <div />
+        <div className="plinko-ui__title">PLINKO</div>
         <SettingsButton />
       </header>
 
