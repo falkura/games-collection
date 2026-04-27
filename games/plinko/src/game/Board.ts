@@ -50,12 +50,7 @@ export class Board extends Container {
     const pegRadius = Math.max(4, Math.min(8, 100 / rows));
     const ballRadius = Math.max(6, Math.min(12, 150 / rows));
 
-    // Bins are square: side = colSpacingX. Reserve their height at bottom.
-    // We first compute colSpacingX from available width, then derive binHeight = colSpacingX.
-    const colSpacingX = Math.min(
-      (width - pegRadius * 4) / (lastRowPegs - 1),
-      48,
-    );
+    const colSpacingX = Math.min((width - pegRadius * 4) / (lastRowPegs - 1));
     const binHeight = colSpacingX; // square bins
     const topPad = ballRadius * 4;
     const binGap = colSpacingX * 0.15; // gap between peg area bottom and bins

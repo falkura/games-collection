@@ -70,21 +70,8 @@ export class Plinko extends GameController {
   }
 
   private rebuildBoard() {
-    const screenW = Layout.screenWidth;
-    const screenH = Layout.screenHeight;
-
-    // Wide board: use most of the screen width, leave room for history on sides
-    const sideMargin = Layout.isPortrait ? 8 : 260;
-    const reservedTop = Layout.isPortrait ? 68 : 68;
-    const reservedBottom = Layout.isPortrait ? 300 : 260;
-
-    // Board should be wide and not too tall — Plinko is wider than tall in Stake
-    const maxBoardW = screenW - sideMargin * 2;
-    const maxBoardH = screenH - reservedTop - reservedBottom;
-
-    // Target aspect: width is dominant. Clamp height so board stays compact.
-    const boardW = Math.min(maxBoardW, 860);
-    const boardH = Math.max(280, Math.min(maxBoardH, boardW * 0.72));
+    const boardW = 950;
+    const boardH = 900;
 
     this.board.build({
       rows: this.currentRows,
@@ -102,13 +89,8 @@ export class Plinko extends GameController {
 
     this.physics.rebuild(this.board.layout);
 
-    // Remove stale ball visuals (board resized, layout changed)
-    for (const b of this.balls) b.destroy();
-    this.balls = [];
-
-    // Position board: centered horizontally, below top HUD
-    this.boardWrapper.x = (screenW - boardW) / 2;
-    this.boardWrapper.y = reservedTop;
+    this.boardWrapper.x = (Layout.screen.width - boardW) / 2;
+    this.boardWrapper.y = Layout.game.fromTop(250);
   }
 
   private async handleDropRequest() {
