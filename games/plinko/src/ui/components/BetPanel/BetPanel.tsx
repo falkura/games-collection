@@ -34,6 +34,20 @@ export function BetPanel() {
   } = usePlinkoStore();
 
   const autoTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      e.preventDefault();
+      const s = usePlinkoStore.getState();
+      if (s.balance < s.bet || s.autoplay) return;
+      Audio.play("bet");
+      plinkoEvents.emit("plinko:drop-request");
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
   const [betInput, setBetInput] = useState(bet.toFixed(2));
   const segRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
