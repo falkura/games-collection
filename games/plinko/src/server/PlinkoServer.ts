@@ -32,8 +32,9 @@ export interface ServerHistoryEntry {
 
 export interface PlinkoServer {
   readonly sessionId: string;
+  init(): Promise<void>;
   drop(req: DropRequest): Promise<DropResponse>;
-  getHistory(): ServerHistoryEntry[];
+  getHistory(): Promise<ServerHistoryEntry[]>;
 }
 
 /** Shared server instance — set by Plinko.ts on start, read by UI. */
@@ -79,10 +80,9 @@ class ServerLogger {
   response(entry: ServerHistoryEntry, path: (0 | 1)[], elapsedMs: number) {
     const dc = DIFF_COLOR[entry.difficulty];
     console.groupCollapsed(
-      `%c↓ DROP RESPONSE %c${entry.clientId}  %c${entry.win ? "WIN" : "LOSS"}`,
+      `%c↓ DROP RESPONSE %c${entry.clientId}`,
       "color:#8a90ad;font-weight:700",
       "color:#8a90ad;font-weight:400",
-      entry.win ? "color:#4ade80;font-weight:700" : "color:#f87171;font-weight:700",
     );
     console.log(`%cid         %c#${entry.id}`, "color:#8a90ad", "color:#8a90ad");
     console.log(`%cbin        %c${entry.bin}`, "color:#8a90ad", `color:${dc};font-weight:700`);
@@ -110,7 +110,14 @@ export class FakePlinkoServer implements PlinkoServer {
     if (__DEV__) logger.session(this.sessionId);
   }
 
-  getHistory(): ServerHistoryEntry[] {
+  async init(): Promise<void> {
+    if (__DEV__) console.log("%c[PlinkoServer] %cinit…", "color:#8a90ad;font-weight:700", "color:#8a90ad");
+    await new Promise((res) => setTimeout(res, 600));
+    if (__DEV__) console.log("%c[PlinkoServer] %cready", "color:#8a90ad;font-weight:700", "color:#4ade80;font-weight:700");
+  }
+
+  async getHistory(): Promise<ServerHistoryEntry[]> {
+    await new Promise((res) => setTimeout(res, 600));
     return [...this._history];
   }
 
@@ -139,7 +146,7 @@ export class FakePlinkoServer implements PlinkoServer {
     const path = buildPath(rows, bin);
     const multiplier = multipliers[bin];
     const payout = +(bet * multiplier).toFixed(2);
-    const win = payout >= bet;
+    const win = payout > bet;
 
     await new Promise((res) => setTimeout(res, 80));
 

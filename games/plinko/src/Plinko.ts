@@ -57,6 +57,10 @@ export class Plinko extends GameController {
     });
 
     plinkoEvents.on("plinko:drop-request", this.handleDropRequest, this);
+
+    this.server.init().then(() => {
+      usePlinkoStore.getState().setReady(true);
+    });
   }
 
   public reset() {
@@ -116,6 +120,7 @@ export class Plinko extends GameController {
 
   private async handleDropRequest() {
     const state = usePlinkoStore.getState();
+    if (!state.ready) return;
     if (state.balance < state.bet) return;
     if (this.balls.length >= BALL_CONFIG.maxActiveBalls) return;
 
@@ -185,7 +190,7 @@ export class Plinko extends GameController {
       bet: originalState.bet,
       difficulty: originalState.difficulty,
       rows: originalState.rows,
-      win: response.payout >= originalState.bet,
+      win: response.payout > originalState.bet,
     });
 
     if (ball.destroyed) return;

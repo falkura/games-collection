@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { usePlinkoStore } from "../../../store/store";
 import { getBinColor } from "../../../server/payouts";
 import { plinkoServer, ServerHistoryEntry } from "../../../server/PlinkoServer";
@@ -11,12 +11,19 @@ export function HistoryModal() {
   const open = usePlinkoStore((s) => s.historyOpen);
   const setOpen = usePlinkoStore((s) => s.setHistoryOpen);
   const [history, setHistory] = useState<ServerHistoryEntry[]>([]);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!open) return;
-    setHistory(plinkoServer?.getHistory() ?? []);
+    if (!open || !plinkoServer) return;
+    setLoading(true);
     setPage(0);
+    setExpandedId(null);
+    plinkoServer.getHistory().then((h) => {
+      setHistory(h);
+      setLoading(false);
+    });
   }, [open]);
 
   if (!open) return null;
@@ -25,7 +32,12 @@ export function HistoryModal() {
   const safePage = Math.min(page, totalPages - 1);
   const pageItems = history.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
 
-  const goTo = (p: number) => { Audio.play("click"); setPage(p); };
+  const goTo = (p: number) => { Audio.play("click"); setPage(p); setExpandedId(null); };
+
+  const toggleRow = (id: number) => {
+    Audio.play("click");
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <>
@@ -42,7 +54,12 @@ export function HistoryModal() {
         </div>
 
         <div className="history-modal__body">
-          {history.length === 0 ? (
+          {loading ? (
+            <div className="history-modal__loading">
+              <span className="history-modal__spinner" />
+              Loading…
+            </div>
+          ) : history.length === 0 ? (
             <div className="history-modal__empty">No bets yet.</div>
           ) : (
             <table className="history-modal__table">
@@ -61,22 +78,56 @@ export function HistoryModal() {
                 {pageItems.map((h) => {
                   const color = getBinColor(h.difficulty, h.rows, h.bin);
                   const time = new Date(h.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                  const expanded = expandedId === h.id;
                   return (
-                    <tr key={h.id} className={h.win ? "history-modal__row--win" : "history-modal__row--lose"}>
-                      <td className="history-modal__num">#{h.id}</td>
-                      <td>
-                        <span className="history-modal__mult" style={{ color, borderColor: `${color}55`, background: `${color}18` }}>
-                          {h.multiplier}×
-                        </span>
-                      </td>
-                      <td>${h.bet.toFixed(2)}</td>
-                      <td style={{ color: h.win ? "var(--plinko-accent)" : "var(--plinko-danger)" }}>
-                        ${h.payout.toFixed(2)}
-                      </td>
-                      <td className="history-modal__dim">{h.difficulty}</td>
-                      <td className="history-modal__dim">{h.rows}</td>
-                      <td className="history-modal__dim">{time}</td>
-                    </tr>
+                    <React.Fragment key={h.id}>
+                      <tr
+                        className={`history-modal__row ${expanded ? "history-modal__row--expanded" : ""}`}
+                        onClick={() => toggleRow(h.id)}
+                      >
+                        <td className="history-modal__num">#{h.id}</td>
+                        <td>
+                          <span className="history-modal__mult" style={{ color, borderColor: `${color}55`, background: `${color}18` }}>
+                            {h.multiplier}×
+                          </span>
+                        </td>
+                        <td>${h.bet.toFixed(2)}</td>
+                        <td style={{ color: h.payout === h.bet ? "var(--plinko-text-dim)" : h.win ? "var(--plinko-accent)" : "var(--plinko-danger)" }}>
+                          ${h.payout.toFixed(2)}
+                        </td>
+                        <td className="history-modal__dim">{h.difficulty}</td>
+                        <td className="history-modal__dim">{h.rows}</td>
+                        <td className="history-modal__dim">{time}</td>
+                      </tr>
+                      {expanded && (
+                        <tr className="history-modal__detail-row">
+                          <td colSpan={7}>
+                            <div className="history-modal__detail">
+                              <div className="history-modal__detail-grid">
+                                <span className="history-modal__detail-label">Client ID</span>
+                                <span className="history-modal__detail-value history-modal__detail-value--mono">{h.clientId}</span>
+                                <span className="history-modal__detail-label">Bin</span>
+                                <span className="history-modal__detail-value" style={{ color }}>{h.bin}</span>
+                                <span className="history-modal__detail-label">Multiplier</span>
+                                <span className="history-modal__detail-value" style={{ color }}>{h.multiplier}×</span>
+                                <span className="history-modal__detail-label">Bet</span>
+                                <span className="history-modal__detail-value">${h.bet.toFixed(2)}</span>
+                                <span className="history-modal__detail-label">Payout</span>
+                                <span className="history-modal__detail-value" style={{ color: h.payout === h.bet ? "var(--plinko-text-dim)" : h.win ? "var(--plinko-accent)" : "var(--plinko-danger)" }}>
+                                  ${h.payout.toFixed(2)}{h.payout !== h.bet && ` (${h.win ? "WIN" : "LOSS"})`}
+                                </span>
+                                <span className="history-modal__detail-label">Difficulty</span>
+                                <span className="history-modal__detail-value">{h.difficulty}</span>
+                                <span className="history-modal__detail-label">Rows</span>
+                                <span className="history-modal__detail-value">{h.rows}</span>
+                                <span className="history-modal__detail-label">Timestamp</span>
+                                <span className="history-modal__detail-value">{new Date(h.timestamp).toLocaleString()}</span>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </tbody>

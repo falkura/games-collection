@@ -28,6 +28,7 @@ interface PlinkoState {
   pendingDrops: number;
   history: HistoryEntry[];
   settings: Settings;
+  ready: boolean;
   infoOpen: boolean;
   settingsOpen: boolean;
   historyOpen: boolean;
@@ -47,6 +48,7 @@ interface PlinkoState {
   incPending: () => void;
   decPending: () => void;
   setSettings: (s: Partial<Settings>) => void;
+  setReady: (v: boolean) => void;
   setInfoOpen: (v: boolean) => void;
   setSettingsOpen: (v: boolean) => void;
   setHistoryOpen: (v: boolean) => void;
@@ -65,6 +67,7 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
   pendingDrops: 0,
   history: [],
   settings: { volume: 0.5 },
+  ready: false,
   infoOpen: false,
   settingsOpen: false,
   historyOpen: false,
@@ -93,6 +96,7 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
     set((s) => ({ pendingDrops: Math.max(0, s.pendingDrops - 1) })),
   setSettings: (s) =>
     set((state) => ({ settings: { ...state.settings, ...s } })),
+  setReady: (v) => set({ ready: v }),
   setInfoOpen: (v) => set({ infoOpen: v }),
   setSettingsOpen: (v) => set({ settingsOpen: v }),
   setHistoryOpen: (v) => set({ historyOpen: v }),

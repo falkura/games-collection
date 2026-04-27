@@ -69,6 +69,29 @@
   font-size: 14px;
 }
 
+.history-modal__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 0;
+  color: var(--plinko-text-dim);
+  font-size: 14px;
+}
+
+.history-modal__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--plinko-border);
+  border-top-color: var(--plinko-accent);
+  border-radius: 50%;
+  animation: hm-spin 0.7s linear infinite;
+}
+
+@keyframes hm-spin {
+  to { transform: rotate(360deg); }
+}
+
 .history-modal__table {
   width: 100%;
   border-collapse: collapse;
@@ -93,6 +116,57 @@
 
 .history-modal__table tr:last-child td {
   border-bottom: none;
+}
+
+.history-modal__row {
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.history-modal__row:hover {
+  background: color-mix(in srgb, var(--plinko-border) 40%, transparent);
+}
+.history-modal__row--expanded {
+  background: color-mix(in srgb, var(--plinko-border) 50%, transparent);
+}
+
+.history-modal__detail-row td {
+  padding: 0;
+  border-bottom: 1px solid var(--plinko-border);
+}
+
+.history-modal__detail {
+  padding: 10px 12px 12px;
+  background: var(--plinko-panel-2);
+  animation: hm-expand 0.15s ease-out;
+}
+
+.history-modal__detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  font-size: 12px;
+}
+
+.history-modal__detail-label {
+  color: var(--plinko-text-dim);
+  white-space: nowrap;
+}
+
+.history-modal__detail-value {
+  color: var(--plinko-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-modal__detail-value--mono {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--plinko-text-dim);
+  word-break: break-all;
+}
+
+@keyframes hm-expand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .history-modal__num {

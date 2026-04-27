@@ -21,6 +21,7 @@ export function BetPanel() {
     autoplay,
     autoplayCount,
     turbo,
+    ready,
     pendingDrops,
     setBet,
     halveBet,
@@ -52,7 +53,7 @@ export function BetPanel() {
   const segRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
 
-  const ballsActive = pendingDrops > 0;
+  const disabled = !ready || pendingDrops > 0;
 
   useEffect(() => {
     setBetInput(bet.toFixed(2));
@@ -122,7 +123,7 @@ export function BetPanel() {
     });
   }, [turbo]);
 
-  const canBet = balance >= bet && !autoplay;
+  const canBet = ready && balance >= bet && !autoplay;
 
   const commitBet = (raw: string) => {
     const v = parseFloat(raw);
@@ -136,7 +137,7 @@ export function BetPanel() {
       <div className="bet-panel__row">
         <label className="bet-panel__label">Bet Amount</label>
         <div className="bet-panel__bet-row">
-          <div className={`bet-panel__input-wrap${ballsActive ? " bet-panel__input-wrap--disabled" : ""}`}>
+          <div className={`bet-panel__input-wrap${disabled ? " bet-panel__input-wrap--disabled" : ""}`}>
             <span className="bet-panel__currency">$</span>
             <input
               type="number"
@@ -144,7 +145,7 @@ export function BetPanel() {
               min={0.01}
               step={0.01}
               value={betInput}
-              disabled={ballsActive}
+              disabled={disabled}
               onChange={(e) => setBetInput(e.target.value)}
               onBlur={(e) => commitBet(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && commitBet(betInput)}
@@ -152,7 +153,7 @@ export function BetPanel() {
           </div>
           <button
             className="bet-panel__btn-mini"
-            disabled={ballsActive}
+            disabled={disabled}
             onClick={() => { Audio.play("halfDouble"); halveBet(); }}
             type="button"
           >
@@ -160,7 +161,7 @@ export function BetPanel() {
           </button>
           <button
             className="bet-panel__btn-mini"
-            disabled={ballsActive}
+            disabled={disabled}
             onClick={() => { Audio.play("halfDouble"); doubleBet(); }}
             type="button"
           >
@@ -173,7 +174,7 @@ export function BetPanel() {
       <div className="bet-panel__row bet-panel__row--split">
         <div className="bet-panel__field">
           <label className="bet-panel__label">Difficulty</label>
-          <div className={`bet-panel__seg${ballsActive ? " bet-panel__seg--disabled" : ""}`} ref={segRef}>
+          <div className={`bet-panel__seg${disabled ? " bet-panel__seg--disabled" : ""}`} ref={segRef}>
             <div
               className={`bet-panel__seg-indicator bet-panel__seg-indicator--${difficulty.toLowerCase()}`}
               style={indicatorStyle}
@@ -185,7 +186,7 @@ export function BetPanel() {
                   key={d}
                   type="button"
                   className={`bet-panel__seg-btn bet-panel__seg-btn--${d.toLowerCase()} ${active ? "bet-panel__seg-btn--on" : ""}`}
-                  disabled={ballsActive}
+                  disabled={disabled}
                   onClick={() => { Audio.play("difficulty"); setDifficulty(d as Difficulty); }}
                 >
                   {d}
@@ -200,7 +201,7 @@ export function BetPanel() {
           <select
             className="bet-panel__select"
             value={rows}
-            disabled={ballsActive}
+            disabled={disabled}
             onChange={(e) => setRows(parseInt(e.target.value, 10) as Rows)}
           >
             {ROW_OPTIONS.map((r) => (
@@ -260,7 +261,7 @@ export function BetPanel() {
         disabled={!canBet}
         onClick={() => { Audio.play("bet"); plinkoEvents.emit("plinko:drop-request"); }}
       >
-        Bet ${bet.toFixed(2)}
+        {ready ? `Bet $${bet.toFixed(2)}` : "Connecting…"}
       </button>
     </div>
   );
