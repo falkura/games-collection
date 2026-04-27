@@ -1,0 +1,119 @@
+.history-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 20;
+  pointer-events: auto;
+  animation: hm-fade 0.2s ease-out;
+}
+
+.history-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100vw - 24px));
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--plinko-panel);
+  border: 1px solid var(--plinko-border);
+  border-radius: var(--plinko-radius);
+  z-index: 21;
+  pointer-events: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  animation: hm-pop 0.2s ease-out;
+}
+
+.history-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--plinko-border);
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.history-modal__close {
+  font-size: 16px;
+  color: var(--plinko-text-dim);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.history-modal__close:hover {
+  background: var(--plinko-panel-2);
+  color: var(--plinko-text);
+}
+
+.history-modal__body {
+  overflow-y: auto;
+  padding: 10px 14px 16px;
+}
+
+.history-modal__empty {
+  text-align: center;
+  color: var(--plinko-text-dim);
+  padding: 24px 0;
+  font-size: 14px;
+}
+
+.history-modal__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.history-modal__table th {
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--plinko-text-dim);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--plinko-border);
+}
+
+.history-modal__table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--plinko-border) 50%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-modal__table tr:last-child td {
+  border-bottom: none;
+}
+
+.history-modal__num {
+  color: var(--plinko-text-dim);
+  font-size: 11px;
+}
+
+.history-modal__dim {
+  color: var(--plinko-text-dim);
+}
+
+.history-modal__mult {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+@keyframes hm-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@keyframes hm-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

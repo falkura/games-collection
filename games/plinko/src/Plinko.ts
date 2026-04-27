@@ -13,6 +13,7 @@ import {
 import { FakePlinkoServer, PlinkoServer } from "./server/PlinkoServer";
 import { plinkoEvents } from "./store/events";
 import { usePlinkoStore } from "./store/store";
+import "./Audio";
 
 export class Plinko extends GameController {
   private board: Board;
@@ -81,7 +82,10 @@ export class Plinko extends GameController {
       gradient: DIFFICULTY_GRADIENT[this.currentDifficulty],
     });
 
-    this.board.renderBins(getMultipliers(this.currentDifficulty, this.currentRows), () => {});
+    this.board.renderBins(
+      getMultipliers(this.currentDifficulty, this.currentRows),
+      () => {},
+    );
 
     this.scaleBoardToScreen();
   }

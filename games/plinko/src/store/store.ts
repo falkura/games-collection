@@ -30,6 +30,7 @@ interface PlinkoState {
   settings: Settings;
   infoOpen: boolean;
   settingsOpen: boolean;
+  historyOpen: boolean;
 
   setBet: (v: number) => void;
   halveBet: () => void;
@@ -48,9 +49,10 @@ interface PlinkoState {
   setSettings: (s: Partial<Settings>) => void;
   setInfoOpen: (v: boolean) => void;
   setSettingsOpen: (v: boolean) => void;
+  setHistoryOpen: (v: boolean) => void;
 }
 
-const HISTORY_LIMIT = 30;
+const HISTORY_LIMIT = 40;
 
 export const usePlinkoStore = create<PlinkoState>((set) => ({
   balance: 1000,
@@ -65,6 +67,7 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
   settings: { volume: 0.6 },
   infoOpen: false,
   settingsOpen: false,
+  historyOpen: false,
 
   setBet: (v) => set({ bet: Math.max(0.01, +v.toFixed(2)) }),
   halveBet: () =>
@@ -92,4 +95,5 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
     set((state) => ({ settings: { ...state.settings, ...s } })),
   setInfoOpen: (v) => set({ infoOpen: v }),
   setSettingsOpen: (v) => set({ settingsOpen: v }),
+  setHistoryOpen: (v) => set({ historyOpen: v }),
 }));

@@ -1,5 +1,6 @@
 import { BetPanel } from "./components/BetPanel/BetPanel";
 import { History } from "./components/History/History";
+import { HistoryModal } from "./components/History/HistoryModal";
 import { SettingsButton } from "./components/Settings/SettingsButton";
 import { SettingsMenu } from "./components/Settings/SettingsMenu";
 import { InfoModal } from "./components/Info/InfoModal";
@@ -22,6 +23,7 @@ export function App() {
 
       <SettingsMenu />
       <InfoModal />
+      <HistoryModal />
     </div>
   );
 }

@@ -7,11 +7,11 @@
   border-radius: 10px;
   font-size: 18px;
   line-height: 1;
-  transition: background 0.15s, transform 0.2s;
+  transition: background 0.15s;
   flex-shrink: 0;
 }
 .settings-button:hover {
-  transform: rotate(30deg);
+  background: var(--plinko-panel-2);
 }
 .settings-button:active {
   transform: scale(0.93);

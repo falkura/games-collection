@@ -1,4 +1,5 @@
 import { usePlinkoStore } from "../../../store/store";
+import { Audio } from "../../../Audio";
 import "./InfoModal.css";
 
 export function InfoModal() {
@@ -16,7 +17,7 @@ export function InfoModal() {
           <button
             type="button"
             className="info-modal__close"
-            onClick={() => setOpen(false)}
+            onClick={() => { Audio.play("close"); setOpen(false); }}
             aria-label="Close"
           >
             ×

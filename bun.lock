@@ -90,6 +90,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@falkura-pet/engine": "workspace:*",
+        "@pixi/sound": "^6.0.1",
         "@types/matter-js": "^0.20.2",
         "matter-js": "^0.20.0",
         "react": "^18.3.1",
@@ -463,6 +464,8 @@
     "@pixi/colord": ["@pixi/colord@2.9.6", "", {}, "sha512-nezytU2pw587fQstUu1AsJZDVEynjskwOL+kibwcdxsMBFqPsFFNA7xl0ii/gXuDi6M0xj3mfRJj8pBSc2jCfA=="],
 
     "@pixi/msdf-bmfont-xml": ["@pixi/msdf-bmfont-xml@3.0.0", "", { "dependencies": { "arabic-persian-reshaper": "^1.0.1", "cli-progress": "^3.12.0", "commander": "^14.0.0", "handlebars": "^4.7.7", "is-invalid-path": "^1.0.2", "jimp": "^1.6.0", "js2xmlparser": "^5.0.0", "map-limit": "0.0.1", "maxrects-packer": "^2.7.3", "opentype.js": "^0.11.0" }, "bin": { "msdf-bmfont": "cli.js" } }, "sha512-h/FDfBnWiv4+5JNNsfYs3wpDYYOJCCd14PMbFpt1sHDfutJGZ6MvDvq5JI7pL6toX25uyGPV9ADMCdV1KCVulg=="],
+
+    "@pixi/sound": ["@pixi/sound@6.0.1", "", { "peerDependencies": { "pixi.js": "^8.0.0" } }, "sha512-hpFlQSScAR2L/CsEoIvDi7s1oGsu8y9Zd742Vd3982N+q3IF2vFuIfV9HN4ryjlGnhCT8yBlEgs1gp4G9Rt9TA=="],
 
     "@pixi/svg2ttf": ["@pixi/svg2ttf@6.1.0", "", { "dependencies": { "@xmldom/xmldom": "~0.9.8", "argparse": "^2.0.1", "cubic2quad": "^1.2.1", "lodash": "^4.17.21", "microbuffer": "^1.0.0", "svgpath": "^2.6.0" }, "bin": { "svg2ttf": "svg2ttf.js" } }, "sha512-qT7P6F48lyWVWn6w0qxWtxLVVPEcXzAlo9/nimh4cflfKQWdApqfCZVOCgaaO0xHVpClbhCzApQXlJnLEs1oaw=="],
 

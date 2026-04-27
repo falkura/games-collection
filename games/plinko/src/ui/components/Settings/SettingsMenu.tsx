@@ -1,10 +1,12 @@
 import { usePlinkoStore } from "../../../store/store";
+import { Audio } from "../../../Audio";
 import "./SettingsMenu.css";
 
 export function SettingsMenu() {
   const open = usePlinkoStore((s) => s.settingsOpen);
   const setOpen = usePlinkoStore((s) => s.setSettingsOpen);
   const setInfoOpen = usePlinkoStore((s) => s.setInfoOpen);
+  const setHistoryOpen = usePlinkoStore((s) => s.setHistoryOpen);
   const settings = usePlinkoStore((s) => s.settings);
   const setSettings = usePlinkoStore((s) => s.setSettings);
 
@@ -19,7 +21,7 @@ export function SettingsMenu() {
           <button
             type="button"
             className="settings-menu__close"
-            onClick={() => setOpen(false)}
+            onClick={() => { Audio.play("close"); setOpen(false); }}
           >
             ✕
           </button>
@@ -47,6 +49,19 @@ export function SettingsMenu() {
           type="button"
           className="settings-menu__info-btn"
           onClick={() => {
+            Audio.play("click");
+            setOpen(false);
+            setHistoryOpen(true);
+          }}
+        >
+          📜 Bet History
+        </button>
+
+        <button
+          type="button"
+          className="settings-menu__info-btn"
+          onClick={() => {
+            Audio.play("click");
             setOpen(false);
             setInfoOpen(true);
           }}

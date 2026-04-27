@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { usePlinkoStore } from "../../../store/store";
+import { Audio } from "../../../Audio";
 import { plinkoEvents } from "../../../store/events";
 import {
   DIFFICULTIES,
@@ -138,7 +139,7 @@ export function BetPanel() {
           <button
             className="bet-panel__btn-mini"
             disabled={ballsActive}
-            onClick={halveBet}
+            onClick={() => { Audio.play("halfDouble"); halveBet(); }}
             type="button"
           >
             ½
@@ -146,7 +147,7 @@ export function BetPanel() {
           <button
             className="bet-panel__btn-mini"
             disabled={ballsActive}
-            onClick={doubleBet}
+            onClick={() => { Audio.play("halfDouble"); doubleBet(); }}
             type="button"
           >
             2×
@@ -171,7 +172,7 @@ export function BetPanel() {
                   type="button"
                   className={`bet-panel__seg-btn bet-panel__seg-btn--${d.toLowerCase()} ${active ? "bet-panel__seg-btn--on" : ""}`}
                   disabled={ballsActive}
-                  onClick={() => setDifficulty(d as Difficulty)}
+                  onClick={() => { Audio.play("difficulty"); setDifficulty(d as Difficulty); }}
                 >
                   {d}
                 </button>
@@ -221,7 +222,7 @@ export function BetPanel() {
         <button
           type="button"
           className={`bet-panel__autoplay-btn ${autoplay ? "bet-panel__autoplay-btn--on" : ""}`}
-          onClick={() => setAutoplay(!autoplay)}
+          onClick={() => { Audio.play(autoplay ? "autoplayOff" : "autoplayOn"); setAutoplay(!autoplay); }}
         >
           <span className="bet-panel__autoplay-dot" />
           {autoplay ? "Stop" : "Auto"}
@@ -229,7 +230,7 @@ export function BetPanel() {
         <button
           type="button"
           className={`bet-panel__turbo-btn ${turbo ? "bet-panel__turbo-btn--on" : ""}`}
-          onClick={() => setTurbo(!turbo)}
+          onClick={() => { Audio.play(turbo ? "turboOff" : "turboOn"); setTurbo(!turbo); }}
           title="Turbo: 2× speed"
         >
           ⚡
@@ -241,7 +242,7 @@ export function BetPanel() {
         type="button"
         className={`bet-panel__bet-btn bet-panel__bet-btn--${difficulty.toLowerCase()}`}
         disabled={!canBet}
-        onClick={() => plinkoEvents.emit("plinko:drop-request")}
+        onClick={() => { Audio.play("bet"); plinkoEvents.emit("plinko:drop-request"); }}
       >
         Bet ${bet.toFixed(2)}
       </button>
