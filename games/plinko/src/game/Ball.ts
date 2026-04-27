@@ -1,10 +1,7 @@
 import { Graphics } from "pixi.js";
 import Matter from "matter-js";
 
-const BALL_COLORS = [
-  0xff5577, 0xffa500, 0xffd84d, 0x4ade80, 0x22d3ee, 0x60a5fa, 0xc084fc,
-  0xfb7185, 0xf472b6, 0x34d399,
-];
+const BALL_COLORS = ["#FF1D45"];
 
 export class Ball extends Graphics {
   public readonly body: Matter.Body;
