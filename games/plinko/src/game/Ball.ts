@@ -59,22 +59,6 @@ export class Ball extends Container {
         ease: hop.isLast ? "power2.in" : "power2.in",
       });
     }
-
-    // Squash pulse timed to each peg contact moment
-    let t = 0;
-    for (let i = 0; i < hops.length - 1; i++) {
-      t += hops[i].riseTime + hops[i].fallTime;
-      this.tl.to(
-        this.gfx.scale,
-        { x: BALL_CONFIG.squashX, y: BALL_CONFIG.squashY, duration: BALL_CONFIG.squashDuration, ease: "power2.out" },
-        t,
-      );
-      this.tl.to(
-        this.gfx.scale,
-        { x: 1, y: 1, duration: BALL_CONFIG.stretchDuration, ease: "elastic.out(1.5, 0.4)" },
-        ">",
-      );
-    }
   }
 
   public isAlive() { return this._alive; }

@@ -179,7 +179,6 @@ export class Plinko extends GameController {
     gsap.to(ball, {
       alpha: 0,
       duration: BALL_CONFIG.fadeDuration,
-      delay: BALL_CONFIG.fadeDelay,
       onComplete: () => {
         this.balls = this.balls.filter((b) => b !== ball);
         if (!ball.destroyed) ball.destroy();

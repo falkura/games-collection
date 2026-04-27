@@ -28,15 +28,8 @@ export const BALL_CONFIG = {
    */
   wobbleFraction: 0.18,
 
-  /** Squash/stretch on peg hit. */
-  squashX: 1.15,
-  squashY: 0.82,
-  squashDuration: 0.04,
-  stretchDuration: 0.09,
-
   /** Alpha fade after landing. */
   fadeDuration: 0.18,
-  fadeDelay: 0.05,
 
   /** Milliseconds between autoplay drops. */
   autoplayIntervalMs: 400,
