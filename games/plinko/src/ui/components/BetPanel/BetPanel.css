@@ -232,11 +232,10 @@
 /* Bet button */
 .bet-panel__bet-btn {
   margin-top: 2px;
-  padding: 15px;
+  padding: 14px;
   border-radius: 10px;
-  background: linear-gradient(160deg, #4ade80, #16a34a);
-  color: #0a1a0e;
-  font-size: 16px;
+  color: #fff;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -245,16 +244,34 @@
     transform 0.1s,
     filter 0.15s,
     opacity 0.2s;
-  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.35);
 }
+.bet-panel__bet-btn.bet-panel__bet-btn--low    { background: #2563eb; }
+.bet-panel__bet-btn.bet-panel__bet-btn--medium { background: #16a34a; }
+.bet-panel__bet-btn.bet-panel__bet-btn--high   { background: #7c3aed; }
+.bet-panel__bet-btn.bet-panel__bet-btn--expert { background: #ea580c; }
+
 .bet-panel__bet-btn:hover:not(:disabled) {
-  filter: brightness(1.1);
+  filter: brightness(1.12);
   transform: translateY(-1px);
 }
 .bet-panel__bet-btn:active:not(:disabled) {
   transform: scale(0.98) translateY(0);
 }
 .bet-panel__bet-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Disabled state for controls when balls are active */
+.bet-panel__seg--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.bet-panel__input-wrap--disabled {
+  opacity: 0.45;
+}
+.bet-panel__btn-mini:disabled,
+.bet-panel__select:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }

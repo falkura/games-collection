@@ -4,7 +4,6 @@ export interface DropRequest {
   bet: number;
   difficulty: Difficulty;
   rows: Rows;
-  /** Stable client-generated id so the UI can correlate the result. */
   clientId: string;
 }
 
@@ -14,6 +13,8 @@ export interface DropResponse {
   bin: number;
   multiplier: number;
   payout: number;
+  /** Per-row decisions: 0 = go left, 1 = go right. Length === rows. */
+  path: (0 | 1)[];
 }
 
 export interface PlinkoServer {
@@ -21,37 +22,52 @@ export interface PlinkoServer {
 }
 
 /**
- * Fake server: samples a target bin from a binomial-ish distribution biased
- * by difficulty (low difficulty → balls cluster in the middle; expert → fatter
- * tails). Real server impl will replace this without UI changes.
+ * Fake server: picks a target bin (weighted toward edges on higher difficulties),
+ * then builds a random path of [0,1] decisions that routes to that bin.
+ * Real server replaces this without UI changes.
  */
 export class FakePlinkoServer implements PlinkoServer {
   async drop(req: DropRequest): Promise<DropResponse> {
     const { difficulty, rows, bet, clientId } = req;
     const multipliers = getMultipliers(difficulty, rows);
+    const binCount = rows + 1; // 0..rows
 
-    const tailBias: Record<Difficulty, number> = {
-      Low: 0,
-      Medium: 0.04,
-      High: 0.08,
-      Expert: 0.12,
+    // Bias toward edges based on difficulty
+    const edgeBias: Record<Difficulty, number> = {
+      Low: 0.0,
+      Medium: 0.06,
+      High: 0.14,
+      Expert: 0.22,
     };
-    const bias = tailBias[difficulty];
+    const bias = edgeBias[difficulty];
 
-    let leftSteps = 0;
+    // Sample bin via biased binomial (each step has slight drift toward edges)
+    let rightSteps = 0;
     for (let i = 0; i < rows; i++) {
-      const r = Math.random();
-      const goLeft = r < 0.5 - (r > 0.5 ? -bias : bias) * (Math.random() - 0.5);
-      if (goLeft) leftSteps++;
+      const p = 0.5 + bias * (Math.random() > 0.5 ? 1 : -1) * 0.5;
+      if (Math.random() < p) rightSteps++;
     }
-    // Standard Plinko: bin = number of "right" steps.
-    const bin = rows - leftSteps;
+    const bin = Math.max(0, Math.min(binCount - 1, rightSteps));
+
+    // Build a random path of (0|1) decisions that sums to `bin` right-steps
+    const path = buildPath(rows, bin);
+
     const multiplier = multipliers[bin];
     const payout = +(bet * multiplier).toFixed(2);
 
-    // Simulate a network round-trip.
     await new Promise((res) => setTimeout(res, 80));
 
-    return { clientId, bin, multiplier, payout };
+    return { clientId, bin, multiplier, payout, path };
   }
+}
+
+/** Generate a random [0|1] array of length `rows` with exactly `rights` ones. */
+function buildPath(rows: number, rights: number): (0 | 1)[] {
+  const path: (0 | 1)[] = Array(rows - rights).fill(0).concat(Array(rights).fill(1)) as (0 | 1)[];
+  // Fisher-Yates shuffle
+  for (let i = path.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [path[i], path[j]] = [path[j], path[i]];
+  }
+  return path;
 }

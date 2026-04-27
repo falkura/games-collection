@@ -182,9 +182,13 @@ export class Board extends Container {
 }
 
 function formatMultiplier(v: number): string {
-  if (v >= 100) return `${Math.round(v)}x`;
-  if (v >= 10) return `${v % 1 === 0 ? v : v.toFixed(1)}x`;
-  return `${v}x`;
+  if (v >= 1000) {
+    const k = v / 1000;
+    return `${k % 1 === 0 ? k : k.toFixed(1)}k`;
+  }
+  if (v >= 100) return `${Math.round(v)}`;
+  if (v >= 10) return `${v % 1 === 0 ? v : v.toFixed(1)}`;
+  return `${v}`;
 }
 
 function lerpColor(a: string, b: string, t: number): number {

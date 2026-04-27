@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { GameController, Layout } from "@falkura-pet/engine";
 import { Board } from "./game/Board";
 import { Ball } from "./game/Ball";
-import { PhysicsWorld } from "./game/PhysicsWorld";
+import { BALL_CONFIG } from "./game/ballConfig";
 import {
   DIFFICULTY_GRADIENT,
   Difficulty,
@@ -18,14 +18,11 @@ export class Plinko extends GameController {
   private board: Board;
   private boardWrapper: Container;
   private balls: Ball[] = [];
-  private physics: PhysicsWorld;
   private server: PlinkoServer = new FakePlinkoServer();
   private currentDifficulty: Difficulty;
   private currentRows: Rows;
 
   public start() {
-    this.physics = new PhysicsWorld();
-
     this.boardWrapper = new Container();
     this.view.addChild(this.boardWrapper);
 
@@ -50,17 +47,14 @@ export class Plinko extends GameController {
     });
 
     plinkoEvents.on("plinko:drop-request", this.handleDropRequest, this);
-    this.ticker.add(this.tick, this);
   }
 
   public reset() {
     this.balls.forEach((b) => b.destroy());
     this.balls = [];
-    if (this.physics) this.physics.rebuild(this.board.layout);
   }
 
   public finish() {
-    this.ticker.remove(this.tick, this);
     plinkoEvents.off("plinko:drop-request", this.handleDropRequest, this);
   }
 
@@ -84,10 +78,7 @@ export class Plinko extends GameController {
       this.currentDifficulty,
       this.currentRows,
     );
-
     this.board.renderBins(multipliers, () => {});
-
-    this.physics.rebuild(this.board.layout);
 
     this.boardWrapper.x = (Layout.screen.width - boardW) / 2;
     this.boardWrapper.y = Layout.game.fromTop(250);
@@ -96,6 +87,7 @@ export class Plinko extends GameController {
   private async handleDropRequest() {
     const state = usePlinkoStore.getState();
     if (state.balance < state.bet) return;
+    if (this.balls.length >= BALL_CONFIG.maxActiveBalls) return;
 
     state.subBalance(state.bet);
     state.incPending();
@@ -128,13 +120,13 @@ export class Plinko extends GameController {
       return;
     }
 
-    const physBody = this.physics.spawnBall(response.bin, (bin) => {
-      this.onBallLanded(ball, bin, response, state);
-    });
-
-    const ball = new Ball(physBody, this.board.layout.ballRadius);
+    const ball = new Ball(this.board.layout.ballRadius);
     this.boardWrapper.addChildAt(ball, 0);
     this.balls.push(ball);
+
+    ball.animate(this.board.layout, response.path, (bin) => {
+      this.onBallLanded(ball, bin, response, state);
+    });
   }
 
   private onBallLanded(
@@ -144,10 +136,6 @@ export class Plinko extends GameController {
     originalState: ReturnType<typeof usePlinkoStore.getState>,
   ) {
     ball.markDead();
-
-    // Snap ball visual to center of bin
-    const targetX = this.board.layout.binCenters[bin].x;
-    ball.position.x = targetX;
 
     this.board.bumpBin(bin);
 
@@ -170,31 +158,14 @@ export class Plinko extends GameController {
       win: response.payout >= originalState.bet,
     });
 
-    // Fade out and remove
     gsap.to(ball, {
       alpha: 0,
       duration: 0.35,
-      delay: 0.1,
+      delay: 0.15,
       onComplete: () => {
         this.balls = this.balls.filter((b) => b !== ball);
         if (!ball.destroyed) ball.destroy();
       },
     });
   }
-
-  private tick = () => {
-    const dt = Math.min(1 / 30, this.ticker.deltaMS / 1000);
-    const substeps = 3;
-    const sub = dt / substeps;
-    for (let s = 0; s < substeps; s++) {
-      this.physics.step(sub);
-    }
-
-    // Sync visual balls to physics bodies
-    for (const ball of this.balls) {
-      if (ball.isAlive()) {
-        ball.syncToBody();
-      }
-    }
-  };
 }

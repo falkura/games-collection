@@ -8,6 +8,14 @@ await Engine.init({
   gameConfig: config,
   gameCtor: Plinko,
   hideDebugPane: true,
+  sizeLandscape: {
+    width: 1080,
+    height: 1920,
+  },
+  sizePortrait: {
+    width: 1080,
+    height: 1920,
+  },
 });
 
 Engine.startGame();
