@@ -69,8 +69,6 @@ export function HistoryModal() {
                   <th>Mult</th>
                   <th>Bet</th>
                   <th>Payout</th>
-                  <th>Diff</th>
-                  <th>Rows</th>
                   <th>Time</th>
                 </tr>
               </thead>
@@ -95,8 +93,6 @@ export function HistoryModal() {
                         <td style={{ color: h.payout === h.bet ? "var(--plinko-text-dim)" : h.win ? "var(--plinko-accent)" : "var(--plinko-danger)" }}>
                           ${h.payout.toFixed(2)}
                         </td>
-                        <td className="history-modal__dim">{h.difficulty}</td>
-                        <td className="history-modal__dim">{h.rows}</td>
                         <td className="history-modal__dim">{time}</td>
                       </tr>
                       {expanded && (
