@@ -14,7 +14,6 @@
 .hud--top {
   top: 0;
   justify-content: space-between;
-  /* Avoid the tweakpane panel anchored to the top-right. */
   padding-right: calc(16px + var(--tweakpane-reserved));
 }
 
@@ -24,55 +23,48 @@
   gap: 12px;
 }
 
-.hud__meta {
-  display: flex;
-  gap: 8px;
-}
+/* --- Combined info pill --- */
 
-.hud__chip {
+.hud__info-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 11px 16px;
-  font-size: 14px;
-  font-weight: 600;
+  gap: 10px;
+  padding: 0 20px;
+  height: 52px;
   border-radius: 999px;
   background: rgba(19, 26, 58, 0.85);
   border: 1px solid var(--c-panel-border);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  color: var(--c-text);
-  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
-.hud__chip--diff {
+.hud__info-diff {
   color: var(--c-accent-3);
 }
 
-.hud__chip-icon {
-  font-size: 12px;
-  opacity: 0.85;
+.hud__info-time {
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
 }
 
-.hud__chip--btn {
-  padding: 11px 16px;
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: 0.5px;
-  min-width: 48px;
-  justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.hud__chip--btn:hover {
-  background: rgba(19, 26, 58, 1);
+.hud__info-stars {
   color: var(--c-accent);
+  font-variant-numeric: tabular-nums;
 }
 
-.hud__chip--btn.is-on {
-  background: var(--c-accent);
-  color: #0b1024;
-  border-color: transparent;
+.hud__info-stars-total {
+  color: var(--c-text-muted);
+  font-weight: 600;
+}
+
+.hud__info-sep {
+  color: var(--c-text-muted);
+  opacity: 0.45;
+  font-weight: 400;
 }
 
 /* --- Pause overlay --- */
@@ -139,36 +131,7 @@
 .hud-paused__btn:hover { filter: brightness(1.06); }
 .hud-paused__btn:active { transform: translateY(1px); }
 
-.hud__stars {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 18px;
-  border-radius: 999px;
-  background: rgba(19, 26, 58, 0.85);
-  border: 1px solid var(--c-panel-border);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  font-weight: 700;
-  font-size: 15px;
-  font-variant-numeric: tabular-nums;
-  min-height: 44px;
-}
-
-.hud__star {
-  color: var(--c-accent);
-  filter: drop-shadow(0 0 6px rgba(255, 210, 74, 0.5));
-  font-size: 16px;
-}
-
-.hud__stars-count {
-  color: var(--c-text);
-}
-
-.hud__stars-total {
-  color: var(--c-text-muted);
-  font-weight: 600;
-}
+/* --- Buttons --- */
 
 .hud__btn {
   font-size: 15px;
@@ -200,6 +163,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.hud__btn--icon.is-on {
+  background: var(--c-accent);
+  color: #0b1024;
+  border-color: transparent;
 }
 
 .hud__btn--accent {
@@ -209,7 +179,6 @@
   font-weight: 800;
   letter-spacing: 0.02em;
   padding: 14px 26px;
-  /* No backdrop-filter on a solid color — caused banding artifacts. */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   transition: transform 0.08s ease, filter 0.18s ease;
@@ -222,10 +191,8 @@
 
 @media (max-width: 480px) {
   .hud { padding: 10px 12px; }
-  .hud__chip { padding: 12px 14px; font-size: 14px; min-height: 48px; }
-  .hud__chip--btn { min-width: 52px; }
-  .hud__stars { padding: 12px 16px; font-size: 15px; min-height: 48px; }
+  .hud__info-pill { padding: 0 14px; gap: 8px; font-size: 13px; height: 48px; }
   .hud__btn { padding: 16px 20px; font-size: 15px; min-height: 56px; }
-  .hud__btn--icon { width: 56px; height: 56px; font-size: 26px; }
+  .hud__btn--icon { width: 48px; height: 48px; font-size: 22px; }
   .hud__btn--accent { padding: 16px 24px; }
 }
