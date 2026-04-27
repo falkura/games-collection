@@ -39,7 +39,7 @@
   color: var(--plinko-text-dim);
 }
 
-.settings-menu__close {
+.settings-menu .settings-menu__close {
   font-size: 13px;
   color: var(--plinko-text-dim);
   padding: 4px 8px;
@@ -47,7 +47,7 @@
   background: var(--plinko-panel-2);
   border: 1px solid var(--plinko-border);
 }
-.settings-menu__close:hover {
+.settings-menu .settings-menu__close:hover {
   color: var(--plinko-text);
 }
 
@@ -80,7 +80,7 @@
   color: var(--plinko-text-dim);
 }
 
-.settings-menu__info-btn {
+.settings-menu .settings-menu__info-btn {
   background: var(--plinko-panel-2);
   border: 1px solid var(--plinko-border);
   border-radius: 10px;
@@ -93,7 +93,7 @@
     background 0.15s,
     border-color 0.15s;
 }
-.settings-menu__info-btn:hover {
+.settings-menu .settings-menu__info-btn:hover {
   background: var(--plinko-border);
   border-color: var(--plinko-text-dim);
 }

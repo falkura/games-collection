@@ -39,7 +39,7 @@ export function InfoModal() {
               spread.
             </li>
             <li>
-              <b>Autoplay</b> — Drops a ball every 0.7s until you turn it off or
+              <b>Autoplay</b> — Drops a ball every 0.4s until you turn it off or
               run out of balance.
             </li>
             <li>

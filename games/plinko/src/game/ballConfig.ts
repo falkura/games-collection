@@ -2,7 +2,7 @@ export const BALL_CONFIG = {
   color: "#FF1D45",
 
   /** Max simultaneous balls on the board before drop requests are ignored. */
-  maxActiveBalls: 10,
+  maxActiveBalls: 100,
 
   /**
    * Simulated gravity in px/s². Applied to the actual pixel distances between
@@ -37,4 +37,7 @@ export const BALL_CONFIG = {
   /** Alpha fade after landing. */
   fadeDuration: 0.18,
   fadeDelay: 0.05,
+
+  /** Milliseconds between autoplay drops. */
+  autoplayIntervalMs: 400,
 };

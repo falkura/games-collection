@@ -7,6 +7,7 @@ import {
   ROW_OPTIONS,
   Rows,
 } from "../../../server/payouts";
+import { BALL_CONFIG } from "../../../game/ballConfig";
 import "./BetPanel.css";
 
 export function BetPanel() {
@@ -82,7 +83,7 @@ export function BetPanel() {
       }
     };
     tick();
-    autoTimer.current = window.setInterval(tick, 700);
+    autoTimer.current = window.setInterval(tick, BALL_CONFIG.autoplayIntervalMs);
     return () => {
       if (autoTimer.current !== null) window.clearInterval(autoTimer.current);
     };
@@ -179,32 +180,33 @@ export function BetPanel() {
       </div>
 
       {/* Autoplay */}
-      <div className="bet-panel__row">
-        <label className="bet-panel__label">Autoplay</label>
-        <div className="bet-panel__autoplay-row">
-          <div className="bet-panel__input-wrap bet-panel__input-wrap--count">
-            <input
-              type="number"
-              className="bet-panel__input bet-panel__input--count"
-              min={0}
-              step={1}
-              placeholder="∞"
-              value={autoplayCount === 0 ? "" : autoplayCount}
-              onChange={(e) => {
-                const v = parseInt(e.target.value, 10);
-                setAutoplayCount(isNaN(v) ? 0 : v);
-              }}
-              disabled={autoplay}
-            />
-          </div>
-          <button
-            type="button"
-            className={`bet-panel__autoplay-btn ${autoplay ? "bet-panel__autoplay-btn--on" : ""}`}
-            onClick={() => setAutoplay(!autoplay)}
-          >
-            <span className="bet-panel__autoplay-dot" />
-            {autoplay ? "Stop" : "Auto"}
-          </button>
+      <div className="bet-panel__autoplay-row">
+        <div className="bet-panel__balance">
+          <span className="bet-panel__label">Balance</span>
+          <span className="bet-panel__balance-amount">${balance.toFixed(2)}</span>
+        </div>
+        <button
+          type="button"
+          className={`bet-panel__autoplay-btn ${autoplay ? "bet-panel__autoplay-btn--on" : ""}`}
+          onClick={() => setAutoplay(!autoplay)}
+        >
+          <span className="bet-panel__autoplay-dot" />
+          {autoplay ? "Stop" : "Auto"}
+        </button>
+        <div className="bet-panel__input-wrap bet-panel__input-wrap--count">
+          <input
+            type="number"
+            className="bet-panel__input bet-panel__input--count"
+            min={0}
+            step={1}
+            placeholder="∞"
+            value={autoplayCount === 0 ? "" : autoplayCount}
+            onChange={(e) => {
+              const v = parseInt(e.target.value, 10);
+              setAutoplayCount(isNaN(v) ? 0 : v);
+            }}
+            disabled={autoplay}
+          />
         </div>
       </div>
 

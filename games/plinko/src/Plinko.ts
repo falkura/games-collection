@@ -60,27 +60,44 @@ export class Plinko extends GameController {
 
   public resize() {
     if (!this.board) return;
-    this.rebuildBoard();
+    this.scaleBoardToScreen();
   }
 
+  private static readonly BOARD_W = 950;
+  private static readonly BOARD_H = 900;
+
   private rebuildBoard() {
-    const boardW = 950;
-    const boardH = 900;
+    // Kill and remove all in-flight balls before destroying board geometry
+    for (const ball of this.balls) {
+      ball.markDead();
+      if (!ball.destroyed) ball.destroy();
+    }
+    this.balls = [];
 
     this.board.build({
       rows: this.currentRows,
-      width: boardW,
-      height: boardH,
+      width: Plinko.BOARD_W,
+      height: Plinko.BOARD_H,
       gradient: DIFFICULTY_GRADIENT[this.currentDifficulty],
     });
 
-    const multipliers = getMultipliers(
-      this.currentDifficulty,
-      this.currentRows,
-    );
-    this.board.renderBins(multipliers, () => {});
+    this.board.renderBins(getMultipliers(this.currentDifficulty, this.currentRows), () => {});
 
-    this.boardWrapper.x = (Layout.screen.width - boardW) / 2;
+    this.scaleBoardToScreen();
+  }
+
+  private scaleBoardToScreen() {
+    const screenW = Layout.screen.width;
+    const screenH = Layout.screen.height;
+
+    // Leave room for the UI panels (top bar ~60px, bottom panel ~230px)
+    const availW = screenW;
+    const availH = screenH - 290;
+
+    const scale = Math.min(availW / Plinko.BOARD_W, availH / Plinko.BOARD_H, 1);
+
+    this.boardWrapper.scale.set(scale);
+    this.boardWrapper.x = (screenW - Plinko.BOARD_W * scale) / 2;
     this.boardWrapper.y = Layout.game.fromTop(250);
   }
 
@@ -158,10 +175,11 @@ export class Plinko extends GameController {
       win: response.payout >= originalState.bet,
     });
 
+    if (ball.destroyed) return;
     gsap.to(ball, {
       alpha: 0,
-      duration: 0.35,
-      delay: 0.15,
+      duration: BALL_CONFIG.fadeDuration,
+      delay: BALL_CONFIG.fadeDelay,
       onComplete: () => {
         this.balls = this.balls.filter((b) => b !== ball);
         if (!ball.destroyed) ball.destroy();

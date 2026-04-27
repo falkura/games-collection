@@ -113,7 +113,7 @@ export class Board extends Container {
     multipliers: number[],
     onCreated: (bins: Container[]) => void,
   ) {
-    this.binLayer.removeChildren().forEach((c) => c.destroy());
+    this.binLayer.removeChildren().forEach((c) => { gsap.killTweensOf(c); c.destroy(); });
     this.bins = [];
 
     const { binCenters, binWidth, binHeight } = this.layout;
