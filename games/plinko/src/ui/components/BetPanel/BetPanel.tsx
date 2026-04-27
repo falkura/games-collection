@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePlinkoStore } from "../../../store/store";
 import { plinkoEvents } from "../../../store/events";
 import {
@@ -30,11 +30,28 @@ export function BetPanel() {
 
   const autoTimer = useRef<number | null>(null);
   const [betInput, setBetInput] = useState(bet.toFixed(2));
+  const segRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
 
   // Keep betInput in sync when bet changes externally (halveBet / doubleBet)
   useEffect(() => {
     setBetInput(bet.toFixed(2));
   }, [bet]);
+
+  // Slide indicator to active difficulty button
+  useLayoutEffect(() => {
+    if (!segRef.current) return;
+    const seg = segRef.current;
+    const activeBtn = seg.querySelector<HTMLButtonElement>(".bet-panel__seg-btn--on");
+    if (!activeBtn) return;
+    const segRect = seg.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    setIndicatorStyle({
+      width: btnRect.width,
+      height: btnRect.height,
+      transform: `translateX(${btnRect.left - segRect.left - 4}px)`,
+    });
+  }, [difficulty]);
 
   useEffect(() => {
     if (!autoplay) {
@@ -114,7 +131,11 @@ export function BetPanel() {
       <div className="bet-panel__row bet-panel__row--split">
         <div className="bet-panel__field">
           <label className="bet-panel__label">Difficulty</label>
-          <div className="bet-panel__seg">
+          <div className="bet-panel__seg" ref={segRef}>
+            <div
+              className={`bet-panel__seg-indicator bet-panel__seg-indicator--${difficulty.toLowerCase()}`}
+              style={indicatorStyle}
+            />
             {DIFFICULTIES.map((d) => {
               const active = d === difficulty;
               return (
