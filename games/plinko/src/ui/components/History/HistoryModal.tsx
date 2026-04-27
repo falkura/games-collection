@@ -70,29 +70,27 @@ export function HistoryModal() {
           )}
         </div>
 
-        {totalPages > 1 && (
-          <div className="history-modal__pagination">
-            <button
-              type="button"
-              className="history-modal__page-btn"
-              disabled={safePage === 0}
-              onClick={() => goTo(safePage - 1)}
-            >
-              ‹
-            </button>
-            <span className="history-modal__page-info">
-              {safePage + 1} / {totalPages}
-            </span>
-            <button
-              type="button"
-              className="history-modal__page-btn"
-              disabled={safePage === totalPages - 1}
-              onClick={() => goTo(safePage + 1)}
-            >
-              ›
-            </button>
-          </div>
-        )}
+        <div className="history-modal__pagination">
+          <button
+            type="button"
+            className="history-modal__page-btn"
+            disabled={safePage === 0}
+            onClick={() => goTo(safePage - 1)}
+          >
+            ‹
+          </button>
+          <span className="history-modal__page-info">
+            {safePage + 1} / {totalPages}
+          </span>
+          <button
+            type="button"
+            className="history-modal__page-btn"
+            disabled={safePage === totalPages - 1}
+            onClick={() => goTo(safePage + 1)}
+          >
+            ›
+          </button>
+        </div>
       </div>
     </>
   );

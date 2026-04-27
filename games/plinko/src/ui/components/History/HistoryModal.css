@@ -13,7 +13,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(520px, calc(100vw - 24px));
-  max-height: calc(100vh - 48px);
+  height: min(600px, calc(100vh - 48px));
   display: flex;
   flex-direction: column;
   background: var(--plinko-panel);
@@ -50,6 +50,7 @@
 .history-modal__body {
   overflow-y: auto;
   padding: 10px 14px 16px;
+  flex: 1;
 }
 
 .history-modal__empty {
