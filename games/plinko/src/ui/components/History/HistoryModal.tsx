@@ -1,14 +1,24 @@
+import { useState } from "react";
 import { usePlinkoStore } from "../../../store/store";
 import { getBinColor } from "../../../server/payouts";
 import { Audio } from "../../../Audio";
 import "./HistoryModal.css";
 
+const PAGE_SIZE = 30;
+
 export function HistoryModal() {
   const open = usePlinkoStore((s) => s.historyOpen);
   const setOpen = usePlinkoStore((s) => s.setHistoryOpen);
   const history = usePlinkoStore((s) => s.history);
+  const [page, setPage] = useState(0);
 
   if (!open) return null;
+
+  const totalPages = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const pageItems = history.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+
+  const goTo = (p: number) => { Audio.play("click"); setPage(p); };
 
   return (
     <>
@@ -35,11 +45,12 @@ export function HistoryModal() {
                 </tr>
               </thead>
               <tbody>
-                {history.map((h, i) => {
+                {pageItems.map((h, i) => {
+                  const globalIndex = safePage * PAGE_SIZE + i;
                   const color = getBinColor(h.difficulty, h.rows, h.bin);
                   return (
                     <tr key={h.id} className={h.win ? "history-modal__row--win" : "history-modal__row--lose"}>
-                      <td className="history-modal__num">{history.length - i}</td>
+                      <td className="history-modal__num">{history.length - globalIndex}</td>
                       <td>
                         <span className="history-modal__mult" style={{ color, borderColor: `${color}55`, background: `${color}18` }}>
                           {h.multiplier}×
@@ -58,6 +69,30 @@ export function HistoryModal() {
             </table>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="history-modal__pagination">
+            <button
+              type="button"
+              className="history-modal__page-btn"
+              disabled={safePage === 0}
+              onClick={() => goTo(safePage - 1)}
+            >
+              ‹
+            </button>
+            <span className="history-modal__page-info">
+              {safePage + 1} / {totalPages}
+            </span>
+            <button
+              type="button"
+              className="history-modal__page-btn"
+              disabled={safePage === totalPages - 1}
+              onClick={() => goTo(safePage + 1)}
+            >
+              ›
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

@@ -94,6 +94,45 @@
   color: var(--plinko-text-dim);
 }
 
+.history-modal__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--plinko-border);
+  flex-shrink: 0;
+}
+
+.history-modal__page-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--plinko-panel-2);
+  border: 1px solid var(--plinko-border);
+  color: var(--plinko-text);
+  font-size: 18px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s;
+}
+.history-modal__page-btn:hover:not(:disabled) {
+  background: var(--plinko-border);
+}
+.history-modal__page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.history-modal__page-info {
+  font-size: 13px;
+  color: var(--plinko-text-dim);
+  font-variant-numeric: tabular-nums;
+  min-width: 48px;
+  text-align: center;
+}
+
 .history-modal__mult {
   display: inline-block;
   padding: 2px 7px;

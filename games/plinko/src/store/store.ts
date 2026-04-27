@@ -52,7 +52,7 @@ interface PlinkoState {
   setHistoryOpen: (v: boolean) => void;
 }
 
-const HISTORY_LIMIT = 40;
+const HISTORY_LIMIT = 150;
 
 export const usePlinkoStore = create<PlinkoState>((set) => ({
   balance: 1000,
