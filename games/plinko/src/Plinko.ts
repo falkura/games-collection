@@ -10,7 +10,11 @@ import {
   Rows,
   getMultipliers,
 } from "./server/payouts";
-import { FakePlinkoServer, PlinkoServer } from "./server/PlinkoServer";
+import {
+  FakePlinkoServer,
+  PlinkoServer,
+  setPlinkoServer,
+} from "./server/PlinkoServer";
 import { plinkoEvents } from "./store/events";
 import { usePlinkoStore } from "./store/store";
 import "./Audio";
@@ -19,7 +23,12 @@ export class Plinko extends GameController {
   private board: Board;
   private boardWrapper: Container;
   private balls: Ball[] = [];
-  private server: PlinkoServer = new FakePlinkoServer();
+  private server: PlinkoServer = (() => {
+    const s = new FakePlinkoServer();
+    setPlinkoServer(s);
+    return s;
+  })();
+
   private currentDifficulty: Difficulty;
   private currentRows: Rows;
 

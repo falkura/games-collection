@@ -36,6 +36,15 @@
   flex-shrink: 0;
 }
 
+.history-modal__session {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--plinko-text-dim);
+  font-family: monospace;
+  margin-top: 2px;
+}
+
 .history-modal__close {
   font-size: 16px;
   color: var(--plinko-text-dim);
