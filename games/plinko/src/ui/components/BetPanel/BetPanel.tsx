@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import { usePlinkoStore } from "../../../store/store";
 import { plinkoEvents } from "../../../store/events";
 import {
@@ -18,6 +19,7 @@ export function BetPanel() {
     rows,
     autoplay,
     autoplayCount,
+    turbo,
     pendingDrops,
     setBet,
     halveBet,
@@ -27,6 +29,7 @@ export function BetPanel() {
     setAutoplay,
     setAutoplayCount,
     decAutoplayCount,
+    setTurbo,
   } = usePlinkoStore();
 
   const autoTimer = useRef<number | null>(null);
@@ -88,6 +91,21 @@ export function BetPanel() {
       if (autoTimer.current !== null) window.clearInterval(autoTimer.current);
     };
   }, [autoplay]);
+
+  const turboProxy = useRef({ ts: 1 });
+  useEffect(() => {
+    const proxy = turboProxy.current;
+    proxy.ts = gsap.globalTimeline.timeScale();
+    gsap.to(proxy, {
+      ts: turbo ? 2 : 1,
+      duration: 0.3,
+      ease: "power1.inOut",
+      overwrite: true,
+      onUpdate() {
+        gsap.globalTimeline.timeScale(proxy.ts);
+      },
+    });
+  }, [turbo]);
 
   const canBet = balance >= bet && !autoplay;
 
@@ -185,14 +203,6 @@ export function BetPanel() {
           <span className="bet-panel__label">Balance</span>
           <span className="bet-panel__balance-amount">${balance.toFixed(2)}</span>
         </div>
-        <button
-          type="button"
-          className={`bet-panel__autoplay-btn ${autoplay ? "bet-panel__autoplay-btn--on" : ""}`}
-          onClick={() => setAutoplay(!autoplay)}
-        >
-          <span className="bet-panel__autoplay-dot" />
-          {autoplay ? "Stop" : "Auto"}
-        </button>
         <div className="bet-panel__input-wrap bet-panel__input-wrap--count">
           <input
             type="number"
@@ -208,6 +218,22 @@ export function BetPanel() {
             disabled={autoplay}
           />
         </div>
+        <button
+          type="button"
+          className={`bet-panel__autoplay-btn ${autoplay ? "bet-panel__autoplay-btn--on" : ""}`}
+          onClick={() => setAutoplay(!autoplay)}
+        >
+          <span className="bet-panel__autoplay-dot" />
+          {autoplay ? "Stop" : "Auto"}
+        </button>
+        <button
+          type="button"
+          className={`bet-panel__turbo-btn ${turbo ? "bet-panel__turbo-btn--on" : ""}`}
+          onClick={() => setTurbo(!turbo)}
+          title="Turbo: 2× speed"
+        >
+          ⚡
+        </button>
       </div>
 
       {/* Bet button */}

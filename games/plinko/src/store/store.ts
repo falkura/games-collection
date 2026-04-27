@@ -24,6 +24,7 @@ interface PlinkoState {
   autoplay: boolean;
   /** 0 = infinite, >0 = remaining drops */
   autoplayCount: number;
+  turbo: boolean;
   pendingDrops: number;
   history: HistoryEntry[];
   settings: Settings;
@@ -38,6 +39,7 @@ interface PlinkoState {
   setAutoplay: (v: boolean) => void;
   setAutoplayCount: (v: number) => void;
   decAutoplayCount: () => void;
+  setTurbo: (v: boolean) => void;
   addBalance: (v: number) => void;
   subBalance: (v: number) => void;
   pushHistory: (e: HistoryEntry) => void;
@@ -57,6 +59,7 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
   rows: 12,
   autoplay: false,
   autoplayCount: 0,
+  turbo: false,
   pendingDrops: 0,
   history: [],
   settings: { volume: 0.6 },
@@ -71,6 +74,7 @@ export const usePlinkoStore = create<PlinkoState>((set) => ({
   setRows: (r) => set({ rows: r }),
   setAutoplay: (v) => set({ autoplay: v }),
   setAutoplayCount: (v) => set({ autoplayCount: Math.max(0, v) }),
+  setTurbo: (v) => set({ turbo: v }),
   decAutoplayCount: () =>
     set((s) => {
       if (s.autoplayCount <= 0) return {};
