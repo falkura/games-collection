@@ -34,6 +34,9 @@ export const BALL_CONFIG = {
   /** Milliseconds between autoplay drops. */
   autoplayIntervalMs: 400,
 
+  /** GSAP timeline timeScale when turbo is active. Also used to shorten the autoplay interval. */
+  turboTimeScale: 2,
+
   /**
    * Per-hop speed variance: each hop's launch speed is scaled by a random
    * factor in [1 - speedVariance, 1 + speedVariance].

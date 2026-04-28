@@ -90,6 +90,9 @@ export function BetPanel() {
       }
       return;
     }
+    const interval = turbo
+      ? BALL_CONFIG.autoplayIntervalMs / BALL_CONFIG.turboTimeScale
+      : BALL_CONFIG.autoplayIntervalMs;
     const tick = () => {
       const s = usePlinkoStore.getState();
       if (s.balance < s.bet) {
@@ -102,18 +105,18 @@ export function BetPanel() {
       }
     };
     tick();
-    autoTimer.current = window.setInterval(tick, BALL_CONFIG.autoplayIntervalMs);
+    autoTimer.current = window.setInterval(tick, interval);
     return () => {
       if (autoTimer.current !== null) window.clearInterval(autoTimer.current);
     };
-  }, [autoplay]);
+  }, [autoplay, turbo]);
 
   const turboProxy = useRef({ ts: 1 });
   useEffect(() => {
     const proxy = turboProxy.current;
     proxy.ts = gsap.globalTimeline.timeScale();
     gsap.to(proxy, {
-      ts: turbo ? 2 : 1,
+      ts: turbo ? BALL_CONFIG.turboTimeScale : 1,
       duration: 0.3,
       ease: "power1.inOut",
       overwrite: true,
@@ -246,7 +249,7 @@ export function BetPanel() {
           type="button"
           className={`bet-panel__turbo-btn ${turbo ? "bet-panel__turbo-btn--on" : ""}`}
           onClick={() => { Audio.play(turbo ? "turboOff" : "turboOn"); setTurbo(!turbo); }}
-          title="Turbo: 2× speed"
+          title={`Turbo: ${BALL_CONFIG.turboTimeScale}× speed`}
         >
           <svg width="14" height="18" viewBox="0 0 14 18" fill="none" aria-hidden="true">
             <path d="M8 1L1 10h5.5L6 17l7-9H7.5L8 1Z" fill="currentColor" stroke="currentColor" strokeWidth="0.5" strokeLinejoin="round"/>

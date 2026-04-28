@@ -1,5 +1,6 @@
 import { usePlinkoStore } from "../../../store/store";
 import { Audio } from "../../../Audio";
+import { BALL_CONFIG } from "../../../game/ballConfig";
 import "./InfoModal.css";
 
 export function InfoModal() {
@@ -40,8 +41,11 @@ export function InfoModal() {
               spread.
             </li>
             <li>
-              <b>Autoplay</b> — Drops a ball every 0.4s until you turn it off or
-              run out of balance.
+              <b>Autoplay</b> — Continuously drops balls until you stop it or
+              run out of balance. Set a count to limit the number of drops.
+            </li>
+            <li>
+              <b>Turbo</b> — Runs the game at {BALL_CONFIG.turboTimeScale}× speed, including faster autoplay drops.
             </li>
             <li>
               <b>1/2</b> and <b>2×</b> quickly halve or double your bet.
